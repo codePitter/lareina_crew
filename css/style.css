@@ -61,8 +61,6 @@ body {
         font-size: 22px;
         font-weight: 700;
         color: white;
-        --text-light: center;
-        padding-left:20px;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     }
 
@@ -754,4 +752,334 @@ body {
         border-left: none;
         border-top: 3px solid var(--primary-blue);
     }
+}
+
+/* ========== MODAL DE GESTIÓN DE PERSONAL ========== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+    .modal.show {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+.modal-content {
+    background-color: var(--bg-main);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px var(--shadow-md);
+    width: 90%;
+    max-width: 900px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .modal-header h2 {
+        margin: 0;
+        font-size: 24px;
+    }
+
+.close-modal {
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+    .close-modal:hover {
+        transform: rotate(90deg);
+        color: var(--warning-red);
+    }
+
+.modal-body {
+    padding: 25px 30px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+    .modal-actions button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+.btn-add {
+    background: var(--primary-green);
+    color: white;
+}
+
+    .btn-add:hover {
+        background: var(--dark-green);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
+    }
+
+.btn-export {
+    background: var(--primary-blue);
+    color: white;
+}
+
+    .btn-export:hover {
+        background: var(--secondary-blue);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    }
+
+.btn-import {
+    background: var(--accent-teal);
+    color: white;
+}
+
+    .btn-import:hover {
+        background: #00ACC1;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+    }
+
+.manage-btn {
+    background: var(--primary-green);
+    color: white;
+    border: 2px solid var(--primary-green);
+    padding: 6px 18px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+    .manage-btn:hover {
+        background: var(--dark-green);
+        border-color: var(--dark-green);
+        box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+    }
+
+.personnel-stats {
+    margin-left: auto;
+    display: flex;
+    gap: 15px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-medium);
+}
+
+    .personnel-stats span {
+        background: var(--bg-secondary);
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+/* ========== TABLA DE PERSONAL ========== */
+.personnel-table-container {
+    overflow-x: auto;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+}
+
+.personnel-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-main);
+}
+
+    .personnel-table thead {
+        background: var(--bg-secondary);
+    }
+
+    .personnel-table th {
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid var(--border-medium);
+    }
+
+    .personnel-table tbody tr {
+        border-bottom: 1px solid var(--border-light);
+        transition: all 0.2s;
+    }
+
+        .personnel-table tbody tr:hover {
+            background: var(--light-blue);
+        }
+
+        .personnel-table tbody tr.inactive {
+            opacity: 0.5;
+            background: var(--bg-tertiary);
+        }
+
+    .personnel-table td {
+        padding: 12px 15px;
+        color: var(--text-dark);
+        font-size: 14px;
+    }
+
+        .personnel-table td input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid var(--border-medium);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+            .personnel-table td input:focus {
+                outline: none;
+                border-color: var(--primary-blue);
+                box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            }
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+    .status-badge.active {
+        background: var(--light-green);
+        color: var(--dark-green);
+    }
+
+    .status-badge.inactive {
+        background: var(--warning-red-light);
+        color: var(--warning-red);
+    }
+
+.personnel-actions {
+    display: flex;
+    gap: 8px;
+}
+
+    .personnel-actions button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+.btn-edit {
+    background: var(--primary-blue);
+    color: white;
+}
+
+    .btn-edit:hover {
+        background: var(--secondary-blue);
+    }
+
+.btn-toggle {
+    background: var(--primary-orange);
+    color: white;
+}
+
+    .btn-toggle:hover {
+        background: #F57C00;
+    }
+
+.btn-delete {
+    background: var(--warning-red);
+    color: white;
+}
+
+    .btn-delete:hover {
+        background: #D32F2F;
+    }
+
+.btn-save {
+    background: var(--primary-green);
+    color: white;
+}
+
+    .btn-save:hover {
+        background: var(--dark-green);
+    }
+
+.btn-cancel {
+    background: var(--border-medium);
+    color: var(--text-dark);
+}
+
+    .btn-cancel:hover {
+        background: var(--border-light);
+    }
+
+/* ========== RESPONSIVE MODAL ========== */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        max-height: 90vh;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .personnel-stats {
+        margin-left: 0;
+        margin-top: 10px;
+        flex-direction: column;
+    }
+
+    .personnel-table {
+        font-size: 12px;
+    }
+
+        .personnel-table th,
+        .personnel-table td {
+            padding: 8px 10px;
+        }
 }

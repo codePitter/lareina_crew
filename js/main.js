@@ -1,62 +1,54 @@
 ﻿// ========== DATOS INICIALES ==========
-const PERSONNEL = [
-    'Abreu',
-    'Algosino',
-    'Aranda',
-    'Bruno',
-    'Buldorini',
-    'Caceres',
-    'Caldarella',
-    'Cantone',
-    'Cardozo',
-    'Carrasco',
-    'Chaparro',
-    'Coloccioni',
-    'Delgado',
-    'Diaz',
-    'Durruty',
-    'Erosa',
-    'Flores C.',
-    'Flores R.',
-    'Gago',
-    'Gauna',
-    'Gill',
-    'Goncalves',
-    'Guimenez',
-    'Kesuani',
-    'Kolenicz',
-    'Ledesma',
-    'Leguizamon',
-    'Lisi',
-    'Lopez',
-    'Miranda',
-    'Morelli',
-    'Moyano',
-    'Navone',
-    'Ortiz',
-    'Peralta',
-    'Pereyra',
-    'Perez O.',
-    'Perez P.',
-    'Puig',
-    'Quiroga',
-    'Regunaschi',
-    'Rios',
-    'Rodriguez',
-    'Ruiz',
-    'Salaya',
-    'Tevez',
-    'Valenzuela',
-    'Van',
-    'Velazquez',
-    'Ventrella',
-    'Villanueva',
-    'Zapata'
-];
+// Lista de personal - Se carga dinámicamente desde crew/personnel.json
+let PERSONNEL = [];
 
 // Estado global de la aplicación
 let currentDay = 0; // 0 = Lunes, 6 = Domingo
 let scheduleData = {};
+
+// ========== CARGA DE PERSONAL DESDE JSON ==========
+async function loadPersonnelFromJSON() {
+    try {
+        const response = await fetch('crew/personnel.json');
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Filtrar solo personal activo y extraer nombres
+        PERSONNEL = data.personnel
+            .filter(person => person.active)
+            .map(person => person.name)
+            .sort(); // Ordenar alfabéticamente
+
+        console.log(`✅ Personal cargado: ${PERSONNEL.length} personas`);
+        console.log('📋 Lista:', PERSONNEL);
+
+        return true;
+    } catch (error) {
+        console.error('❌ Error al cargar personal desde JSON:', error);
+
+        // Fallback: usar lista por defecto si falla la carga
+        console.warn('⚠️ Usando lista de personal por defecto');
+        PERSONNEL = [
+            'Abreu', 'Algosino', 'Aranda', 'Bruno', 'Buldorini',
+            'Caceres', 'Caldarella', 'Cantone', 'Cardozo', 'Carrasco',
+            'Chaparro', 'Coloccioni', 'Delgado', 'Diaz', 'Durruty',
+            'Erosa', 'Flores C.', 'Flores R.', 'Gago', 'Gauna',
+            'Gill', 'Goncalves', 'Guimenez', 'Kesuani', 'Kolenicz',
+            'Ledesma', 'Leguizamon', 'Lisi', 'Lopez', 'Miranda',
+            'Morelli', 'Moyano', 'Navone', 'Ortiz', 'Peralta',
+            'Pereyra', 'Perez O.', 'Perez P.', 'Puig', 'Quiroga',
+            'Regunaschi', 'Rios', 'Rodriguez', 'Ruiz', 'Salaya',
+            'Tevez', 'Valenzuela', 'Van', 'Velazquez', 'Ventrella',
+            'Villanueva', 'Zapata'
+        ];
+
+        return false;
+    }
+}
 
 // ========== FUNCIONES DE ALMACENAMIENTO LOCAL ==========
 function saveToLocalStorage() {
@@ -137,7 +129,6 @@ function importFromJSON() {
     input.click();
 }
 
-// Inicializar datos para cada día
 function initScheduleData() {
     for (let day = 0; day < 7; day++) {
         scheduleData[day] = {
@@ -159,24 +150,34 @@ function initScheduleData() {
 }
 
 // ========== INICIALIZACIÓN ==========
-document.addEventListener('DOMContentLoaded', function () {
-    // Intentar cargar datos guardados
+
+// ========== INICIALIZACIÓN DEL SISTEMA ==========
+document.addEventListener('DOMContentLoaded', async function () {
+    // 1. Cargar personal desde JSON primero
+    console.log('🔄 Cargando lista de personal...');
+    await loadPersonnelFromJSON();
+
+    // 2. Intentar cargar datos guardados
     const dataLoaded = loadFromLocalStorage();
 
-    // Si no hay datos guardados, inicializar con datos vacíos
+    // 3. Si no hay datos guardados, inicializar con datos vacíos
     if (!dataLoaded) {
         initScheduleData();
     }
 
+    // 4. Inicializar interfaz
     setTodayDate();
     generateScheduleGrid();
     generatePersonnelList();
     setupEventListeners();
+    setupPersonnelModalListeners();
     loadSchedule(currentDay);
 
-    // Mostrar mensaje de bienvenida solo la primera vez
+    // 5. Mostrar mensaje de bienvenida
     if (!dataLoaded) {
-        console.log('Sistema iniciado. Los cambios se guardarán automáticamente.');
+        console.log('✅ Sistema iniciado. Los cambios se guardarán automáticamente.');
+    } else {
+        console.log('✅ Sistema iniciado con datos previos.');
     }
 });
 
@@ -1301,4 +1302,293 @@ function formatTurnoForPDF(turnoData) {
     }
 
     return text;
+}// ========== GESTIÓN DE PERSONAL - CÓDIGO ADICIONAL ==========
+
+// Variable global para almacenar los datos del personal
+let personnelData = {
+    personnel: [],
+    metadata: {
+        total: 0,
+        lastUpdated: new Date().toISOString().split('T')[0],
+        version: "1.0"
+    }
+};
+
+// ========== MODAL DE GESTIÓN ==========
+function openPersonnelModal() {
+    const modal = document.getElementById('personnelModal');
+    modal.classList.add('show');
+    loadPersonnelData();
+    renderPersonnelTable();
 }
+
+function closePersonnelModal() {
+    const modal = document.getElementById('personnelModal');
+    modal.classList.remove('show');
+}
+
+// ========== CARGAR DATOS DE PERSONAL ==========
+function loadPersonnelData() {
+    // Convertir el array PERSONNEL actual a formato de datos
+    if (personnelData.personnel.length === 0) {
+        // Primera vez: crear desde PERSONNEL
+        personnelData.personnel = PERSONNEL.map((name, index) => ({
+            id: index + 1,
+            name: name,
+            active: true
+        }));
+        personnelData.metadata.total = personnelData.personnel.length;
+    }
+}
+
+// ========== RENDERIZAR TABLA ==========
+function renderPersonnelTable() {
+    const tbody = document.getElementById('personnelTableBody');
+    tbody.innerHTML = '';
+
+    // Ordenar por ID
+    const sortedPersonnel = [...personnelData.personnel].sort((a, b) => a.id - b.id);
+
+    sortedPersonnel.forEach(person => {
+        const row = createPersonnelRow(person);
+        tbody.appendChild(row);
+    });
+
+    updatePersonnelStats();
+}
+
+function createPersonnelRow(person) {
+    const row = document.createElement('tr');
+    row.dataset.id = person.id;
+    if (!person.active) row.classList.add('inactive');
+
+    row.innerHTML = `
+        <td>${person.id}</td>
+        <td>
+            <span class="name-display">${person.name}</span>
+            <input type="text" class="name-edit" value="${person.name}" style="display: none;">
+        </td>
+        <td>
+            <span class="status-badge ${person.active ? 'active' : 'inactive'}">
+                ${person.active ? '✓ Activo' : '✗ Inactivo'}
+            </span>
+        </td>
+        <td>
+            <div class="personnel-actions">
+                <button class="btn-edit" onclick="editPerson(${person.id})">✏️ Editar</button>
+                <button class="btn-save" onclick="savePerson(${person.id})" style="display: none;">💾 Guardar</button>
+                <button class="btn-cancel" onclick="cancelEdit(${person.id})" style="display: none;">✖️ Cancelar</button>
+                <button class="btn-toggle" onclick="togglePersonActive(${person.id})">
+                    ${person.active ? '🚫 Desactivar' : '✓ Activar'}
+                </button>
+                <button class="btn-delete" onclick="deletePerson(${person.id})">🗑️ Eliminar</button>
+            </div>
+        </td>
+    `;
+
+    return row;
+}
+
+// ========== ACTUALIZAR ESTADÍSTICAS ==========
+function updatePersonnelStats() {
+    const total = personnelData.personnel.length;
+    const active = personnelData.personnel.filter(p => p.active).length;
+    const inactive = total - active;
+
+    document.getElementById('personnelTotal').textContent = `Total: ${total}`;
+    document.getElementById('personnelActive').textContent = `Activos: ${active}`;
+    document.getElementById('personnelInactive').textContent = `Inactivos: ${inactive}`;
+}
+
+// ========== AGREGAR PERSONA ==========
+function addPerson() {
+    const name = prompt('Ingresa el nombre o apellido de la nueva persona:');
+    if (!name || name.trim() === '') return;
+
+    // Buscar el ID más alto
+    const maxId = personnelData.personnel.reduce((max, p) => Math.max(max, p.id), 0);
+
+    const newPerson = {
+        id: maxId + 1,
+        name: name.trim(),
+        active: true
+    };
+
+    personnelData.personnel.push(newPerson);
+    personnelData.metadata.total = personnelData.personnel.length;
+    personnelData.metadata.lastUpdated = new Date().toISOString().split('T')[0];
+
+    renderPersonnelTable();
+    updatePERSONNELArray();
+    generatePersonnelList();
+
+    alert(`✅ ${name} ha sido agregado correctamente.`);
+}
+
+// ========== EDITAR PERSONA ==========
+function editPerson(id) {
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    const nameDisplay = row.querySelector('.name-display');
+    const nameEdit = row.querySelector('.name-edit');
+    const btnEdit = row.querySelector('.btn-edit');
+    const btnSave = row.querySelector('.btn-save');
+    const btnCancel = row.querySelector('.btn-cancel');
+
+    nameDisplay.style.display = 'none';
+    nameEdit.style.display = 'block';
+    nameEdit.focus();
+    nameEdit.select();
+
+    btnEdit.style.display = 'none';
+    btnSave.style.display = 'inline-block';
+    btnCancel.style.display = 'inline-block';
+}
+
+function savePerson(id) {
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    const nameEdit = row.querySelector('.name-edit');
+    const newName = nameEdit.value.trim();
+
+    if (newName === '') {
+        alert('El nombre no puede estar vacío.');
+        return;
+    }
+
+    // Actualizar en los datos
+    const person = personnelData.personnel.find(p => p.id === id);
+    if (person) {
+        person.name = newName;
+        personnelData.metadata.lastUpdated = new Date().toISOString().split('T')[0];
+    }
+
+    renderPersonnelTable();
+    updatePERSONNELArray();
+    generatePersonnelList();
+
+    alert(`✅ Cambios guardados correctamente.`);
+}
+
+function cancelEdit(id) {
+    renderPersonnelTable();
+}
+
+// ========== ACTIVAR/DESACTIVAR PERSONA ==========
+function togglePersonActive(id) {
+    const person = personnelData.personnel.find(p => p.id === id);
+    if (person) {
+        person.active = !person.active;
+        personnelData.metadata.lastUpdated = new Date().toISOString().split('T')[0];
+        renderPersonnelTable();
+        updatePERSONNELArray();
+        generatePersonnelList();
+    }
+}
+
+// ========== ELIMINAR PERSONA ==========
+function deletePerson(id) {
+    const person = personnelData.personnel.find(p => p.id === id);
+    if (!person) return;
+
+    const confirmation = confirm(`¿Estás seguro de que deseas ELIMINAR permanentemente a "${person.name}"?\n\nEsta acción no se puede deshacer.`);
+    if (!confirmation) return;
+
+    personnelData.personnel = personnelData.personnel.filter(p => p.id !== id);
+    personnelData.metadata.total = personnelData.personnel.length;
+    personnelData.metadata.lastUpdated = new Date().toISOString().split('T')[0];
+
+    renderPersonnelTable();
+    updatePERSONNELArray();
+    generatePersonnelList();
+
+    alert(`✅ ${person.name} ha sido eliminado correctamente.`);
+}
+
+// ========== ACTUALIZAR ARRAY PERSONNEL ==========
+function updatePERSONNELArray() {
+    // Actualizar el array global PERSONNEL con los datos activos
+    PERSONNEL.length = 0; // Limpiar array
+    personnelData.personnel
+        .filter(p => p.active)
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .forEach(p => PERSONNEL.push(p.name));
+}
+
+// ========== EXPORTAR JSON ==========
+function exportPersonnelToJSON() {
+    const dataStr = JSON.stringify(personnelData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `personnel_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+
+    alert(`✅ Archivo JSON exportado correctamente.\n\n📁 Reemplaza el archivo "crew/personnel.json" con el archivo descargado para que los cambios sean permanentes.`);
+}
+
+// ========== IMPORTAR JSON ==========
+function importPersonnelFromJSON() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const importedData = JSON.parse(event.target.result);
+
+                // Validar estructura
+                if (importedData.personnel && Array.isArray(importedData.personnel)) {
+                    personnelData = importedData;
+                    renderPersonnelTable();
+                    updatePERSONNELArray();
+                    generatePersonnelList();
+                    alert('✅ Personal importado correctamente.');
+                } else {
+                    alert('❌ El archivo no tiene el formato correcto.');
+                }
+            } catch (error) {
+                console.error('Error al importar:', error);
+                alert('❌ Error al leer el archivo. Asegúrate de que sea un archivo JSON válido.');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// ========== EVENT LISTENERS PARA EL MODAL ==========
+function setupPersonnelModalListeners() {
+    // Botón para abrir modal
+    document.getElementById('managePersonnel').addEventListener('click', openPersonnelModal);
+
+    // Botón cerrar modal
+    document.querySelector('.close-modal').addEventListener('click', closePersonnelModal);
+
+    // Cerrar al hacer click fuera del modal
+    document.getElementById('personnelModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            closePersonnelModal();
+        }
+    });
+
+    // Botón agregar persona
+    document.getElementById('addPersonBtn').addEventListener('click', addPerson);
+
+    // Botón exportar JSON
+    document.getElementById('exportPersonnelJSON').addEventListener('click', exportPersonnelToJSON);
+
+    // Botón importar JSON
+    document.getElementById('importPersonnelJSON').addEventListener('click', importPersonnelFromJSON);
+}
+
+// ========== AGREGAR A LA INICIALIZACIÓN ==========
+// Esta función debe llamarse después de que se cargue el DOM
+// Se agregará al final del archivo main.js existente
+-e
+// Inicializar listeners del modal de personal
+setupPersonnelModalListeners();

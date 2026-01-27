@@ -9,10 +9,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
+    <!-- ✅ VERSIÓN CORREGIDA - SIN VACACIONES DUPLICADAS ✅ -->
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>CREAR 📋 HORARIOS</h1>
+            <h1>📋 Crear Horarios</h1>
 
             <div class="controls">
                 <div class="date-selector">
@@ -33,6 +34,7 @@
                 <button class="export-btn" id="exportPDF">📥 PDF</button>
                 <button class="backup-btn" id="exportBackup">💾 Backup</button>
                 <button class="backup-btn" id="importBackup">📂 Importar</button>
+                <button class="manage-btn" id="managePersonnel">👥 Gestionar Personal</button>
                 <button class="clear-btn" id="clearData">🗑️ Limpiar</button>
             </div>
         </div>
@@ -78,7 +80,7 @@
                     </div>
                 </div>
 
-                <!-- Vacaciones -->
+                <!-- ⭐ ÚNICA SECCIÓN DE VACACIONES ⭐ -->
                 <div class="sidebar-section">
                     <div class="sidebar-title">✈️ Vacaciones</div>
                     <div class="vacaciones-dropzone" id="vacacionesDropzone" data-dropzone="vacaciones">
@@ -87,6 +89,48 @@
                             <!-- Se generará dinámicamente -->
                         </div>
                     </div>
+                </div>
+                <!-- ⭐ FIN ÚNICA SECCIÓN DE VACACIONES ⭐ -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Gestión de Personal -->
+    <div id="personnelModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>👥 Gestión de Personal</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+
+            <div class="modal-body">
+                <!-- Botones de acción -->
+                <div class="modal-actions">
+                    <button class="btn-add" id="addPersonBtn">➕ Agregar Persona</button>
+                    <button class="btn-export" id="exportPersonnelJSON">💾 Exportar JSON</button>
+                    <button class="btn-import" id="importPersonnelJSON">📂 Importar JSON</button>
+                    <div class="personnel-stats">
+                        <span id="personnelTotal">Total: 0</span>
+                        <span id="personnelActive">Activos: 0</span>
+                        <span id="personnelInactive">Inactivos: 0</span>
+                    </div>
+                </div>
+
+                <!-- Tabla de personal -->
+                <div class="personnel-table-container">
+                    <table class="personnel-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="personnelTableBody">
+                            <!-- Se llenará dinámicamente -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

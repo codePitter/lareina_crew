@@ -1,0 +1,269 @@
+{
+  "personnel": [
+    {
+      "id": 1,
+      "name": "Abreu",
+      "active": true
+    },
+    {
+      "id": 2,
+      "name": "Algosino",
+      "active": true
+    },
+    {
+      "id": 3,
+      "name": "Aranda",
+      "active": true
+    },
+    {
+      "id": 4,
+      "name": "Bruno",
+      "active": true
+    },
+    {
+      "id": 5,
+      "name": "Buldorini",
+      "active": true
+    },
+    {
+      "id": 6,
+      "name": "Caceres",
+      "active": true
+    },
+    {
+      "id": 7,
+      "name": "Caldarella",
+      "active": true
+    },
+    {
+      "id": 8,
+      "name": "Cantone",
+      "active": true
+    },
+    {
+      "id": 9,
+      "name": "Cardozo",
+      "active": true
+    },
+    {
+      "id": 10,
+      "name": "Carrasco",
+      "active": true
+    },
+    {
+      "id": 11,
+      "name": "Chaparro",
+      "active": true
+    },
+    {
+      "id": 12,
+      "name": "Coloccioni",
+      "active": true
+    },
+    {
+      "id": 13,
+      "name": "Delgado",
+      "active": true
+    },
+    {
+      "id": 14,
+      "name": "Diaz",
+      "active": true
+    },
+    {
+      "id": 15,
+      "name": "Durruty",
+      "active": true
+    },
+    {
+      "id": 16,
+      "name": "Erosa",
+      "active": true
+    },
+    {
+      "id": 17,
+      "name": "Flores C.",
+      "active": true
+    },
+    {
+      "id": 18,
+      "name": "Flores R.",
+      "active": true
+    },
+    {
+      "id": 19,
+      "name": "Gago",
+      "active": true
+    },
+    {
+      "id": 20,
+      "name": "Gauna",
+      "active": true
+    },
+    {
+      "id": 21,
+      "name": "Gill",
+      "active": true
+    },
+    {
+      "id": 22,
+      "name": "Goncalves",
+      "active": true
+    },
+    {
+      "id": 23,
+      "name": "Guimenez",
+      "active": true
+    },
+    {
+      "id": 24,
+      "name": "Kesuani",
+      "active": true
+    },
+    {
+      "id": 25,
+      "name": "Kolenicz",
+      "active": true
+    },
+    {
+      "id": 26,
+      "name": "Ledesma",
+      "active": true
+    },
+    {
+      "id": 27,
+      "name": "Leguizamon",
+      "active": true
+    },
+    {
+      "id": 28,
+      "name": "Lisi",
+      "active": true
+    },
+    {
+      "id": 29,
+      "name": "Lopez",
+      "active": true
+    },
+    {
+      "id": 30,
+      "name": "Miranda",
+      "active": true
+    },
+    {
+      "id": 31,
+      "name": "Morelli",
+      "active": true
+    },
+    {
+      "id": 32,
+      "name": "Moyano",
+      "active": true
+    },
+    {
+      "id": 33,
+      "name": "Navone",
+      "active": true
+    },
+    {
+      "id": 34,
+      "name": "Ortiz",
+      "active": true
+    },
+    {
+      "id": 35,
+      "name": "Peralta",
+      "active": true
+    },
+    {
+      "id": 36,
+      "name": "Pereyra",
+      "active": true
+    },
+    {
+      "id": 37,
+      "name": "Perez O.",
+      "active": true
+    },
+    {
+      "id": 38,
+      "name": "Perez P.",
+      "active": true
+    },
+    {
+      "id": 39,
+      "name": "Puig",
+      "active": true
+    },
+    {
+      "id": 40,
+      "name": "Quiroga",
+      "active": true
+    },
+    {
+      "id": 41,
+      "name": "Regunaschi",
+      "active": true
+    },
+    {
+      "id": 42,
+      "name": "Rios",
+      "active": true
+    },
+    {
+      "id": 43,
+      "name": "Rodriguez",
+      "active": true
+    },
+    {
+      "id": 44,
+      "name": "Ruiz",
+      "active": true
+    },
+    {
+      "id": 45,
+      "name": "Salaya",
+      "active": true
+    },
+    {
+      "id": 46,
+      "name": "Tevez",
+      "active": true
+    },
+    {
+      "id": 47,
+      "name": "Valenzuela",
+      "active": true
+    },
+    {
+      "id": 48,
+      "name": "Van",
+      "active": true
+    },
+    {
+      "id": 49,
+      "name": "Velazquez",
+      "active": true
+    },
+    {
+      "id": 50,
+      "name": "Ventrella",
+      "active": true
+    },
+    {
+      "id": 51,
+      "name": "Villanueva",
+      "active": true
+    },
+    {
+      "id": 52,
+      "name": "Zapata",
+      "active": true
+    }
+  ],
+  "metadata": {
+    "total": 52,
+    "lastUpdated": "2026-01-27",
+    "version": "1.0"
+  }
+}
