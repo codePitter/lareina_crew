@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Horarios</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>CREAR 📋 HORARIOS</h1>
+
+            <div class="controls">
+                <div class="date-selector">
+                    <label>📅</label>
+                    <input type="date" id="weekDate" value="">
+                </div>
+
+                <div class="day-tabs">
+                    <button class="day-tab active" data-day="0">LUN</button>
+                    <button class="day-tab" data-day="1">MAR</button>
+                    <button class="day-tab" data-day="2">MIÉ</button>
+                    <button class="day-tab" data-day="3">JUE</button>
+                    <button class="day-tab" data-day="4">VIE</button>
+                    <button class="day-tab" data-day="5">SÁB</button>
+                    <button class="day-tab" data-day="6">DOM</button>
+                </div>
+
+                <button class="export-btn" id="exportPDF">📥 PDF</button>
+                <button class="backup-btn" id="exportBackup">💾 Backup</button>
+                <button class="backup-btn" id="importBackup">📂 Importar</button>
+                <button class="clear-btn" id="clearData">🗑️ Limpiar</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Schedule Area -->
+            <div class="schedule-area">
+                <div class="schedule-grid" id="scheduleGrid">
+                    <!-- Las 26 cajas se generarán dinámicamente con JavaScript -->
+                </div>
+
+                <!-- Francos - Ahora en el área de schedule -->
+                <div class="francos-section">
+                    <div class="francos-section-title">🏖️ Francos (Día Libre)</div>
+                    <div class="francos-dropzone" id="francosDropzone" data-dropzone="francos">
+                        <div class="francos-dropzone-title">Arrastra aquí para asignar franco</div>
+                        <div id="francosList" class="francos-list">
+                            <!-- Se generará dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Personal Disponible -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">👥 Personal Disponible</div>
+                    <div id="personnelList" class="personnel-list">
+                        <!-- Se generará dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Licencias -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">🏥 Licencias</div>
+                    <div class="licencias-dropzone" id="licenciasDropzone" data-dropzone="licencias">
+                        <div class="licencias-dropzone-title">Arrastra aquí para asignar licencia</div>
+                        <div id="licenciasList" class="licencias-list">
+                            <!-- Se generará dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vacaciones -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">✈️ Vacaciones</div>
+                    <div class="vacaciones-dropzone" id="vacacionesDropzone" data-dropzone="vacaciones">
+                        <div class="vacaciones-dropzone-title">Arrastra aquí para asignar vacaciones</div>
+                        <div id="vacacionesList" class="vacaciones-list">
+                            <!-- Se generará dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
