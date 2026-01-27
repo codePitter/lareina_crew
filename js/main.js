@@ -1285,6 +1285,7 @@ function exportToPDF() {
     doc.save(`Horarios_${currentDayName}_${selectedDate}.pdf`);
 }
 
+
 // Función auxiliar para formatear turno
 function formatTurnoForPDF(turnoData) {
     if (!turnoData.name) {
@@ -1294,15 +1295,15 @@ function formatTurnoForPDF(turnoData) {
     let text = turnoData.name;
 
     if (turnoData.entrada && turnoData.salida) {
-        text += `\n${turnoData.entrada} - ${turnoData.salida}`;
+        text += ` (${turnoData.entrada} - ${turnoData.salida})`;
     } else if (turnoData.entrada) {
-        text += `\n${turnoData.entrada} -`;
+        text += ` (${turnoData.entrada} -)`;
     } else if (turnoData.salida) {
-        text += `\n- ${turnoData.salida}`;
+        text += ` (- ${turnoData.salida})`;
     }
 
     return text;
-}// ========== GESTIÓN DE PERSONAL - CÓDIGO ADICIONAL ==========
+}
 
 // Variable global para almacenar los datos del personal
 let personnelData = {
