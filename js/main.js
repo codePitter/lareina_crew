@@ -93,7 +93,7 @@ function exportToJSON() {
     link.download = `horarios_backup_${new Date().toISOString().split('T')[0]}.json`;
     link.click();
     URL.revokeObjectURL(url);
-    alert('Backup exportado correctamente');
+    alert('Guardado correctamente');
 }
 
 function importFromJSON() {
