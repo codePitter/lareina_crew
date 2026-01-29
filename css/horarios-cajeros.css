@@ -1660,3 +1660,46 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+/* ========== VISTA DE HORARIOS COMPLETOS ========== */
+.code-cell.schedule-view {
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+    .code-cell.schedule-view:hover {
+        overflow: visible;
+        white-space: normal;
+        word-break: break-word;
+        z-index: 10;
+        position: relative;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        padding: 8px;
+    }
+
+/* Botón de toggle view */
+.view-toggle-btn {
+    padding: 8px 16px;
+    background: var(--accent-teal);
+    color: white;
+    border: 2px solid #00ACC1;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+    .view-toggle-btn:hover {
+        background: #00ACC1;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 188, 212, 0.3);
+    }
+
+    .view-toggle-btn:active {
+        transform: translateY(0);
+    }

@@ -1,8 +1,9 @@
-﻿// ========== VARIABLES GLOBALES ==========
+﻿// // ========== VARIABLES GLOBALES ==========
 let PERSONNEL = [];
 let scheduleData = {};
 let scheduleCodes = {}; // { "codeId": { code: 1, schedule: "09:00-13:00 / 17:00-21:00", hours: 8 } }
 let nextCodeId = 1;
+let viewMode = 'codes'; // 'codes' o 'schedules'
 
 // ========== CARGA DE DATOS ==========
 async function loadPersonnelFromJSON() {
@@ -239,14 +240,24 @@ function generateScheduleTable() {
         nameCell.textContent = person.name;
         row.appendChild(nameCell);
 
-        // D�as de la semana
+        // Días de la semana
         let totalWeekHours = 0;
         for (let day = 0; day < 7; day++) {
             const codeInfo = getCodeForPerson(person.name, day);
             const dayCell = document.createElement('td');
             dayCell.className = `code-cell ${codeInfo.type}`;
-            dayCell.textContent = codeInfo.code;
-            dayCell.title = codeInfo.schedule;
+
+            // Mostrar código o horario según el modo de vista
+            if (viewMode === 'codes') {
+                dayCell.textContent = codeInfo.code;
+                dayCell.title = codeInfo.schedule;
+            } else {
+                // Modo horarios: mostrar el horario completo
+                dayCell.textContent = codeInfo.schedule;
+                dayCell.title = `Código: ${codeInfo.code}`;
+                dayCell.classList.add('schedule-view');
+            }
+
             row.appendChild(dayCell);
 
             totalWeekHours += codeInfo.hours;
@@ -544,6 +555,27 @@ function importCodesFromJSON() {
     input.click();
 }
 
+
+// ========== TOGGLE VIEW MODE ==========
+function toggleViewMode() {
+    const btn = document.getElementById('viewToggleBtn');
+
+    if (viewMode === 'codes') {
+        viewMode = 'schedules';
+        btn.textContent = '🔄 Ver Códigos';
+        btn.title = 'Cambiar a vista de códigos';
+    } else {
+        viewMode = 'codes';
+        btn.textContent = '🔄 Ver Horarios Completos';
+        btn.title = 'Cambiar a vista de horarios completos';
+    }
+
+    // Regenerar la tabla
+    generateScheduleTable();
+
+    console.log(`Vista cambiada a: ${viewMode}`);
+}
+
 // ========== EVENT LISTENERS ==========
 function setupEventListeners() {
     // Botones principales
@@ -565,6 +597,9 @@ function setupEventListeners() {
     // Botones del modal
     document.getElementById('exportCodesBtn').addEventListener('click', exportCodesToJSON);
     document.getElementById('importCodesBtn').addEventListener('click', importCodesFromJSON);
+
+    // Botón de cambio de vista
+    document.getElementById('viewToggleBtn').addEventListener('click', toggleViewMode);
 
     // Filtros
     document.getElementById('contractFilter').addEventListener('change', generateScheduleTable);
