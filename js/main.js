@@ -1147,7 +1147,7 @@ function exportToPDF() {
     for (let i = 1; i <= 26; i++) {
         const cajaData = dayData.cajas[i];
         const row = [
-            i === 26 ? '26 - PERFUMERIA' : i.toString(),
+            i === 26 ? 'PERFUMERIA' : i.toString(),
             formatTurnoForPDF(cajaData.turno1),
             formatTurnoForPDF(cajaData.turno2),
             formatTurnoForPDF(cajaData.turno3)
