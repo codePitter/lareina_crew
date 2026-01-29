@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Horarios</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=2.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
@@ -13,7 +13,7 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>Crear 📋 Horarios</h1>
+            <h1>Crear Horarios</h1>
 
             <div class="controls">
                 <div class="date-selector">
@@ -34,6 +34,7 @@
                 <button class="export-btn" id="exportPDF">📥 PDF</button>
                 <button class="backup-btn" id="exportBackup">💾 Guardar</button>
                 <button class="backup-btn" id="importBackup">📂 Cargar</button>
+                <button class="view-schedules-btn" onclick="window.location.href='horarios-cajeros.html'">📊 Ver Horarios por Cajero</button>
                 <button class="manage-btn" id="managePersonnel">👥 Gestionar Personal</button>
                 <button class="clear-btn" id="clearData">🗑️ Limpiar</button>
             </div>
@@ -135,6 +136,6 @@
         </div>
     </div>
 
-    <script src="js/main.js"></script>
+    <script src="js/main.js?v=2.0"></script>
 </body>
 </html>

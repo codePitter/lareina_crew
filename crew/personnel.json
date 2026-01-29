@@ -2,268 +2,425 @@
   "personnel": [
     {
       "id": 1,
-      "name": "Abreu",
-      "active": true
+      "name": "Abreu M.Laura",
+      "active": true,
+      "contractType": "Part-time",
+      "weeklyHours": 30
     },
     {
       "id": 2,
-      "name": "Algosino",
-      "active": true
+      "name": "Algosino Carla",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 3,
-      "name": "Aranda",
-      "active": true
+      "name": "Aranda Facundo",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 4,
-      "name": "Bruno",
-      "active": true
+      "name": "Bruno Jesica",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 5,
-      "name": "Buldorini",
-      "active": true
+      "name": "Buldorini Valeria",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 6,
-      "name": "Caceres",
-      "active": true
+      "name": "Caceres Sofia",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 7,
-      "name": "Caldarella",
-      "active": true
+      "name": "Caldarella Roxana",
+      "active": true,
+      "contractType": "Part-time",
+      "weeklyHours": 30
     },
     {
       "id": 8,
-      "name": "Cantone",
-      "active": true
+      "name": "Cantone Martina",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 9,
-      "name": "Cardozo",
-      "active": true
+      "name": "Cardozo Silvia",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 10,
-      "name": "Carrasco",
-      "active": true
+      "name": "Carrasco Natali",
+      "active": true,
+      "contractType": "Part-time",
+      "weeklyHours": 30
     },
     {
       "id": 11,
-      "name": "Chaparro",
-      "active": true
+      "name": "Chaparro Emilce",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 12,
-      "name": "Coloccioni",
-      "active": true
+      "name": "Coloccioni Alejandra",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 13,
-      "name": "Delgado",
-      "active": true
+      "name": "Delgado Marcela",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 14,
-      "name": "Diaz",
-      "active": true
+      "name": "Diaz Ornella",
+      "active": true,
+      "contractType": "Part-time",
+      "weeklyHours": 30
     },
     {
       "id": 15,
-      "name": "Durruty",
-      "active": true
+      "name": "Durruty Jorgelina",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 16,
-      "name": "Erosa",
-      "active": true
+      "name": "Erosa Abigail",
+      "active": true,
+      "contractType": "Part-time",
+      "weeklyHours": 30
     },
     {
       "id": 17,
-      "name": "Flores C.",
-      "active": true
+      "name": "Flores Cintia",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 18,
-      "name": "Flores R.",
-      "active": true
+      "name": "Flores Rocio",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 19,
-      "name": "Gago",
-      "active": true
+      "name": "Gago Donnari Axel",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 20,
-      "name": "Gauna",
-      "active": true
+      "name": "Gauna Mariela",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 21,
-      "name": "Gill",
-      "active": true
+      "name": "Gill Fabrizio",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 22,
-      "name": "Goncalves",
-      "active": true
+      "name": "Goncalves Federico",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 23,
-      "name": "Guimenez",
-      "active": true
+      "name": "Gonzalez Patricia",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 24,
-      "name": "Kesuani",
-      "active": true
+      "name": "Guimenez Laura",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 25,
-      "name": "Kolenicz",
-      "active": true
+      "name": "Kesuani Fernanda",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 26,
-      "name": "Ledesma",
-      "active": true
+      "name": "Kolenicz Angela",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 27,
-      "name": "Leguizamon",
-      "active": true
+      "name": "Ledesma Bruno",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 28,
-      "name": "Lisi",
-      "active": true
+      "name": "Leguizamon Leila",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 29,
-      "name": "Lopez",
-      "active": true
+      "name": "Lisi M.Eugenia",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 30,
-      "name": "Miranda",
-      "active": true
+      "name": "Lopez Gabriela",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 31,
-      "name": "Morelli",
-      "active": true
+      "name": "Miranda Rocio",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 32,
-      "name": "Moyano",
-      "active": true
+      "name": "Morelli Marisol",
+      "active": true,
+      "contractType": "Part-time",
+      "weeklyHours": 36
     },
     {
       "id": 33,
-      "name": "Navone",
-      "active": true
+      "name": "Moyano Eric",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 34,
-      "name": "Ortiz",
-      "active": true
+      "name": "Navone Agostina",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 35,
-      "name": "Peralta",
-      "active": true
+      "name": "Ortiz Brisa",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 36,
-      "name": "Pereyra",
-      "active": true
+      "name": "Peralta Gariela",
+      "active": true,
+      "contractType": "Part-time",
+      "weeklyHours": 30
     },
     {
       "id": 37,
-      "name": "Perez O.",
-      "active": true
+      "name": "Perez Orianny",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 38,
-      "name": "Perez P.",
-      "active": true
+      "name": "Perez Paola",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 39,
-      "name": "Puig",
-      "active": true
+      "name": "Pereyra Silvia",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 40,
-      "name": "Quiroga",
-      "active": true
+      "name": "Puig Agustina",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 41,
-      "name": "Regunaschi",
-      "active": true
+      "name": "Quiroga Pedro",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 42,
-      "name": "Rios",
-      "active": true
+      "name": "Regunaschi Romina",
+      "active": true,
+      "contractType": "Part-time",
+      "weeklyHours": 30
     },
     {
       "id": 43,
-      "name": "Rodriguez",
-      "active": true
+      "name": "Rios Mailen",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 44,
-      "name": "Ruiz",
-      "active": true
+      "name": "Rodriguez Adriana",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 45,
-      "name": "Salaya",
-      "active": true
+      "name": "Ruiz Marcela",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 46,
-      "name": "Tevez",
-      "active": true
+      "name": "Salaya Brenda",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 47,
-      "name": "Valenzuela",
-      "active": true
+      "name": "Suppa Soledad",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 48,
-      "name": "Van Tuyne",
-      "active": true
+      "name": "Tevez Ruth",
+      "active": true,
+      "contractType": "Part-time",
+      "weeklyHours": 30
     },
     {
       "id": 49,
-      "name": "Velazquez",
-      "active": true
+      "name": "Valenzuela Elsa",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 50,
-      "name": "Ventrella",
-      "active": true
+      "name": "Van Tuyne Jorge",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 51,
-      "name": "Villanueva",
-      "active": true
+      "name": "Velazquez Daniela",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     },
     {
       "id": 52,
-      "name": "Zapata",
-      "active": true
+      "name": "Ventrella Anabel",
+      "active": true,
+      "contractType": "Part-time",
+      "weeklyHours": 30
+    },
+    {
+      "id": 53,
+      "name": "Villanueva Mariana",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
+    },
+    {
+      "id": 54,
+      "name": "Zapata Mayra",
+      "active": true,
+      "contractType": "Full-time",
+      "weeklyHours": 48
     }
   ],
   "metadata": {
-    "total": 52,
+    "total": 54,
     "lastUpdated": "2026-01-27",
-    "version": "1.0"
+    "version": "2.0"
+  },
+  "scheduleCodes": {
+    "1": {
+      "code": "1",
+      "description": "Mañana y Tarde",
+      "segments": [
+        {
+          "start": "09:00",
+          "end": "13:00"
+        },
+        {
+          "start": "17:00",
+          "end": "21:00"
+        }
+      ],
+      "totalHours": 8
+    },
+    "2": {
+      "code": "2",
+      "description": "Turno Completo",
+      "segments": [
+        {
+          "start": "08:00",
+          "end": "16:00"
+        }
+      ],
+      "totalHours": 8
+    },
+    "3": {
+      "code": "3",
+      "description": "Turno Tarde",
+      "segments": [
+        {
+          "start": "13:00",
+          "end": "21:00"
+        }
+      ],
+      "totalHours": 8
+    }
   }
 }

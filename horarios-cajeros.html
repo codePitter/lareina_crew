@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horarios por Cajero/a</title>
+    <link rel="stylesheet" href="css/horarios-cajeros.css?v=2.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📋 Horarios por Cajero/a</h1>
+
+            <div class="controls">
+                <div class="date-selector">
+                    <label>📅 Semana:</label>
+                    <input type="date" id="weekDate" value="">
+                </div>
+
+                <button class="nav-btn" onclick="window.location.href='index.html'">
+                    ⬅️ Volver a Horarios
+                </button>
+                <button class="manage-btn" id="manageCodesBtn">⚙️ Gestionar Códigos</button>
+                <button class="export-btn" id="exportExcelBtn">📥 Exportar Excel</button>
+                <button class="backup-btn" id="saveScheduleBtn">💾 Guardar</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label>Filtrar por contrato:</label>
+                    <select id="contractFilter">
+                        <option value="all">Todos</option>
+                        <option value="Full-time">Full-time (48hs)</option>
+                        <option value="Part-time">Part-time (30-36hs)</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Buscar cajero/a:</label>
+                    <input type="text" id="searchInput" placeholder="Nombre...">
+                </div>
+
+                <div class="stats">
+                    <span id="totalEmployees">Total: 0</span>
+                    <span id="activeEmployees">Activos: 0</span>
+                </div>
+            </div>
+
+            <!-- Tabla de horarios -->
+            <div class="schedule-table-container">
+                <table class="schedule-table" id="scheduleTable">
+                    <thead>
+                        <tr>
+                            <th>Contrato</th>
+                            <th>ID</th>
+                            <th>Cajero/a</th>
+                            <th>Lun</th>
+                            <th>Mar</th>
+                            <th>Mié</th>
+                            <th>Jue</th>
+                            <th>Vie</th>
+                            <th>Sáb</th>
+                            <th>Dom</th>
+                            <th>Total Hrs</th>
+                            <th>Hs Extras</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTableBody">
+                        <!-- Se llenará dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Leyenda de códigos -->
+            <div class="legend-section">
+                <div class="legend-title">📖 Leyenda de Códigos</div>
+                <div class="legend-content" id="legendContent">
+                    <!-- Se llenará dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Gestión de Códigos -->
+    <div id="codesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ Gestión de Códigos de Horario</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-info">
+                    <p>Los códigos se asignan automáticamente a cada combinación única de horarios.</p>
+                    <p>Puedes editar los códigos para personalizar la numeración.</p>
+                </div>
+
+                <!-- Tabla de códigos -->
+                <div class="codes-table-container">
+                    <table class="codes-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Horario</th>
+                                <th>Horas</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="codesTableBody">
+                            <!-- Se llenará dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-export" id="exportCodesBtn">💾 Exportar Códigos</button>
+                    <button class="btn-import" id="importCodesBtn">📂 Importar Códigos</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/horarios-cajeros.js?v=2.0"></script>
+</body>
+</html>

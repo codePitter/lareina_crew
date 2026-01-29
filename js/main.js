@@ -5,6 +5,11 @@ let PERSONNEL = [];
 // Estado global de la aplicación
 let currentDay = 0; // 0 = Lunes, 6 = Domingo
 let scheduleData = {};
+let dynamicRows = []; // Almacenar las filas dinámicas agregadas
+
+// Sistema de selección por click
+let selectedPersonnel = null; // Nombre del personal seleccionado
+let selectedDropzone = null; // Dropzone seleccionada
 
 // ========== CARGA DE PERSONAL DESDE JSON ==========
 async function loadPersonnelFromJSON() {
@@ -77,8 +82,10 @@ function loadFromLocalStorage() {
 function clearLocalStorage() {
     if (confirm('¿Estás seguro de que deseas borrar todos los horarios guardados? Esta acción no se puede deshacer.')) {
         localStorage.removeItem('scheduleData');
+        localStorage.removeItem('dynamicRows');
+        dynamicRows = [];
         initScheduleData();
-        loadSchedule(currentDay);
+        regenerateScheduleGrid();
         generatePersonnelList();
         alert('Todos los horarios han sido borrados.');
     }
@@ -157,15 +164,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log('🔄 Cargando lista de personal...');
     await loadPersonnelFromJSON();
 
-    // 2. Intentar cargar datos guardados
+    // 2. Cargar filas dinámicas guardadas
+    loadDynamicRowsFromLocalStorage();
+
+    // 3. Intentar cargar datos guardados
     const dataLoaded = loadFromLocalStorage();
 
-    // 3. Si no hay datos guardados, inicializar con datos vacíos
+    // 4. Si no hay datos guardados, inicializar con datos vacíos
     if (!dataLoaded) {
         initScheduleData();
     }
 
-    // 4. Inicializar interfaz
+    // 5. Inicializar interfaz
     setTodayDate();
     generateScheduleGrid();
     generatePersonnelList();
@@ -173,7 +183,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     setupPersonnelModalListeners();
     loadSchedule(currentDay);
 
-    // 5. Mostrar mensaje de bienvenida
+    // 6. Agregar event listener al botón de agregar fila
+    const addBtn = document.getElementById('addRowBtn');
+    if (addBtn) {
+        addBtn.addEventListener('click', addDynamicRow);
+    }
+
+    // 7. Mostrar mensaje de bienvenida
     if (!dataLoaded) {
         console.log('✅ Sistema iniciado. Los cambios se guardarán automáticamente.');
     } else {
@@ -240,12 +256,23 @@ function generateScheduleGrid() {
         grid.appendChild(row);
     }
 
-    // 2 Filas sin número después de la 26
-    const extraRow1 = createSpecialRow('', 27);
-    grid.appendChild(extraRow1);
+    // Cargar filas dinámicas si existen
+    if (dynamicRows.length > 0) {
+        dynamicRows.forEach((rowData, index) => {
+            const dynamicRow = createDynamicRow(rowData.label, rowData.cajaNum, index);
+            grid.appendChild(dynamicRow);
+        });
+    }
 
-    const extraRow2 = createSpecialRow('', 28);
-    grid.appendChild(extraRow2);
+    // Botón para agregar fila
+    const addRowButton = document.createElement('div');
+    addRowButton.className = 'add-row-button-container';
+    addRowButton.innerHTML = `
+        <button class="add-row-btn" id="addRowBtn">
+            ➕ Agregar Fila
+        </button>
+    `;
+    grid.appendChild(addRowButton);
 
     // Fila Aux 1
     const auxRow1 = createSpecialRow('Aux. 1', 29);
@@ -283,6 +310,116 @@ function createSpecialRow(label, cajaNum) {
     return row;
 }
 
+// ========== FUNCIONES PARA FILAS DINÁMICAS ==========
+function createDynamicRow(label, cajaNum, index) {
+    const row = document.createElement('div');
+    row.className = 'caja-row dynamic-row';
+    row.dataset.dynamicIndex = index;
+
+    // Label con botón de eliminar
+    const cajaLabel = document.createElement('div');
+    cajaLabel.className = 'caja-number dynamic-label';
+    cajaLabel.innerHTML = `
+        <span class="dynamic-label-text">${label || ''}</span>
+        <button class="remove-row-btn" onclick="removeDynamicRow(${index})" title="Eliminar fila">
+            ✖️
+        </button>
+    `;
+    row.appendChild(cajaLabel);
+
+    // Crear 3 turnos
+    for (let turno = 1; turno <= 3; turno++) {
+        const turnoBlock = createTurnoBlock(cajaNum, turno);
+        row.appendChild(turnoBlock);
+    }
+
+    return row;
+}
+
+function addDynamicRow() {
+    const label = prompt('Ingresa el nombre para la nueva fila (opcional):');
+    if (label === null) return; // Usuario canceló
+
+    // Encontrar el siguiente número de caja disponible
+    const usedCajas = dynamicRows.map(r => r.cajaNum);
+    let nextCajaNum = 27;
+    while (usedCajas.includes(nextCajaNum)) {
+        nextCajaNum++;
+    }
+
+    const newRow = {
+        label: label.trim() || '',
+        cajaNum: nextCajaNum
+    };
+
+    dynamicRows.push(newRow);
+
+    // Inicializar en scheduleData para todos los días
+    for (let day = 0; day < 7; day++) {
+        if (!scheduleData[day].cajas[nextCajaNum]) {
+            scheduleData[day].cajas[nextCajaNum] = {
+                turno1: { name: '', entrada: '', salida: '' },
+                turno2: { name: '', entrada: '', salida: '' },
+                turno3: { name: '', entrada: '', salida: '' }
+            };
+        }
+    }
+
+    saveDynamicRowsToLocalStorage();
+    regenerateScheduleGrid();
+    saveToLocalStorage();
+}
+
+function removeDynamicRow(index) {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta fila?')) return;
+
+    const rowData = dynamicRows[index];
+
+    // Eliminar datos de scheduleData
+    for (let day = 0; day < 7; day++) {
+        delete scheduleData[day].cajas[rowData.cajaNum];
+    }
+
+    // Eliminar de dynamicRows
+    dynamicRows.splice(index, 1);
+
+    saveDynamicRowsToLocalStorage();
+    regenerateScheduleGrid();
+    saveToLocalStorage();
+}
+
+function regenerateScheduleGrid() {
+    generateScheduleGrid();
+    loadSchedule(currentDay);
+
+    // Re-agregar event listener al botón
+    const addBtn = document.getElementById('addRowBtn');
+    if (addBtn) {
+        addBtn.addEventListener('click', addDynamicRow);
+    }
+}
+
+function saveDynamicRowsToLocalStorage() {
+    try {
+        localStorage.setItem('dynamicRows', JSON.stringify(dynamicRows));
+    } catch (error) {
+        console.error('Error al guardar filas dinámicas:', error);
+    }
+}
+
+function loadDynamicRowsFromLocalStorage() {
+    try {
+        const saved = localStorage.getItem('dynamicRows');
+        if (saved) {
+            dynamicRows = JSON.parse(saved);
+            console.log('Filas dinámicas cargadas:', dynamicRows.length);
+        }
+    } catch (error) {
+        console.error('Error al cargar filas dinámicas:', error);
+        dynamicRows = [];
+    }
+}
+
 function createTurnoBlock(cajaNum, turnoNum) {
     const block = document.createElement('div');
     block.className = 'turno-block';
@@ -304,6 +441,17 @@ function createTurnoBlock(cajaNum, turnoNum) {
     dropzone.addEventListener('dragleave', handleDragLeave);
     dropzone.addEventListener('drop', handleDrop);
     dropzone.addEventListener('dblclick', handleDropzoneDblClick);
+
+    // Evento click para selección
+    dropzone.addEventListener('click', (e) => {
+        console.log('=== EVENTO CLICK EN DROPZONE ===');
+        console.log('Target:', e.target);
+        console.log('CurrentTarget:', e.currentTarget);
+        console.log('Dropzone dataset:', dropzone.dataset);
+        e.stopPropagation(); // Evitar que el click global limpie la selección
+        handleDropzoneClick(e, dropzone);
+        console.log('=== FIN HANDLER DROPZONE ===');
+    });
 
     turnoContent.appendChild(dropzone);
 
@@ -357,12 +505,173 @@ function generatePersonnelList() {
         chip.addEventListener('dragstart', handleDragStart);
         chip.addEventListener('dragend', handleDragEnd);
 
+        // Evento click para selección
+        chip.addEventListener('click', (e) => handlePersonnelClick(e, name));
+
         // Evento doble click
         chip.addEventListener('dblclick', (e) => showPersonnelContextMenu(e, name));
 
         list.appendChild(chip);
     });
 }
+
+// ========== SISTEMA DE SELECCIÓN POR CLICK ==========
+function handlePersonnelClick(e, name) {
+    // Si es doble click, no hacer nada (lo maneja el otro evento)
+    if (e.detail === 2) return;
+
+    e.stopPropagation();
+
+    console.log('Click en personal:', name);
+    console.log('Dropzone seleccionada:', selectedDropzone);
+
+    // Si ya hay una dropzone seleccionada, asignar el nombre
+    if (selectedDropzone) {
+        console.log('Asignando a dropzone seleccionada');
+        assignPersonnelToDropzone(name, selectedDropzone);
+        clearSelection();
+        return;
+    }
+
+    // Si no hay dropzone seleccionada, seleccionar este personal
+    if (selectedPersonnel === name) {
+        // Deseleccionar si se hace click en el mismo
+        console.log('Deseleccionando personal');
+        clearSelection();
+    } else {
+        // Seleccionar este personal
+        console.log('Seleccionando personal');
+        selectedPersonnel = name;
+        updateSelectionVisuals();
+    }
+}
+
+function handleDropzoneClick(e, dropzone) {
+    console.log('=== handleDropzoneClick llamado ===');
+    console.log('Event type:', e.type);
+    console.log('Event detail:', e.detail);
+    console.log('Dropzone:', dropzone);
+
+    // Si es doble click, no hacer nada (lo maneja el otro evento)
+    if (e.detail === 2) {
+        console.log('Es doble click, saliendo');
+        return;
+    }
+
+    // No prevenir propagación aquí para que el click se registre
+    // e.stopPropagation();
+
+    console.log('Click en dropzone, caja:', dropzone.dataset.caja, 'turno:', dropzone.dataset.turno);
+    console.log('Tiene nombre?:', dropzone.classList.contains('has-name'));
+    console.log('Personal seleccionado:', selectedPersonnel);
+
+    // Si la dropzone ya tiene un nombre, no hacer nada
+    if (dropzone.classList.contains('has-name')) {
+        console.log('Dropzone ya tiene nombre, ignorando click');
+        return;
+    }
+
+    // Si ya hay personal seleccionado, asignar
+    if (selectedPersonnel) {
+        console.log('Asignando personal seleccionado a esta dropzone');
+        assignPersonnelToDropzone(selectedPersonnel, dropzone);
+        clearSelection();
+        return;
+    }
+
+    // Si no hay personal seleccionado, seleccionar esta dropzone
+    if (selectedDropzone === dropzone) {
+        // Deseleccionar si se hace click en la misma
+        console.log('Deseleccionando dropzone');
+        clearSelection();
+    } else {
+        // Seleccionar esta dropzone
+        console.log('Seleccionando dropzone');
+        selectedDropzone = dropzone;
+        updateSelectionVisuals();
+    }
+}
+
+function assignPersonnelToDropzone(name, dropzone) {
+    const cajaNum = dropzone.dataset.caja;
+    const turnoKey = dropzone.dataset.turno;
+
+    console.log('Asignando:', name, 'a caja:', cajaNum, 'turno:', turnoKey);
+
+    // Validar que no esté en franco/licencia/vacaciones
+    const dayData = scheduleData[currentDay];
+    if (dayData.francos.includes(name) ||
+        dayData.licencias.includes(name) ||
+        dayData.vacaciones.includes(name)) {
+        alert(`${name} está en Franco/Licencia/Vacaciones. Quítalo de esa lista primero.`);
+        return;
+    }
+
+    // Asignar el nombre
+    dayData.cajas[cajaNum][turnoKey].name = name;
+
+    // Actualizar la dropzone visualmente
+    dropzone.textContent = name;
+    dropzone.classList.add('has-name');
+    makeDropzoneDraggable(dropzone);
+
+    // Actualizar estado del personal y contadores
+    updatePersonnelStatus();
+    updateTurnoCounters();
+    updateRepeatedNamesWarning();
+
+    // Guardar
+    saveToLocalStorage();
+
+    console.log('Asignación completada');
+}
+
+function clearSelection() {
+    selectedPersonnel = null;
+    selectedDropzone = null;
+    updateSelectionVisuals();
+}
+
+function updateSelectionVisuals() {
+    // Limpiar todas las selecciones visuales
+    document.querySelectorAll('.person-chip').forEach(chip => {
+        chip.classList.remove('selected');
+    });
+
+    document.querySelectorAll('.name-dropzone').forEach(dropzone => {
+        dropzone.classList.remove('selected');
+    });
+
+    // Marcar el personal seleccionado
+    if (selectedPersonnel) {
+        document.querySelectorAll('.person-chip').forEach(chip => {
+            if (chip.dataset.name === selectedPersonnel) {
+                chip.classList.add('selected');
+            }
+        });
+    }
+
+    // Marcar la dropzone seleccionada
+    if (selectedDropzone) {
+        selectedDropzone.classList.add('selected');
+    }
+}
+
+// Limpiar selección al hacer click fuera
+document.addEventListener('click', (e) => {
+    console.log('Click global detectado en:', e.target);
+    // Si el click no fue en un chip ni en una dropzone, limpiar selección
+    const clickedChip = e.target.closest('.person-chip');
+    const clickedDropzone = e.target.closest('.name-dropzone');
+
+    console.log('Clicked chip?:', !!clickedChip);
+    console.log('Clicked dropzone?:', !!clickedDropzone);
+
+    if (!clickedChip && !clickedDropzone) {
+        console.log('Click fuera, limpiando selección');
+        clearSelection();
+    }
+});
 
 // ========== MENÚ CONTEXTUAL PARA PERSONAL ==========
 function showPersonnelContextMenu(e, name) {
@@ -561,10 +870,6 @@ function handleDrop(e) {
 }
 
 // Doble click en dropzone para quitar nombre
-function handleDropzoneClick(e) {
-    // Ya no hace nada con click simple
-}
-
 function handleDropzoneDblClick(e) {
     const dropzone = e.target;
     if (dropzone.classList.contains('has-name')) {
@@ -704,6 +1009,11 @@ function updateRepeatedNamesWarning() {
         dropzone.classList.remove('repeated-warning');
     });
 
+    // Limpiar advertencias en la barra lateral
+    document.querySelectorAll('.person-chip').forEach(chip => {
+        chip.classList.remove('repeated-warning');
+    });
+
     // Marcar los nombres que aparecen 3 o más veces
     for (let name in nameCount) {
         if (nameCount[name] >= 3) {
@@ -711,6 +1021,13 @@ function updateRepeatedNamesWarning() {
             document.querySelectorAll('.name-dropzone.has-name').forEach(dropzone => {
                 if (dropzone.textContent === name) {
                     dropzone.classList.add('repeated-warning');
+                }
+            });
+
+            // Marcar también el chip en la barra lateral
+            document.querySelectorAll('.person-chip').forEach(chip => {
+                if (chip.dataset.name === name) {
+                    chip.classList.add('repeated-warning');
                 }
             });
         }
@@ -1155,17 +1472,19 @@ function exportToPDF() {
         tableData.push(row);
     }
 
-    // 2 Filas sin número (27 y 28)
-    for (let i = 27; i <= 28; i++) {
-        const cajaData = dayData.cajas[i];
-        const row = [
-            '',
-            formatTurnoForPDF(cajaData.turno1),
-            formatTurnoForPDF(cajaData.turno2),
-            formatTurnoForPDF(cajaData.turno3)
-        ];
-        tableData.push(row);
-    }
+    // Filas dinámicas (si existen)
+    dynamicRows.forEach(rowData => {
+        const cajaData = dayData.cajas[rowData.cajaNum];
+        if (cajaData) {
+            const row = [
+                rowData.label || '',
+                formatTurnoForPDF(cajaData.turno1),
+                formatTurnoForPDF(cajaData.turno2),
+                formatTurnoForPDF(cajaData.turno3)
+            ];
+            tableData.push(row);
+        }
+    });
 
     // Filas especiales
     const specialRows = [
@@ -1215,13 +1534,21 @@ function exportToPDF() {
             3: { cellWidth: 50 }
         },
         didParseCell: function (data) {
-            // Colorear fila de perfumería (caja 26)
+            // Colorear fila de perfumería (caja 26 - índice 25)
             if (data.row.index === 25 && data.section === 'body') {
                 data.cell.styles.fillColor = [255, 224, 178];
             }
 
-            // Colorear filas especiales (últimas 4)
-            if (data.row.index >= 28 && data.section === 'body') {
+            // Colorear filas dinámicas (si existen) - tono celeste
+            const dynamicRowsStartIndex = 26; // Después de las 26 cajas
+            const dynamicRowsEndIndex = dynamicRowsStartIndex + dynamicRows.length - 1;
+            if (data.row.index >= dynamicRowsStartIndex && data.row.index <= dynamicRowsEndIndex && data.section === 'body') {
+                data.cell.styles.fillColor = [212, 233, 242]; // Celeste claro
+            }
+
+            // Colorear filas especiales (últimas 4: Aux1, Aux2, SAC, Teso)
+            const specialRowsStartIndex = 26 + dynamicRows.length;
+            if (data.row.index >= specialRowsStartIndex && data.section === 'body') {
                 data.cell.styles.fillColor = [232, 245, 233];
                 if (data.column.index === 0) {
                     data.cell.styles.textColor = [67, 160, 71];
