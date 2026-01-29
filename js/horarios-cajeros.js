@@ -364,7 +364,7 @@ function renderCodesTable() {
             <td>
                 <button class="code-edit-btn" onclick="editCode('${codeId}')">📝​ Editar</button>
                 <button class="code-save-btn" onclick="saveCode('${codeId}')" style="display: none;">​💾​ Guardar</button>
-                <button class="code-cancel-btn" onclick="cancelEditCode('${codeId}')" style="display: none;">❌ Cancelar</button>
+                <button class="code-cancel-btn" onclick="cancelEditCode('${codeId}')" style="display: none;">?? Cancelar</button>
             </td>
         `;
 
