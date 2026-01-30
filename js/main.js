@@ -159,6 +159,66 @@ function initScheduleData() {
 // ========== INICIALIZACIÓN ==========
 
 // ========== INICIALIZACIÓN DEL SISTEMA ==========
+
+// ========== MENU HAMBURGUESA ========== 
+function setupHamburgerMenu() {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sideMenu = document.getElementById('sideMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+
+    // Abrir menú
+    hamburgerBtn.addEventListener('click', () => {
+        sideMenu.classList.add('open');
+        menuOverlay.classList.add('active');
+        hamburgerBtn.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+
+    // Cerrar menú
+    function closeMenu() {
+        sideMenu.classList.remove('open');
+        menuOverlay.classList.remove('active');
+        hamburgerBtn.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    closeMenuBtn.addEventListener('click', closeMenu);
+    menuOverlay.addEventListener('click', closeMenu);
+
+    // Conectar botones del menú con las funciones existentes
+    document.getElementById('menuExportPDF').addEventListener('click', () => {
+        closeMenu();
+        document.getElementById('exportPDF').click();
+    });
+
+    document.getElementById('menuExportBackup').addEventListener('click', () => {
+        closeMenu();
+        document.getElementById('exportBackup').click();
+    });
+
+    document.getElementById('menuImportBackup').addEventListener('click', () => {
+        closeMenu();
+        document.getElementById('importBackup').click();
+    });
+
+    document.getElementById('menuManagePersonnel').addEventListener('click', () => {
+        closeMenu();
+        document.getElementById('managePersonnel').click();
+    });
+
+    document.getElementById('menuClearData').addEventListener('click', () => {
+        closeMenu();
+        document.getElementById('clearData').click();
+    });
+
+    // Cerrar con tecla Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sideMenu.classList.contains('open')) {
+            closeMenu();
+        }
+    });
+}
 document.addEventListener('DOMContentLoaded', async function () {
     // 1. Cargar personal desde JSON primero
     console.log('🔄 Cargando lista de personal...');
@@ -180,6 +240,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     generateScheduleGrid();
     generatePersonnelList();
     setupEventListeners();
+    setupHamburgerMenu();
     setupPersonnelModalListeners();
     loadSchedule(currentDay);
 

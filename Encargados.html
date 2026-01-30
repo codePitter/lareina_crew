@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horarios de Encargados</title>
+    <link rel="stylesheet" href="css/encargados.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>👔 Horarios de Encargados</h1>
+            <div class="controls">
+                <div class="date-selector">
+                    <label>📅 Semana:</label>
+                    <input type="date" id="weekDate">
+                </div>
+                <button class="btn btn-pdf" id="exportPDF">📥 Exportar PDF</button>
+                <button class="btn btn-save" id="saveBtn">💾 Guardar</button>
+                <button class="btn btn-load" id="loadBtn">📂 Cargar</button>
+                <button class="btn btn-clear" id="clearBtn">🗑️ Limpiar Todo</button>
+                <button class="btn btn-back" onclick="window.location.href='index.html'">⬅️ Volver</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Info Box -->
+            <!--
+            <div class="info-box">
+                <h3>ℹ️ Instrucciones</h3>
+                <p>
+                    • Completa los horarios de los encargados para cada turno.<br>
+                    • Usa el botón "➕" para agregar más encargados si lo necesitas.<br>
+                    • Las filas extras tienen un fondo amarillo y pueden eliminarse con el botón 🗑️.<br>
+                    • Los datos se guardan automáticamente en tu navegador.<br>
+                    • Usa "Exportar PDF" para generar un documento imprimible.
+                </p>
+            </div>
+             -->
+            <!-- Week Container -->
+            <div class="week-container" id="weekContainer">
+                <!-- Se generará dinámicamente con JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/encargados.js"></script>
+</body>
+</html>
