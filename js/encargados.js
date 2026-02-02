@@ -4,6 +4,76 @@ const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', '
 const DEFAULT_MANAGERS = ['Gonzalez, Patricia', 'Duppa, Soledad', 'Aranda, Facuando'];
 
 // ========== INICIALIZACIÓN ==========
+
+// ========== MENU HAMBURGUESA ========== 
+function setupHamburgerMenu() {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sideMenu = document.getElementById('sideMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+
+    if (!hamburgerBtn || !sideMenu || !menuOverlay) return;
+
+    // Toggle menú (abrir/cerrar)
+    hamburgerBtn.addEventListener('click', () => {
+        const isOpen = sideMenu.classList.contains('open');
+
+        if (isOpen) {
+            // Cerrar menú
+            sideMenu.classList.remove('open');
+            menuOverlay.classList.remove('active');
+            hamburgerBtn.classList.remove('active');
+            document.body.style.overflow = '';
+        } else {
+            // Abrir menú
+            sideMenu.classList.add('open');
+            menuOverlay.classList.add('active');
+            hamburgerBtn.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    });
+
+    // Cerrar menú
+    function closeMenu() {
+        sideMenu.classList.remove('open');
+        menuOverlay.classList.remove('active');
+        hamburgerBtn.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    if (closeMenuBtn) {
+        closeMenuBtn.addEventListener('click', closeMenu);
+    }
+    menuOverlay.addEventListener('click', closeMenu);
+
+    // Conectar botones del menú con las funciones existentes
+    document.getElementById('menuExportPDF').addEventListener('click', () => {
+        closeMenu();
+        document.getElementById('exportPDF').click();
+    });
+
+    document.getElementById('menuSaveBtn').addEventListener('click', () => {
+        closeMenu();
+        document.getElementById('saveBtn').click();
+    });
+
+    document.getElementById('menuLoadBtn').addEventListener('click', () => {
+        closeMenu();
+        document.getElementById('loadBtn').click();
+    });
+
+    document.getElementById('menuClearBtn').addEventListener('click', () => {
+        closeMenu();
+        document.getElementById('clearBtn').click();
+    });
+
+    // Cerrar con tecla Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sideMenu.classList.contains('open')) {
+            closeMenu();
+        }
+    });
+}
 document.addEventListener('DOMContentLoaded', function () {
     console.log('🚀 Iniciando sistema de horarios de encargados...');
 
@@ -21,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Event listeners
     setupEventListeners();
+    setupHamburgerMenu();
 
     console.log('✅ Sistema iniciado correctamente');
 });
@@ -444,7 +515,35 @@ function formatShift(shift) {
 function setTodayDate() {
     const dateInput = document.getElementById('weekDate');
     const today = new Date();
-    dateInput.valueAsDate = today;
+
+    // Calcular el lunes de la semana actual
+    const dayOfWeek = today.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Si es domingo, restar 6 días
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - daysToSubtract);
+
+    dateInput.valueAsDate = monday;
+
+    // Agregar listener para forzar selección de lunes
+    dateInput.addEventListener('change', forceMonday);
+}
+
+// Forzar que la fecha seleccionada sea siempre un lunes
+function forceMonday(event) {
+    const input = event.target;
+    const selectedDate = new Date(input.value + 'T00:00:00');
+    const dayOfWeek = selectedDate.getDay();
+
+    // Si no es lunes, ajustar al lunes más cercano
+    if (dayOfWeek !== 1) {
+        const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        const monday = new Date(selectedDate);
+        monday.setDate(selectedDate.getDate() - daysToSubtract);
+        input.valueAsDate = monday;
+
+        // Regenerar la vista con el lunes correcto
+        generateWeekView();
+    }
 }
 
 function formatDate(date) {

@@ -4,6 +4,7 @@
       "id": 1,
       "name": "Abreu M.Laura",
       "active": true,
+      "isManager": false,
       "contractType": "Part-time",
       "weeklyHours": 30
     },
@@ -11,6 +12,7 @@
       "id": 2,
       "name": "Algosino Carla",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -18,6 +20,7 @@
       "id": 3,
       "name": "Aranda Facundo",
       "active": true,
+      "isManager": true,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -25,6 +28,7 @@
       "id": 4,
       "name": "Bruno Jesica",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -32,6 +36,7 @@
       "id": 5,
       "name": "Buldorini Valeria",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -39,6 +44,7 @@
       "id": 6,
       "name": "Caceres Sofia",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -46,6 +52,7 @@
       "id": 7,
       "name": "Caldarella Roxana",
       "active": true,
+      "isManager": false,
       "contractType": "Part-time",
       "weeklyHours": 30
     },
@@ -53,6 +60,7 @@
       "id": 8,
       "name": "Cantone Martina",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -60,6 +68,7 @@
       "id": 9,
       "name": "Cardozo Silvia",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -67,6 +76,7 @@
       "id": 10,
       "name": "Carrasco Natali",
       "active": true,
+      "isManager": false,
       "contractType": "Part-time",
       "weeklyHours": 30
     },
@@ -74,6 +84,7 @@
       "id": 11,
       "name": "Chaparro Emilce",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -81,6 +92,7 @@
       "id": 12,
       "name": "Coloccioni Alejandra",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -88,6 +100,7 @@
       "id": 13,
       "name": "Delgado Marcela",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -95,6 +108,7 @@
       "id": 14,
       "name": "Diaz Ornella",
       "active": true,
+      "isManager": false,
       "contractType": "Part-time",
       "weeklyHours": 30
     },
@@ -102,6 +116,7 @@
       "id": 15,
       "name": "Durruty Jorgelina",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -109,6 +124,7 @@
       "id": 16,
       "name": "Erosa Abigail",
       "active": true,
+      "isManager": false,
       "contractType": "Part-time",
       "weeklyHours": 30
     },
@@ -116,6 +132,7 @@
       "id": 17,
       "name": "Flores Cintia",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -123,6 +140,7 @@
       "id": 18,
       "name": "Flores Rocio",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -130,6 +148,7 @@
       "id": 19,
       "name": "Gago Donnari Axel",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -137,6 +156,7 @@
       "id": 20,
       "name": "Gauna Mariela",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -144,6 +164,7 @@
       "id": 21,
       "name": "Gill Fabrizio",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -151,6 +172,7 @@
       "id": 22,
       "name": "Goncalves Federico",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -158,6 +180,7 @@
       "id": 23,
       "name": "Gonzalez Patricia",
       "active": true,
+      "isManager": true,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -165,6 +188,7 @@
       "id": 24,
       "name": "Guimenez Laura",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -172,6 +196,7 @@
       "id": 25,
       "name": "Kesuani Fernanda",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -179,6 +204,7 @@
       "id": 26,
       "name": "Kolenicz Angela",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -186,6 +212,7 @@
       "id": 27,
       "name": "Ledesma Bruno",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -193,6 +220,7 @@
       "id": 28,
       "name": "Leguizamon Leila",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -200,6 +228,7 @@
       "id": 29,
       "name": "Lisi M.Eugenia",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -207,6 +236,7 @@
       "id": 30,
       "name": "Lopez Gabriela",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -214,6 +244,7 @@
       "id": 31,
       "name": "Miranda Rocio",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -221,6 +252,7 @@
       "id": 32,
       "name": "Morelli Marisol",
       "active": true,
+      "isManager": false,
       "contractType": "Part-time",
       "weeklyHours": 36
     },
@@ -228,6 +260,7 @@
       "id": 33,
       "name": "Moyano Eric",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -235,6 +268,7 @@
       "id": 34,
       "name": "Navone Agostina",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -242,6 +276,7 @@
       "id": 35,
       "name": "Ortiz Brisa",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -249,27 +284,31 @@
       "id": 36,
       "name": "Peralta Gariela",
       "active": true,
+      "isManager": false,
       "contractType": "Part-time",
       "weeklyHours": 30
     },
     {
       "id": 37,
-      "name": "Perez Orianny",
+      "name": "Pereyra Silvia",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
     {
       "id": 38,
-      "name": "Perez Paola",
+      "name": "Perez Orianny",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
     {
       "id": 39,
-      "name": "Pereyra Silvia",
+      "name": "Perez Paola",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -277,6 +316,7 @@
       "id": 40,
       "name": "Puig Agustina",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -284,6 +324,7 @@
       "id": 41,
       "name": "Quiroga Pedro",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -291,6 +332,7 @@
       "id": 42,
       "name": "Regunaschi Romina",
       "active": true,
+      "isManager": false,
       "contractType": "Part-time",
       "weeklyHours": 30
     },
@@ -298,6 +340,7 @@
       "id": 43,
       "name": "Rios Mailen",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -305,6 +348,7 @@
       "id": 44,
       "name": "Rodriguez Adriana",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -312,6 +356,7 @@
       "id": 45,
       "name": "Ruiz Marcela",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -319,6 +364,7 @@
       "id": 46,
       "name": "Salaya Brenda",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -326,6 +372,7 @@
       "id": 47,
       "name": "Suppa Soledad",
       "active": true,
+      "isManager": true,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -333,6 +380,7 @@
       "id": 48,
       "name": "Tevez Ruth",
       "active": true,
+      "isManager": false,
       "contractType": "Part-time",
       "weeklyHours": 30
     },
@@ -340,6 +388,7 @@
       "id": 49,
       "name": "Valenzuela Elsa",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -347,6 +396,7 @@
       "id": 50,
       "name": "Van Tuyne Jorge",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -354,6 +404,7 @@
       "id": 51,
       "name": "Velazquez Daniela",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -361,6 +412,7 @@
       "id": 52,
       "name": "Ventrella Anabel",
       "active": true,
+      "isManager": false,
       "contractType": "Part-time",
       "weeklyHours": 30
     },
@@ -368,6 +420,7 @@
       "id": 53,
       "name": "Villanueva Mariana",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     },
@@ -375,52 +428,14 @@
       "id": 54,
       "name": "Zapata Mayra",
       "active": true,
+      "isManager": false,
       "contractType": "Full-time",
       "weeklyHours": 48
     }
   ],
   "metadata": {
     "total": 54,
-    "lastUpdated": "2026-01-27",
-    "version": "2.0"
-  },
-  "scheduleCodes": {
-    "1": {
-      "code": "1",
-      "description": "Mañana y Tarde",
-      "segments": [
-        {
-          "start": "09:00",
-          "end": "13:00"
-        },
-        {
-          "start": "17:00",
-          "end": "21:00"
-        }
-      ],
-      "totalHours": 8
-    },
-    "2": {
-      "code": "2",
-      "description": "Turno Completo",
-      "segments": [
-        {
-          "start": "08:00",
-          "end": "16:00"
-        }
-      ],
-      "totalHours": 8
-    },
-    "3": {
-      "code": "3",
-      "description": "Turno Tarde",
-      "segments": [
-        {
-          "start": "13:00",
-          "end": "21:00"
-        }
-      ],
-      "totalHours": 8
-    }
+    "lastUpdated": "2026-02-01",
+    "version": "2.1"
   }
 }

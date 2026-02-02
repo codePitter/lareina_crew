@@ -1,8 +1,7 @@
 ﻿// // ========== VARIABLES GLOBALES ==========
 let PERSONNEL = [];
 let scheduleData = {};
-let scheduleCodes = {}; // { "codeId": { code: 1, schedule: "09:00-13:00 / 17:00-21:00", hours: 8 } }
-let nextCodeId = 1;
+let scheduleCodes = {}; // Códigos cargados desde /crew/Schedule codes.json  { "08:00-13:00+17:00-21:00": { codigo: "00353", alternativas: [...] } }
 let viewMode = 'codes'; // 'codes' o 'schedules'
 
 // ========== CARGA DE DATOS ==========
@@ -36,29 +35,19 @@ function loadScheduleFromLocalStorage() {
     return false;
 }
 
-function loadCodesFromLocalStorage() {
+async function loadScheduleCodesFromJSON() {
     try {
-        const savedCodes = localStorage.getItem('scheduleCodes');
-        if (savedCodes) {
-            scheduleCodes = JSON.parse(savedCodes);
-            // Encontrar el siguiente ID disponible
-            const maxId = Math.max(...Object.keys(scheduleCodes).map(k => parseInt(k)), 0);
-            nextCodeId = maxId + 1;
-            console.log('? C�digos cargados del localStorage');
-            return true;
+        const response = await fetch('crew/schedule_codes.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        scheduleCodes = await response.json();
+        console.log(`✅ Códigos cargados: ${Object.keys(scheduleCodes).length} combinaciones`);
+        return true;
     } catch (error) {
-        console.error('Error al cargar c�digos:', error);
-    }
-    return false;
-}
-
-function saveCodesToLocalStorage() {
-    try {
-        localStorage.setItem('scheduleCodes', JSON.stringify(scheduleCodes));
-        console.log('?? C�digos guardados');
-    } catch (error) {
-        console.error('Error al guardar c�digos:', error);
+        console.error('❌ Error al cargar schedule_codes.json:', error);
+        scheduleCodes = {};
+        return false;
     }
 }
 
@@ -112,31 +101,27 @@ function calculateHours(scheduleSignature) {
     return totalMinutes / 60;
 }
 
-function getOrCreateCode(scheduleSignature) {
-    if (!scheduleSignature) {
+function lookupCode(signature) {
+    // signature formato: "08:00-13:00+17:00-21:00" o "08:00-16:00"
+    if (!signature) {
         return { code: '-', hours: 0, schedule: '-' };
     }
 
-    // Buscar si ya existe un c�digo para este horario
-    for (let codeId in scheduleCodes) {
-        if (scheduleCodes[codeId].schedule === scheduleSignature) {
-            return scheduleCodes[codeId];
-        }
+    const entry = scheduleCodes[signature];
+    if (entry) {
+        return {
+            code: entry.codigo,
+            hours: calculateHours(signature),
+            schedule: signature.replace(/\+/g, ' / ')
+        };
     }
 
-    // Si no existe, crear uno nuevo
-    const hours = calculateHours(scheduleSignature);
-    const newCode = {
-        code: nextCodeId,
-        schedule: scheduleSignature,
-        hours: hours
+    // No encontrado en el archivo: mostrar horario como código fallback
+    return {
+        code: '?',
+        hours: calculateHours(signature),
+        schedule: signature.replace(/\+/g, ' / ')
     };
-
-    scheduleCodes[nextCodeId] = newCode;
-    nextCodeId++;
-    saveCodesToLocalStorage();
-
-    return newCode;
 }
 
 function getCodeForPerson(personId, day) {
@@ -161,8 +146,8 @@ function getCodeForPerson(personId, day) {
         return { code: 'V', hours: 0, schedule: 'Vacaciones', type: 'vacaciones' };
     }
 
-    // Buscar en todas las cajas
-    let personSchedule = [];
+    // Buscar en todas las cajas los turnos de esta persona
+    let segments = [];
 
     for (let caja in dayData.cajas) {
         for (let turno in dayData.cajas[caja]) {
@@ -171,22 +156,23 @@ function getCodeForPerson(personId, day) {
                 const entrada = turnoData.entrada || '';
                 const salida = turnoData.salida || '';
                 if (entrada && salida) {
-                    personSchedule.push(`${entrada}-${salida}`);
+                    segments.push(`${entrada}-${salida}`);
                 }
             }
         }
     }
 
-    if (personSchedule.length === 0) {
+    if (segments.length === 0) {
         return { code: '-', hours: 0, schedule: '-', type: 'empty' };
     }
 
-    // Ordenar y crear firma
-    personSchedule.sort();
-    const signature = personSchedule.join(' / ');
+    // Ordenar y crear firma con "+" como separador (formato del JSON)
+    segments.sort();
+    const signature = segments.join('+');
 
-    return { ...getOrCreateCode(signature), type: 'normal' };
+    return { ...lookupCode(signature), type: 'normal' };
 }
+
 
 // ========== GENERACI�N DE LA TABLA ==========
 function generateScheduleTable() {
@@ -252,8 +238,13 @@ function generateScheduleTable() {
                 dayCell.textContent = codeInfo.code;
                 dayCell.title = codeInfo.schedule;
             } else {
-                // Modo horarios: mostrar el horario completo
-                dayCell.textContent = codeInfo.schedule;
+                // Modo horarios: mostrar código (negro) + horario (gris)
+                dayCell.innerHTML = `
+                    <div class="code-with-schedule">
+                        <div class="code-part">${codeInfo.code}</div>
+                        <div class="schedule-part">${codeInfo.schedule}</div>
+                    </div>
+                `;
                 dayCell.title = `Código: ${codeInfo.code}`;
                 dayCell.classList.add('schedule-view');
             }
@@ -359,88 +350,19 @@ function renderCodesTable() {
     const tbody = document.getElementById('codesTableBody');
     tbody.innerHTML = '';
 
-    const sortedCodes = Object.entries(scheduleCodes).sort((a, b) => a[1].code - b[1].code);
+    const usedCodes = getUsedCodesThisWeek();
+    usedCodes.sort((a, b) => a.code.localeCompare(b.code));
 
-    sortedCodes.forEach(([codeId, codeData]) => {
+    usedCodes.forEach(codeData => {
         const row = document.createElement('tr');
-        row.dataset.codeId = codeId;
-
         row.innerHTML = `
-            <td>
-                <span class="code-display" id="code-display-${codeId}">${codeData.code}</span>
-                <input type="number" class="code-edit-input" id="code-input-${codeId}" value="${codeData.code}" style="display: none;" min="1">
-            </td>
+            <td>${codeData.code}</td>
             <td>${codeData.schedule}</td>
             <td>${codeData.hours}h</td>
-            <td>
-                <button class="code-edit-btn" onclick="editCode('${codeId}')">📝​ Editar</button>
-                <button class="code-save-btn" onclick="saveCode('${codeId}')" style="display: none;">​💾​ Guardar</button>
-                <button class="code-cancel-btn" onclick="cancelEditCode('${codeId}')" style="display: none;">?? Cancelar</button>
-            </td>
+            <td>-</td>
         `;
-
         tbody.appendChild(row);
     });
-}
-
-function editCode(codeId) {
-    const display = document.getElementById(`code-display-${codeId}`);
-    const input = document.getElementById(`code-input-${codeId}`);
-    const row = document.querySelector(`tr[data-code-id="${codeId}"]`);
-
-    display.style.display = 'none';
-    input.style.display = 'inline-block';
-
-    const editBtn = row.querySelector('.code-edit-btn');
-    const saveBtn = row.querySelector('.code-save-btn');
-    const cancelBtn = row.querySelector('.code-cancel-btn');
-
-    editBtn.style.display = 'none';
-    saveBtn.style.display = 'inline-block';
-    cancelBtn.style.display = 'inline-block';
-}
-
-function saveCode(codeId) {
-    const input = document.getElementById(`code-input-${codeId}`);
-    const newCode = parseInt(input.value);
-
-    if (newCode < 1) {
-        alert('El c�digo debe ser un n�mero mayor a 0');
-        return;
-    }
-
-    // Verificar si el c�digo ya existe
-    for (let id in scheduleCodes) {
-        if (id !== codeId && scheduleCodes[id].code === newCode) {
-            alert(`El c�digo ${newCode} ya est� en uso`);
-            return;
-        }
-    }
-
-    scheduleCodes[codeId].code = newCode;
-    saveCodesToLocalStorage();
-
-    cancelEditCode(codeId);
-    generateScheduleTable();
-    generateLegend();
-}
-
-function cancelEditCode(codeId) {
-    const display = document.getElementById(`code-display-${codeId}`);
-    const input = document.getElementById(`code-input-${codeId}`);
-    const row = document.querySelector(`tr[data-code-id="${codeId}"]`);
-
-    display.style.display = 'inline-block';
-    input.style.display = 'none';
-    input.value = scheduleCodes[codeId].code;
-
-    const editBtn = row.querySelector('.code-edit-btn');
-    const saveBtn = row.querySelector('.code-save-btn');
-    const cancelBtn = row.querySelector('.code-cancel-btn');
-
-    editBtn.style.display = 'inline-block';
-    saveBtn.style.display = 'none';
-    cancelBtn.style.display = 'none';
 }
 
 // ========== EXPORTAR A EXCEL ==========
@@ -458,7 +380,7 @@ function exportToExcel() {
     // Datos
     PERSONNEL.forEach(person => {
         const row = [
-            person.contractType,
+            person.weeklyHours || 48,
             person.id,
             person.name
         ];
@@ -532,12 +454,6 @@ function importCodesFromJSON() {
 
                 if (typeof importedCodes === 'object') {
                     scheduleCodes = importedCodes;
-
-                    // Actualizar nextCodeId
-                    const maxId = Math.max(...Object.keys(scheduleCodes).map(k => parseInt(k)), 0);
-                    nextCodeId = maxId + 1;
-
-                    saveCodesToLocalStorage();
                     renderCodesTable();
                     generateScheduleTable();
                     generateLegend();
@@ -582,8 +498,7 @@ function setupEventListeners() {
     document.getElementById('manageCodesBtn').addEventListener('click', openCodesModal);
     document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
     document.getElementById('saveScheduleBtn').addEventListener('click', () => {
-        saveCodesToLocalStorage();
-        alert('? Horarios guardados correctamente');
+        alert('✅ Los códigos se cargan automáticamente desde Schedule codes.json');
     });
 
     // Modal
@@ -605,10 +520,32 @@ function setupEventListeners() {
     document.getElementById('contractFilter').addEventListener('change', generateScheduleTable);
     document.getElementById('searchInput').addEventListener('input', generateScheduleTable);
 
-    // Fecha
+    // Fecha - Forzar selección de lunes
     const dateInput = document.getElementById('weekDate');
     const today = new Date();
-    dateInput.valueAsDate = today;
+
+    // Calcular el lunes de la semana actual
+    const dayOfWeek = today.getDay();
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - daysToSubtract);
+
+    dateInput.valueAsDate = monday;
+
+    // Agregar listener para forzar selección de lunes
+    dateInput.addEventListener('change', function (event) {
+        const input = event.target;
+        const selectedDate = new Date(input.value + 'T00:00:00');
+        const dayOfWeek = selectedDate.getDay();
+
+        // Si no es lunes, ajustar al lunes más cercano
+        if (dayOfWeek !== 1) {
+            const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+            const monday = new Date(selectedDate);
+            monday.setDate(selectedDate.getDate() - daysToSubtract);
+            input.valueAsDate = monday;
+        }
+    });
 }
 
 // ========== INICIALIZACI�N ==========
@@ -618,12 +555,97 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Cargar datos
     await loadPersonnelFromJSON();
     loadScheduleFromLocalStorage();
-    loadCodesFromLocalStorage();
+    await loadScheduleCodesFromJSON();
 
     // Inicializar interfaz
     setupEventListeners();
+    setupHamburgerMenu();
     generateScheduleTable();
     generateLegend();
 
     console.log('? Sistema iniciado correctamente');
 });
+
+
+// ========== MENU HAMBURGUESA ========== 
+function setupHamburgerMenu() {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sideMenu = document.getElementById('sideMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+
+    if (!hamburgerBtn || !sideMenu || !menuOverlay) return;
+
+    // Toggle menú (abrir/cerrar)
+    hamburgerBtn.addEventListener('click', () => {
+        const isOpen = sideMenu.classList.contains('open');
+
+        if (isOpen) {
+            // Cerrar menú
+            sideMenu.classList.remove('open');
+            menuOverlay.classList.remove('active');
+            hamburgerBtn.classList.remove('active');
+            document.body.style.overflow = '';
+        } else {
+            // Abrir menú
+            sideMenu.classList.add('open');
+            menuOverlay.classList.add('active');
+            hamburgerBtn.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    });
+
+    // Cerrar menú
+    function closeMenu() {
+        sideMenu.classList.remove('open');
+        menuOverlay.classList.remove('active');
+        hamburgerBtn.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    if (closeMenuBtn) {
+        closeMenuBtn.addEventListener('click', closeMenu);
+    }
+    menuOverlay.addEventListener('click', closeMenu);
+
+    // Conectar botones del menú
+    const menuExportExcel = document.getElementById('menuExportExcel');
+    const menuSaveSchedule = document.getElementById('menuSaveSchedule');
+    const menuManageCodes = document.getElementById('menuManageCodes');
+    const menuViewToggle = document.getElementById('menuViewToggle');
+
+    if (menuExportExcel) {
+        menuExportExcel.addEventListener('click', () => {
+            closeMenu();
+            document.getElementById('exportExcelBtn').click();
+        });
+    }
+
+    if (menuSaveSchedule) {
+        menuSaveSchedule.addEventListener('click', () => {
+            closeMenu();
+            document.getElementById('saveScheduleBtn').click();
+        });
+    }
+
+    if (menuManageCodes) {
+        menuManageCodes.addEventListener('click', () => {
+            closeMenu();
+            document.getElementById('manageCodesBtn').click();
+        });
+    }
+
+    if (menuViewToggle) {
+        menuViewToggle.addEventListener('click', () => {
+            closeMenu();
+            toggleViewMode();
+        });
+    }
+
+    // Cerrar con tecla Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sideMenu.classList.contains('open')) {
+            closeMenu();
+        }
+    });
+}

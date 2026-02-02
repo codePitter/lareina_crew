@@ -22,9 +22,9 @@ async function loadPersonnelFromJSON() {
 
         const data = await response.json();
 
-        // Filtrar solo personal activo y extraer nombres
+        // Filtrar solo personal activo (excluyendo encargados) y extraer nombres
         PERSONNEL = data.personnel
-            .filter(person => person.active)
+            .filter(person => person.active && !person.isManager)
             .map(person => person.name)
             .sort(); // Ordenar alfabéticamente
 
@@ -167,12 +167,25 @@ function setupHamburgerMenu() {
     const menuOverlay = document.getElementById('menuOverlay');
     const closeMenuBtn = document.getElementById('closeMenuBtn');
 
-    // Abrir menú
+    if (!hamburgerBtn || !sideMenu || !menuOverlay) return;
+
+    // Toggle menú (abrir/cerrar)
     hamburgerBtn.addEventListener('click', () => {
-        sideMenu.classList.add('open');
-        menuOverlay.classList.add('active');
-        hamburgerBtn.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        const isOpen = sideMenu.classList.contains('open');
+
+        if (isOpen) {
+            // Cerrar menú
+            sideMenu.classList.remove('open');
+            menuOverlay.classList.remove('active');
+            hamburgerBtn.classList.remove('active');
+            document.body.style.overflow = '';
+        } else {
+            // Abrir menú
+            sideMenu.classList.add('open');
+            menuOverlay.classList.add('active');
+            hamburgerBtn.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
     });
 
     // Cerrar menú
@@ -183,7 +196,9 @@ function setupHamburgerMenu() {
         document.body.style.overflow = '';
     }
 
-    closeMenuBtn.addEventListener('click', closeMenu);
+    if (closeMenuBtn) {
+        closeMenuBtn.addEventListener('click', closeMenu);
+    }
     menuOverlay.addEventListener('click', closeMenu);
 
     // Conectar botones del menú con las funciones existentes
@@ -258,11 +273,36 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 });
 
-// Establecer fecha actual
+// Establecer fecha actual (siempre lunes de la semana actual)
 function setTodayDate() {
     const today = new Date();
     const dateInput = document.getElementById('weekDate');
-    dateInput.valueAsDate = today;
+
+    // Calcular el lunes de la semana actual
+    const dayOfWeek = today.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Si es domingo, restar 6 días
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - daysToSubtract);
+
+    dateInput.valueAsDate = monday;
+
+    // Agregar listener para forzar selección de lunes
+    dateInput.addEventListener('change', forceMonday);
+}
+
+// Forzar que la fecha seleccionada sea siempre un lunes
+function forceMonday(event) {
+    const input = event.target;
+    const selectedDate = new Date(input.value + 'T00:00:00');
+    const dayOfWeek = selectedDate.getDay();
+
+    // Si no es lunes, ajustar al lunes más cercano
+    if (dayOfWeek !== 1) {
+        const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        const monday = new Date(selectedDate);
+        monday.setDate(selectedDate.getDate() - daysToSubtract);
+        input.valueAsDate = monday;
+    }
 }
 
 // ========== GENERAR GRID DE HORARIOS ==========
@@ -659,6 +699,12 @@ function assignPersonnelToDropzone(name, dropzone) {
 
     console.log('Asignando:', name, 'a caja:', cajaNum, 'turno:', turnoKey);
 
+    // Asegurarse de que el día actual existe en scheduleData
+    if (!scheduleData[currentDay]) {
+        console.error('scheduleData[currentDay] no está definido. Inicializando...');
+        initScheduleData();
+    }
+
     // Validar que no esté en franco/licencia/vacaciones
     const dayData = scheduleData[currentDay];
     if (dayData.francos.includes(name) ||
@@ -684,8 +730,13 @@ function assignPersonnelToDropzone(name, dropzone) {
     // Guardar
     saveToLocalStorage();
 
-    console.log('Asignación completada');
+    // Limpiar selección
+    selectedPersonnel = null;
+    selectedDropzone = null;
+
+    console.log('✅ Asignación completada');
 }
+
 
 function clearSelection() {
     selectedPersonnel = null;
@@ -1751,6 +1802,16 @@ function createPersonnelRow(person) {
     row.dataset.id = person.id;
     if (!person.active) row.classList.add('inactive');
 
+    // Asegurar que isManager existe
+    if (person.isManager === undefined) {
+        person.isManager = false;
+    }
+
+    // Asegurar que weeklyHours existe
+    if (!person.weeklyHours) {
+        person.weeklyHours = 48;
+    }
+
     row.innerHTML = `
         <td>${person.id}</td>
         <td>
@@ -1760,6 +1821,20 @@ function createPersonnelRow(person) {
         <td>
             <span class="status-badge ${person.active ? 'active' : 'inactive'}">
                 ${person.active ? '✓ Activo' : '✗ Inactivo'}
+            </span>
+        </td>
+        <td>
+            <span class="contract-display">${person.weeklyHours || 48}h</span>
+            <div class="contract-edit-group" style="display: none;">
+                <input type="number" class="contract-hours-edit" value="${person.weeklyHours || 48}" min="1" max="60" placeholder="Hrs">
+            </div>
+        </td>
+        <td>
+            <span class="manager-badge ${person.isManager ? 'is-manager' : 'not-manager'}" 
+                  onclick="togglePersonManager(${person.id})" 
+                  style="cursor: pointer;" 
+                  title="Click para cambiar rol">
+                ${person.isManager ? '✓ Encargado' : '✗ Encargado'}
             </span>
         </td>
         <td>
@@ -1777,6 +1852,7 @@ function createPersonnelRow(person) {
 
     return row;
 }
+
 
 // ========== ACTUALIZAR ESTADÍSTICAS ==========
 function updatePersonnelStats() {
@@ -1800,7 +1876,9 @@ function addPerson() {
     const newPerson = {
         id: maxId + 1,
         name: name.trim(),
-        active: true
+        active: true,
+        weeklyHours: 48,
+        isManager: false
     };
 
     personnelData.personnel.push(newPerson);
@@ -1819,6 +1897,8 @@ function editPerson(id) {
     const row = document.querySelector(`tr[data-id="${id}"]`);
     const nameDisplay = row.querySelector('.name-display');
     const nameEdit = row.querySelector('.name-edit');
+    const contractDisplay = row.querySelector('.contract-display');
+    const contractEditGroup = row.querySelector('.contract-edit-group');
     const btnEdit = row.querySelector('.btn-edit');
     const btnSave = row.querySelector('.btn-save');
     const btnCancel = row.querySelector('.btn-cancel');
@@ -1828,6 +1908,9 @@ function editPerson(id) {
     nameEdit.focus();
     nameEdit.select();
 
+    contractDisplay.style.display = 'none';
+    contractEditGroup.style.display = 'flex';
+
     btnEdit.style.display = 'none';
     btnSave.style.display = 'inline-block';
     btnCancel.style.display = 'inline-block';
@@ -1836,10 +1919,17 @@ function editPerson(id) {
 function savePerson(id) {
     const row = document.querySelector(`tr[data-id="${id}"]`);
     const nameEdit = row.querySelector('.name-edit');
+    const contractHoursEdit = row.querySelector('.contract-hours-edit');
     const newName = nameEdit.value.trim();
+    const weeklyHours = parseInt(contractHoursEdit.value);
 
     if (newName === '') {
         alert('El nombre no puede estar vacío.');
+        return;
+    }
+
+    if (isNaN(weeklyHours) || weeklyHours < 1 || weeklyHours > 60) {
+        alert('Las horas semanales deben ser un número entre 1 y 60.');
         return;
     }
 
@@ -1847,6 +1937,7 @@ function savePerson(id) {
     const person = personnelData.personnel.find(p => p.id === id);
     if (person) {
         person.name = newName;
+        person.weeklyHours = weeklyHours;
         personnelData.metadata.lastUpdated = new Date().toISOString().split('T')[0];
     }
 
@@ -1894,10 +1985,10 @@ function deletePerson(id) {
 
 // ========== ACTUALIZAR ARRAY PERSONNEL ==========
 function updatePERSONNELArray() {
-    // Actualizar el array global PERSONNEL con los datos activos
+    // Actualizar el array global PERSONNEL con los datos activos (excluyendo encargados)
     PERSONNEL.length = 0; // Limpiar array
     personnelData.personnel
-        .filter(p => p.active)
+        .filter(p => p.active && !p.isManager) // Excluir encargados
         .sort((a, b) => a.name.localeCompare(b.name))
         .forEach(p => PERSONNEL.push(p.name));
 }
@@ -1980,4 +2071,19 @@ function setupPersonnelModalListeners() {
 // Se agregará al final del archivo main.js existente
 -e
 // Inicializar listeners del modal de personal
+
+// ========== FUNCIÓN PARA ALTERNAR ENCARGADO ==========
+function togglePersonManager(id) {
+    const person = personnelData.personnel.find(p => p.id === id);
+    if (!person) return;
+
+    person.isManager = !person.isManager;
+    updatePERSONNELArray();
+    renderPersonnelTable();
+
+    console.log(`${person.name} ahora es ${person.isManager ? 'encargado' : 'cajero'}`);
+}
+
+// Hacer función global
+window.togglePersonManager = togglePersonManager;
 setupPersonnelModalListeners();
