@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Horarios por Cajero/a</title>
-    <link rel="stylesheet" href="css/horarios-cajeros.css?v=2.0">
+    <link rel="stylesheet" href="css/horarios-cajeros.css?v=2.1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
@@ -21,7 +21,6 @@
             </div>
 
             <div class="header-right">
-                <!-- Botón Hamburguesa -->
                 <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menú">
                     <span></span>
                     <span></span>
@@ -48,6 +47,10 @@
                     <button class="menu-item" onclick="window.location.href='encargados.html'">
                         <span class="menu-icon">👔</span>
                         <span class="menu-text">Horarios de Encargados</span>
+                    </button>
+                    <button class="menu-item" onclick="window.location.href='codigos.html'">
+                        <span class="menu-icon">🔢</span>
+                        <span class="menu-text">Gestionar Códigos</span>
                     </button>
                 </div>
 
@@ -87,7 +90,6 @@
             <button id="exportExcelBtn"></button>
             <button id="saveScheduleBtn"></button>
             <button id="manageCodesBtn"></button>
-            <button id="viewToggleBtn"></button>
         </div>
 
         <!-- Main Content -->
@@ -109,10 +111,15 @@
                 </div>
 
                 <div class="filter-group">
-                    <label>Vistas</label>
-                    <button class="view-toggle-btn" id="viewToggleBtn">
-                        🔄 Ver Horarios Completos
-                    </button>
+                    <label>Vistas y Acciones</label>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="view-toggle-btn" id="viewToggleBtn">
+                            🔄 Ver Horarios Completos
+                        </button>
+                        <button class="manage-codes-btn" id="manageCodesMainBtn">
+                            ⚙️ Gestionar Códigos
+                        </button>
+                    </div>
                 </div>
 
                 <div class="stats">
@@ -146,8 +153,6 @@
                 </table>
             </div>
 
-
-
             <!-- Leyenda de códigos -->
             <div class="legend-section">
                 <div class="legend-title">📖 Leyenda de Códigos</div>
@@ -160,27 +165,33 @@
 
     <!-- Modal de Gestión de Códigos -->
     <div id="codesModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content modal-codes-large">
             <div class="modal-header">
                 <h2>⚙️ Gestión de Códigos de Horario</h2>
-                <span class="close-modal">&times;</span>
+                <span class="close-modal" id="closeCodesModal">&times;</span>
             </div>
 
             <div class="modal-body">
                 <div class="modal-info">
-                    <p>Los códigos se asignan automáticamente a cada combinación única de horarios.</p>
-                    <p>Puedes editar los códigos para personalizar la numeración.</p>
+                    <p>📋 Gestiona todas las combinaciones de horarios y sus códigos asociados.</p>
+                    <p>✏️ Puedes editar, agregar o eliminar códigos según sea necesario.</p>
                 </div>
 
-                <!-- Tabla de códigos -->
+                <div class="codes-toolbar">
+                    <div class="search-box-codes">
+                        <input type="text" id="searchCodesInput" placeholder="🔍 Buscar por código o horario...">
+                    </div>
+                    <button class="btn-add-code-modal" id="addNewCodeBtn">➕ Agregar Código</button>
+                </div>
+
                 <div class="codes-table-container">
                     <table class="codes-table">
                         <thead>
                             <tr>
-                                <th>Código</th>
-                                <th>Horario</th>
-                                <th>Horas</th>
-                                <th>Acciones</th>
+                                <th style="width: 100px;">Código</th>
+                                <th style="width: 350px;">Horario</th>
+                                <th style="width: 80px;">Horas</th>
+                                <th style="width: 200px;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="codesTableBody">
@@ -189,57 +200,53 @@
                     </table>
                 </div>
 
-                <div class="modal-actions">
-                    <button class="btn-export" id="exportCodesBtn">💾 Exportar Códigos</button>
-                    <button class="btn-import" id="importCodesBtn">📂 Importar Códigos</button>
+                <div class="modal-footer-actions">
+                    <div class="codes-count" id="codesCount">Total: 0 códigos</div>
+                    <div class="modal-actions">
+                        <button class="btn-import" id="importCodesBtn">📂 Importar</button>
+                        <button class="btn-export" id="exportCodesBtn">💾 Exportar</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="js/horarios-cajeros.js?v=2.0"></script>
-</body>
-</html>    </div>
-
-<!-- Modal de Gestión de Códigos -->
-<div id="codesModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>⚙️ Gestión de Códigos de Horario</h2>
-            <span class="close-modal">&times;</span>
-        </div>
-
-        <div class="modal-body">
-            <div class="modal-info">
-                <p>Los códigos se asignan automáticamente a cada combinación única de horarios.</p>
-                <p>Puedes editar los códigos para personalizar la numeración.</p>
+    <!-- Modal para Agregar/Editar Código Individual -->
+    <div id="codeEditModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2 id="codeEditModalTitle">➕ Agregar Código</h2>
+                <span class="close-modal" id="closeCodeEditModal">&times;</span>
             </div>
 
-            <!-- Tabla de códigos -->
-            <div class="codes-table-container">
-                <table class="codes-table">
-                    <thead>
-                        <tr>
-                            <th>Código</th>
-                            <th>Horario</th>
-                            <th>Horas</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="codesTableBody">
-                        <!-- Se llenará dinámicamente -->
-                    </tbody>
-                </table>
-            </div>
+            <div class="modal-body">
+                <form id="codeEditForm">
+                    <div class="form-group">
+                        <label for="codeNumberInput">Código *</label>
+                        <input type="text" id="codeNumberInput" placeholder="Ej: 100" required>
+                        <small>Ingresa el número de código (sin ceros a la izquierda)</small>
+                    </div>
 
-            <div class="modal-actions">
-                <button class="btn-export" id="exportCodesBtn">💾 Exportar Códigos</button>
-                <button class="btn-import" id="importCodesBtn">📂 Importar Códigos</button>
+                    <div class="form-group">
+                        <label for="codeScheduleInput">Horario *</label>
+                        <input type="text" id="codeScheduleInput" placeholder="Ej: 08:00-12:00+17:00-21:00" required>
+                        <small>Formato: HH:MM-HH:MM para un turno, o HH:MM-HH:MM+HH:MM-HH:MM para dos turnos</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="codeHoursDisplay">Horas Totales</label>
+                        <input type="text" id="codeHoursDisplay" readonly placeholder="Calculado automáticamente">
+                    </div>
+
+                    <div class="modal-form-actions">
+                        <button type="button" class="btn-cancel" id="cancelCodeEdit">Cancelar</button>
+                        <button type="submit" class="btn-save">Guardar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</div>
 
-<script src="js/horarios-cajeros.js?v=2.0"></script>
+    <script src="js/horarios-cajeros.js?v=2.1"></script>
 </body>
 </html>

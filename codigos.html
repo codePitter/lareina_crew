@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Códigos de Horarios</title>
+    <link rel="stylesheet" href="css/codigos.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>🔢 Gestión de Códigos de Horarios</h1>
+            </div>
+
+            <div class="header-right">
+                <!-- Botones de acción -->
+                <button class="btn btn-import" id="importBtn" title="Importar desde archivo">
+                    📂 Importar
+                </button>
+                <button class="btn btn-export" id="exportBtn" title="Exportar a archivo JSON">
+                    💾 Exportar
+                </button>
+                <button class="btn btn-excel" id="excelBtn" title="Exportar a Excel">
+                    📊 Excel
+                </button>
+                <button class="btn btn-print" id="printBtn" title="Imprimir">
+                    🖨️ Imprimir
+                </button>
+
+                <!-- Botón Hamburguesa -->
+                <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menú">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menú Lateral -->
+        <div class="side-menu" id="sideMenu">
+            <div class="side-menu-header">
+                <h2>⚙️ Opciones</h2>
+            </div>
+
+            <div class="side-menu-content">
+                <!-- Sección Navegación -->
+                <div class="menu-section">
+                    <div class="menu-section-title">📍 Navegación</div>
+                    <button class="menu-item" onclick="window.location.href='index.html'">
+                        <span class="menu-icon">📋</span>
+                        <span class="menu-text">Crear Horarios</span>
+                    </button>
+                    <button class="menu-item" onclick="window.location.href='horarios-cajeros.html'">
+                        <span class="menu-icon">📊</span>
+                        <span class="menu-text">Ver Horarios por Cajero</span>
+                    </button>
+                    <button class="menu-item" onclick="window.location.href='encargados.html'">
+                        <span class="menu-icon">👔</span>
+                        <span class="menu-text">Horarios de Encargados</span>
+                    </button>
+                </div>
+
+                <!-- Sección Acciones -->
+                <div class="menu-section">
+                    <div class="menu-section-title">🔧 Acciones</div>
+                    <button class="menu-item" id="menuAddCode">
+                        <span class="menu-icon">➕</span>
+                        <span class="menu-text">Agregar Código</span>
+                    </button>
+                    <button class="menu-item" id="menuImport">
+                        <span class="menu-icon">📂</span>
+                        <span class="menu-text">Importar Datos</span>
+                    </button>
+                    <button class="menu-item" id="menuExport">
+                        <span class="menu-icon">💾</span>
+                        <span class="menu-text">Exportar Datos</span>
+                    </button>
+                </div>
+
+                <!-- Sección Peligro -->
+                <div class="menu-section danger-section">
+                    <div class="menu-section-title">⚠️ Zona de Peligro</div>
+                    <button class="menu-item danger-item" id="menuClearAll">
+                        <span class="menu-icon">🗑️</span>
+                        <span class="menu-text">Limpiar Todo</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overlay para cerrar menú -->
+        <div class="menu-overlay" id="menuOverlay"></div>
+
+        <!-- Input oculto para importar archivos -->
+        <input type="file" id="fileInput" accept=".json,.xlsx,.xls,.csv" style="display: none;">
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Barra de herramientas -->
+            <div class="toolbar">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 Buscar por código, horario o descripción...">
+                </div>
+                
+                <div class="toolbar-actions">
+                    <button class="btn btn-add" id="addCodeBtn">
+                        ➕ Agregar Código
+                    </button>
+                    <div class="stats-badge" id="totalCodes">
+                        Total: 0 códigos
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de códigos -->
+            <div class="table-container">
+                <table class="codes-table" id="codesTable">
+                    <thead>
+                        <tr>
+                            <th class="col-code">Código</th>
+                            <th class="col-schedule">Horario</th>
+                            <th class="col-description">Descripción/Observaciones</th>
+                            <th class="col-hours">Horas</th>
+                            <th class="col-actions">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="codesTableBody">
+                        <!-- Se llenará dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Agregar/Editar Código -->
+    <div id="codeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">➕ Agregar Nuevo Código</h2>
+                <span class="close-modal" id="closeModal">&times;</span>
+            </div>
+
+            <div class="modal-body">
+                <form id="codeForm">
+                    <div class="form-group">
+                        <label for="codeInput">Código *</label>
+                        <input type="text" id="codeInput" placeholder="Ej: 00001" required>
+                        <small>Formato recomendado: 5 dígitos (00001, 00002, etc.)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="scheduleInput">Horario *</label>
+                        <input type="text" id="scheduleInput" placeholder="Ej: 08:00 A 12:00 Y 17:00 A 21:00" required>
+                        <small>Formato: HH:MM A HH:MM o HH:MM A HH:MM Y HH:MM A HH:MM</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descriptionInput">Descripción/Observaciones</label>
+                        <input type="text" id="descriptionInput" placeholder="Ej: TESORERIA, PANADEROS, DOMINGO, etc.">
+                        <small>Opcional: información adicional sobre el código</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hoursInput">Horas Totales</label>
+                        <input type="number" id="hoursInput" placeholder="Calculado automáticamente" step="0.5" readonly>
+                        <small>Las horas se calculan automáticamente del horario</small>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-cancel" id="cancelBtn">Cancelar</button>
+                        <button type="submit" class="btn btn-save">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/codigos.js"></script>
+</body>
+</html>

@@ -496,22 +496,36 @@ function toggleViewMode() {
 function setupEventListeners() {
     // Botones principales
     document.getElementById('manageCodesBtn').addEventListener('click', openCodesModal);
+    document.getElementById('manageCodesMainBtn').addEventListener('click', openCodesModal);
     document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
     document.getElementById('saveScheduleBtn').addEventListener('click', () => {
-        alert('✅ Los códigos se cargan automáticamente desde Schedule codes.json');
+        alert('✅ Los códigos se cargan automáticamente desde schedule_codes.json');
     });
 
-    // Modal
-    document.querySelector('.close-modal').addEventListener('click', closeCodesModal);
+    // Modal de códigos
+    document.getElementById('closeCodesModal').addEventListener('click', closeCodesModal);
     document.getElementById('codesModal').addEventListener('click', function (e) {
         if (e.target === this) {
             closeCodesModal();
         }
     });
 
-    // Botones del modal
+    // Botones del modal de códigos
     document.getElementById('exportCodesBtn').addEventListener('click', exportCodesToJSON);
     document.getElementById('importCodesBtn').addEventListener('click', importCodesFromJSON);
+    document.getElementById('addNewCodeBtn').addEventListener('click', openAddCodeModal);
+    document.getElementById('searchCodesInput').addEventListener('input', filterCodesTable);
+
+    // Modal de edición de código individual
+    document.getElementById('closeCodeEditModal').addEventListener('click', closeCodeEditModal);
+    document.getElementById('cancelCodeEdit').addEventListener('click', closeCodeEditModal);
+    document.getElementById('codeEditForm').addEventListener('submit', saveCodeEdit);
+    document.getElementById('codeScheduleInput').addEventListener('input', updateCodeHoursPreview);
+    document.getElementById('codeEditModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            closeCodeEditModal();
+        }
+    });
 
     // Botón de cambio de vista
     document.getElementById('viewToggleBtn').addEventListener('click', toggleViewMode);
@@ -648,4 +662,228 @@ function setupHamburgerMenu() {
             closeMenu();
         }
     });
+}// ========== VARIABLES PARA MODAL DE CÓDIGOS ==========
+let currentEditingSchedule = null;
+let filteredCodes = null;
+
+// ========== ABRIR/CERRAR MODALES ==========
+function openCodesModal() {
+    const modal = document.getElementById('codesModal');
+    modal.classList.add('show');
+    modal.style.display = 'flex';
+    renderCodesTable();
+    document.body.style.overflow = 'hidden';
 }
+
+function closeCodesModal() {
+    const modal = document.getElementById('codesModal');
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+    document.getElementById('searchCodesInput').value = '';
+    filteredCodes = null;
+    document.body.style.overflow = '';
+}
+
+function openAddCodeModal() {
+    currentEditingSchedule = null;
+    document.getElementById('codeEditModalTitle').textContent = '➕ Agregar Código';
+    document.getElementById('codeNumberInput').value = '';
+    document.getElementById('codeScheduleInput').value = '';
+    document.getElementById('codeHoursDisplay').value = '';
+    document.getElementById('codeEditModal').classList.add('show');
+    document.getElementById('codeEditModal').style.display = 'flex';
+}
+
+function openEditCodeModal(schedule) {
+    currentEditingSchedule = schedule;
+    const codeData = scheduleCodes[schedule];
+
+    document.getElementById('codeEditModalTitle').textContent = '✏️ Editar Código';
+    document.getElementById('codeNumberInput').value = codeData.codigo;
+    document.getElementById('codeScheduleInput').value = schedule;
+    document.getElementById('codeHoursDisplay').value = calculateHours(schedule).toFixed(2) + 'h';
+    document.getElementById('codeEditModal').classList.add('show');
+    document.getElementById('codeEditModal').style.display = 'flex';
+}
+
+function closeCodeEditModal() {
+    const modal = document.getElementById('codeEditModal');
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+    document.getElementById('codeEditForm').reset();
+    currentEditingSchedule = null;
+}
+
+// ========== RENDERIZAR TABLA DE CÓDIGOS ==========
+function renderCodesTable() {
+    const tbody = document.getElementById('codesTableBody');
+    tbody.innerHTML = '';
+
+    // Convertir scheduleCodes a array
+    const codesArray = [];
+    for (let schedule in scheduleCodes) {
+        const code = scheduleCodes[schedule].codigo;
+        codesArray.push({
+            schedule: schedule,
+            code: code,
+            hours: calculateHours(schedule)
+        });
+    }
+
+    // Ordenar por código
+    codesArray.sort((a, b) => {
+        const numA = parseInt(a.code) || 0;
+        const numB = parseInt(b.code) || 0;
+        return numA - numB;
+    });
+
+    // Aplicar filtro si existe
+    const displayCodes = filteredCodes || codesArray;
+
+    // Renderizar filas
+    displayCodes.forEach(codeData => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="code-cell">${codeData.code}</td>
+            <td class="schedule-cell">${codeData.schedule.replace(/\+/g, ' / ')}</td>
+            <td class="hours-cell">${codeData.hours.toFixed(2)}h</td>
+            <td class="actions-cell">
+                <button class="btn-edit-small" onclick="openEditCodeModal('${codeData.schedule.replace(/'/g, "\\'")}')">✏️</button>
+                <button class="btn-delete-small" onclick="deleteCodeConfirm('${codeData.schedule.replace(/'/g, "\\'")}')">🗑️</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    // Actualizar contador
+    document.getElementById('codesCount').textContent = `Total: ${displayCodes.length} códigos`;
+
+    // Mensaje si no hay códigos
+    if (displayCodes.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align: center; padding: 40px; color: #6b7280;">
+                    ${filteredCodes ? '🔍 No se encontraron códigos con ese criterio' : '📋 No hay códigos cargados'}
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// ========== FILTRAR TABLA ==========
+function filterCodesTable(e) {
+    const searchTerm = e.target.value.toLowerCase().trim();
+
+    if (!searchTerm) {
+        filteredCodes = null;
+        renderCodesTable();
+        return;
+    }
+
+    // Filtrar códigos
+    const codesArray = [];
+    for (let schedule in scheduleCodes) {
+        const code = scheduleCodes[schedule].codigo;
+        const scheduleDisplay = schedule.replace(/\+/g, ' / ');
+
+        if (code.includes(searchTerm) || scheduleDisplay.toLowerCase().includes(searchTerm)) {
+            codesArray.push({
+                schedule: schedule,
+                code: code,
+                hours: calculateHours(schedule)
+            });
+        }
+    }
+
+    filteredCodes = codesArray;
+    renderCodesTable();
+}
+
+// ========== GUARDAR/EDITAR CÓDIGO ==========
+function saveCodeEdit(e) {
+    e.preventDefault();
+
+    const codeNumber = document.getElementById('codeNumberInput').value.trim();
+    const scheduleInput = document.getElementById('codeScheduleInput').value.trim();
+
+    if (!codeNumber || !scheduleInput) {
+        alert('❌ Por favor completa todos los campos requeridos');
+        return;
+    }
+
+    // Validar formato de horario
+    const schedulePattern = /^\d{2}:\d{2}-\d{2}:\d{2}(\+\d{2}:\d{2}-\d{2}:\d{2})*$/;
+    if (!schedulePattern.test(scheduleInput)) {
+        alert('❌ Formato de horario inválido.\n\nFormato correcto:\n• Un turno: 08:00-12:00\n• Dos turnos: 08:00-12:00+17:00-21:00');
+        return;
+    }
+
+    // Si estamos editando y el horario cambió, eliminar el anterior
+    if (currentEditingSchedule && currentEditingSchedule !== scheduleInput) {
+        delete scheduleCodes[currentEditingSchedule];
+    }
+
+    // Guardar el código
+    scheduleCodes[scheduleInput] = {
+        codigo: codeNumber,
+        alternativas: scheduleCodes[scheduleInput]?.alternativas || []
+    };
+
+    // Guardar en localStorage
+    saveCodesToLocalStorage();
+
+    // Actualizar vista
+    renderCodesTable();
+    generateScheduleTable();
+    generateLegend();
+    closeCodeEditModal();
+
+    console.log(`✅ Código ${currentEditingSchedule ? 'actualizado' : 'agregado'}: ${scheduleInput} → ${codeNumber}`);
+}
+
+// ========== ELIMINAR CÓDIGO ==========
+function deleteCodeConfirm(schedule) {
+    const code = scheduleCodes[schedule].codigo;
+    const scheduleDisplay = schedule.replace(/\+/g, ' / ');
+
+    if (confirm(`¿Eliminar el código ${code}?\n\nHorario: ${scheduleDisplay}\n\nEsta acción no se puede deshacer.`)) {
+        delete scheduleCodes[schedule];
+        saveCodesToLocalStorage();
+        renderCodesTable();
+        generateScheduleTable();
+        generateLegend();
+        console.log(`🗑️ Código eliminado: ${schedule}`);
+    }
+}
+
+// ========== ACTUALIZAR PREVIEW DE HORAS ==========
+function updateCodeHoursPreview() {
+    const scheduleInput = document.getElementById('codeScheduleInput').value.trim();
+    const hoursDisplay = document.getElementById('codeHoursDisplay');
+
+    if (!scheduleInput) {
+        hoursDisplay.value = '';
+        return;
+    }
+
+    try {
+        const hours = calculateHours(scheduleInput);
+        hoursDisplay.value = hours.toFixed(2) + 'h';
+    } catch (error) {
+        hoursDisplay.value = 'Formato inválido';
+    }
+}
+
+// ========== GUARDAR CÓDIGOS EN LOCALSTORAGE ==========
+function saveCodesToLocalStorage() {
+    try {
+        localStorage.setItem('scheduleCodes', JSON.stringify(scheduleCodes));
+        console.log('💾 Códigos guardados en localStorage');
+    } catch (error) {
+        console.error('Error al guardar códigos:', error);
+    }
+}
+
+// ========== HACER FUNCIONES GLOBALES ==========
+window.openEditCodeModal = openEditCodeModal;
+window.deleteCodeConfirm = deleteCodeConfirm;

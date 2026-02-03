@@ -373,6 +373,7 @@ body {
     .schedule-table tbody tr {
         border-bottom: 1px solid var(--border-light);
         transition: all 0.2s;
+        height:50px;
     }
 
         .schedule-table tbody tr:hover {
@@ -380,7 +381,7 @@ body {
         }
 
     .schedule-table td {
-        padding: 10px 12px;
+        padding: 6px 8px;
         color: var(--text-dark);
         font-size: 13px;
         text-align: center;
@@ -437,20 +438,48 @@ body {
     /* Estilos para las celdas de horarios */
     .schedule-table tbody td[data-day] {
         font-size: 11px;
-        line-height: 1.3;
+        line-height: 1.2;
         white-space: pre-line;
+        padding: 4px 6px;
     }
 
     .schedule-table td.code-cell {
         font-size: 11px;
         white-space: pre-line;
-        line-height: 1.3;
-        padding: 8px 6px;
+        line-height: 1.2;
+        padding: 4px 6px;
     }
 
         .schedule-table td.code-cell.normal {
             font-weight: 700;
         }
+
+/* Estilos para vista de código con horario */
+.code-with-schedule {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 1.1;
+}
+
+.code-part {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1;
+}
+
+.schedule-part {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-medium);
+    line-height: 1.1;
+}
+
+.schedule-view {
+    padding: 3px 6px !important;
+    vertical-align: middle;
+}
 
 .view-toggle-btn {
     padding: 8px 20px;
@@ -597,6 +626,7 @@ body {
     .codes-table tbody tr {
         border-bottom: 1px solid var(--border-light);
         transition: all 0.2s;
+        height:50px;
     }
 
         .codes-table tbody tr:hover {
@@ -696,4 +726,525 @@ body {
         margin-left: 0;
         justify-content: space-between;
     }
+}
+
+/* ========== BOTÓN GESTIONAR CÓDIGOS ========== */
+.manage-codes-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+    .manage-codes-btn:hover {
+        background: linear-gradient(135deg, #5568d3 0%, #653a8f 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .manage-codes-btn:active {
+        transform: translateY(0);
+    }
+
+/* ========== MODAL GRANDE DE CÓDIGOS ========== */
+.modal-codes-large {
+    width: 95%;
+    max-width: 1200px;
+    max-height: 90vh;
+}
+
+.modal-small {
+    width: 90%;
+    max-width: 600px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+    .modal.show {
+        opacity: 1;
+    }
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .modal-header h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+.close-modal {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 32px;
+    cursor: pointer;
+    line-height: 1;
+    transition: transform 0.2s;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .close-modal:hover {
+        transform: rotate(90deg);
+    }
+
+.modal-body {
+    padding: 25px 30px;
+    overflow-y: auto;
+    max-height: calc(90vh - 150px);
+}
+
+.modal-info {
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+    .modal-info p {
+        margin: 5px 0;
+        color: #1e40af;
+        font-size: 14px;
+    }
+
+/* ========== TOOLBAR DEL MODAL ========== */
+.codes-toolbar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.search-box-codes {
+    flex: 1;
+}
+
+    .search-box-codes input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 2px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+        .search-box-codes input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+.btn-add-code-modal {
+    padding: 10px 20px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+    .btn-add-code-modal:hover {
+        background: #5568d3;
+        transform: scale(1.05);
+    }
+
+/* ========== TABLA DE CÓDIGOS EN MODAL ========== */
+.codes-table-container {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.codes-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .codes-table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .codes-table th {
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+    }
+
+    .codes-table tbody tr {
+        border-bottom: 1px solid #e5e7eb;
+        transition: background 0.2s;
+    }
+
+        .codes-table tbody tr:hover {
+            background: #f3f4f6;
+        }
+
+    .codes-table td {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+.code-cell {
+    font-weight: 700;
+    color: #667eea;
+    font-family: 'Courier New', monospace;
+}
+
+.schedule-cell {
+    font-family: 'Courier New', monospace;
+    color: #374151;
+}
+
+.hours-cell {
+    font-weight: 600;
+    color: #10b981;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-edit-small,
+.btn-delete-small {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-edit-small {
+    background: #3b82f6;
+    color: white;
+}
+
+    .btn-edit-small:hover {
+        background: #2563eb;
+        transform: scale(1.1);
+    }
+
+.btn-delete-small {
+    background: #ef4444;
+    color: white;
+}
+
+    .btn-delete-small:hover {
+        background: #dc2626;
+        transform: scale(1.1);
+    }
+
+/* ========== FOOTER DEL MODAL ========== */
+.modal-footer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 2px solid #e5e7eb;
+}
+
+.codes-count {
+    font-weight: 600;
+    color: #667eea;
+    font-size: 14px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-export,
+.btn-import {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-export {
+    background: #10b981;
+    color: white;
+}
+
+    .btn-export:hover {
+        background: #059669;
+    }
+
+.btn-import {
+    background: #06b6d4;
+    color: white;
+}
+
+    .btn-import:hover {
+        background: #0891b2;
+    }
+
+/* ========== FORMULARIO DE EDICIÓN ========== */
+.form-group {
+    margin-bottom: 20px;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #374151;
+        font-size: 14px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input[readonly] {
+            background: #f3f4f6;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+
+    .form-group small {
+        display: block;
+        margin-top: 6px;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+.modal-form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 2px solid #e5e7eb;
+}
+
+.btn-cancel,
+.btn-save {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+    .btn-cancel:hover {
+        background: #d1d5db;
+    }
+
+.btn-save {
+    background: #667eea;
+    color: white;
+}
+
+    .btn-save:hover {
+        background: #5568d3;
+    }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .modal-codes-large {
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border-radius: 0;
+    }
+
+    .modal-body {
+        max-height: calc(100vh - 150px);
+    }
+
+    .codes-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .actions-cell {
+        flex-direction: column;
+    }
+}
+
+/* ========== FILAS MÁS COMPACTAS EN LA TABLA PRINCIPAL ========== */
+.schedule-table th {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+}
+
+.schedule-table td {
+    padding: 6px 8px !important;
+    font-size: 13px !important;
+    line-height: 1.3 !important;
+    vertical-align: middle !important;
+}
+
+.schedule-table tbody tr {
+    height: auto !important;
+    min-height: 32px !important;
+}
+
+/* Compactar encabezados */
+.schedule-table thead tr {
+    height: 38px !important;
+}
+
+/* Compactar celdas especiales */
+.contract-cell,
+.id-cell,
+.name-cell {
+    padding: 5px 8px !important;
+}
+
+/* Compactar vista de códigos */
+.code-cell-schedule {
+    padding: 4px 6px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+/* Compactar vista de horarios completos */
+.schedule-cell-full {
+    padding: 5px 6px !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+}
+
+/* Ajustar altura de select y inputs en filtros */
+.filter-group select,
+.filter-group input[type="text"] {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+    height: 32px !important;
+}
+
+/* Compactar botones de la sección de filtros */
+.view-toggle-btn,
+.manage-codes-btn {
+    padding: 6px 14px !important;
+    font-size: 12px !important;
+    height: 32px !important;
+}
+
+/* Compactar stats */
+.stats span {
+    padding: 4px 12px !important;
+    font-size: 12px !important;
+}
+
+/* Reducir padding de la sección de filtros */
+.filters-section {
+    padding: 12px 20px !important;
+    gap: 12px !important;
+}
+
+/* Compactar leyenda */
+.legend-section {
+    padding: 15px 20px !important;
+}
+
+.legend-title {
+    font-size: 15px !important;
+    margin-bottom: 10px !important;
+    padding: 8px 0 !important;
+}
+
+.legend-content {
+    gap: 8px !important;
+}
+
+.legend-item {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+}
+
+/* Compactar container de tabla */
+.schedule-table-container {
+    margin-top: 15px !important;
 }
