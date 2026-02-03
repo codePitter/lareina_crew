@@ -592,24 +592,47 @@ function generatePersonnelList() {
     list.innerHTML = '';
 
     PERSONNEL.forEach(name => {
+
         const chip = document.createElement('div');
         chip.className = 'person-chip';
         chip.draggable = true;
         chip.dataset.name = name;
-        chip.textContent = name;
 
-        const icon = document.createElement('span');
-        icon.textContent = '🖐️';
-        chip.appendChild(icon);
+        // 🔹 Contenedor principal (nombre + schedule)
+        const personMain = document.createElement('div');
+        personMain.className = 'person-main';
+
+        // 🔹 Fila del nombre
+        const nameRow = document.createElement('div');
+        nameRow.className = 'person-name-row';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'person-name';
+        nameSpan.textContent = name;
+
+        nameRow.appendChild(nameSpan);
+
+        // 🔹 Contenedor de horarios
+        const scheduleInfo = document.createElement('div');
+        scheduleInfo.className = 'schedule-info';
+
+        // 🔹 Horas totales (alineadas a la derecha)
+        const hoursSpan = document.createElement('span');
+        hoursSpan.className = 'person-hours';
+        hoursSpan.textContent = ''; // Se completa dinámicamente después
+
+        // Armar estructura
+        personMain.appendChild(nameRow);
+        personMain.appendChild(scheduleInfo);
+
+        chip.appendChild(personMain);
+        chip.appendChild(hoursSpan);
 
         // Eventos drag
         chip.addEventListener('dragstart', handleDragStart);
         chip.addEventListener('dragend', handleDragEnd);
 
-        // Evento click para selección
         chip.addEventListener('click', (e) => handlePersonnelClick(e, name));
-
-        // Evento doble click
         chip.addEventListener('dblclick', (e) => showPersonnelContextMenu(e, name));
 
         list.appendChild(chip);
@@ -1148,8 +1171,8 @@ function updateRepeatedNamesWarning() {
 
 function updatePersonnelStatus() {
     const dayData = scheduleData[currentDay];
-    const personnelSchedules = {}; // Objeto para almacenar los horarios de cada persona
-
+    const personnelSchedules = {};
+    const personnelHours = {}; // 👈 nuevo
     // Recopilar nombres usados y sus horarios
     for (let caja in dayData.cajas) {
         for (let turno in dayData.cajas[caja]) {
@@ -1169,6 +1192,9 @@ function updatePersonnelStatus() {
                         caja: caja,
                         turno: turno
                     });
+                    const horas = calculateHours(turnoData.entrada, turnoData.salida);
+                    personnelHours[name] = (personnelHours[name] || 0) + horas;
+
                 }
             }
         }
@@ -1204,9 +1230,24 @@ function updatePersonnelStatus() {
         chip.innerHTML = '';
 
         // Nombre
+        const nameRow = document.createElement('div');
+        nameRow.className = 'person-name-row';
+
         const nameSpan = document.createElement('span');
         nameSpan.textContent = name;
-        chip.appendChild(nameSpan);
+
+        nameRow.appendChild(nameSpan);
+
+        // 👉 Total de horas
+        if (personnelHours[name]) {
+            const hoursSpan = document.createElement('span');
+            hoursSpan.className = 'person-hours';
+            hoursSpan.textContent = `${personnelHours[name].toFixed(1)} h`;
+            chip.appendChild(hoursSpan);
+        }
+
+        chip.appendChild(nameRow);
+
 
         if (personnelSchedules[name]) {
             chip.classList.add('used');
@@ -2082,6 +2123,20 @@ function togglePersonManager(id) {
     renderPersonnelTable();
 
     console.log(`${person.name} ahora es ${person.isManager ? 'encargado' : 'cajero'}`);
+}
+function calculateHours(entrada, salida) {
+    if (!entrada || !salida) return 0;
+
+    const [h1, m1] = entrada.split(':').map(Number);
+    const [h2, m2] = salida.split(':').map(Number);
+
+    let start = h1 * 60 + m1;
+    let end = h2 * 60 + m2;
+
+    // Por si hay turnos que cruzan medianoche
+    if (end < start) end += 24 * 60;
+
+    return (end - start) / 60;
 }
 
 // Hacer función global

@@ -80,26 +80,34 @@ function getScheduleSignature(daySchedule) {
 }
 
 function calculateHours(scheduleSignature) {
-    if (!scheduleSignature) return 0;
+    if (!scheduleSignature || typeof scheduleSignature !== 'string') return 0;
 
-    const segments = scheduleSignature.split(' / ');
+    const segments = scheduleSignature.split('+');
     let totalMinutes = 0;
 
     segments.forEach(segment => {
         const [start, end] = segment.split('-');
-        if (start && end) {
-            const [startHour, startMin] = start.split(':').map(Number);
-            const [endHour, endMin] = end.split(':').map(Number);
+        if (!start || !end) return;
 
-            const startInMinutes = startHour * 60 + startMin;
-            const endInMinutes = endHour * 60 + endMin;
+        const [sh, sm] = start.split(':').map(Number);
+        const [eh, em] = end.split(':').map(Number);
 
-            totalMinutes += endInMinutes - startInMinutes;
+        if (
+            isNaN(sh) || isNaN(sm) ||
+            isNaN(eh) || isNaN(em)
+        ) return;
+
+        const startMin = sh * 60 + sm;
+        const endMin = eh * 60 + em;
+
+        if (endMin > startMin) {
+            totalMinutes += endMin - startMin;
         }
     });
 
     return totalMinutes / 60;
 }
+
 
 function lookupCode(signature) {
     // signature formato: "08:00-13:00+17:00-21:00" o "08:00-16:00"
@@ -119,7 +127,7 @@ function lookupCode(signature) {
     // No encontrado en el archivo: mostrar horario como código fallback
     return {
         code: '?',
-        hours: calculateHours(signature),
+        hours: calculateHours(signature) || 0,
         schedule: signature.replace(/\+/g, ' / ')
     };
 }
@@ -251,7 +259,7 @@ function generateScheduleTable() {
 
             row.appendChild(dayCell);
 
-            totalWeekHours += codeInfo.hours;
+            totalWeekHours += Number(codeInfo.hours) || 0;
         }
 
         // Total de horas
