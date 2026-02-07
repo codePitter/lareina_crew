@@ -2113,17 +2113,6 @@ function setupPersonnelModalListeners() {
 -e
 // Inicializar listeners del modal de personal
 
-// ========== FUNCIÓN PARA ALTERNAR ENCARGADO ==========
-function togglePersonManager(id) {
-    const person = personnelData.personnel.find(p => p.id === id);
-    if (!person) return;
-
-    person.isManager = !person.isManager;
-    updatePERSONNELArray();
-    renderPersonnelTable();
-
-    console.log(`${person.name} ahora es ${person.isManager ? 'encargado' : 'cajero'}`);
-}
 function calculateHours(entrada, salida) {
     if (!entrada || !salida) return 0;
 
@@ -2139,6 +2128,4 @@ function calculateHours(entrada, salida) {
     return (end - start) / 60;
 }
 
-// Hacer función global
-window.togglePersonManager = togglePersonManager;
 setupPersonnelModalListeners();

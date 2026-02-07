@@ -188,28 +188,30 @@ body {
 
 .schedule-area {
     flex: 1;
-    padding: 15px 20px;
+    padding: 20px;
     overflow-y: auto;
-    background: var(--bg-secondary);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .schedule-grid {
     display: grid;
-    gap: 6px;
+    gap: 8px;
 }
 
 /* ========== CAJA ROW ========== */
 .header-row {
     display: grid;
     grid-template-columns: 35px 1fr 1fr 1fr;
-    gap: 8px;
-    padding: 6px 10px;
-    background: var(--bg-main);
-    border-bottom: 2px solid var(--primary-blue);
-    margin-bottom: 4px;
+    gap: 10px;
+    padding: 10px 15px;
+    background: linear-gradient(135deg, var(--bg-main) 0%, #f8f9fa 100%);
+    border: 2px solid var(--primary-blue);
+    border-radius: 8px;
+    margin-bottom: 8px;
     position: sticky;
     top: 0;
     z-index: 10;
+    box-shadow: 0 2px 8px var(--shadow-sm);
 }
 
 .caja-number-header {
@@ -243,20 +245,22 @@ body {
 }
 
 .caja-row {
-    background: var(--bg-main);
-    border: 1px solid var(--border-light);
-    border-radius: 6px;
-    padding: 6px 10px;
+    background: linear-gradient(135deg, var(--bg-main) 0%, #fcfcfc 100%);
+    border: 2px solid var(--border-light);
+    border-radius: 8px;
+    padding: 10px 15px;
     display: grid;
     grid-template-columns: 35px 1fr 1fr 1fr;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
     .caja-row:hover {
         border-color: var(--primary-blue);
-        box-shadow: 0 2px 8px var(--shadow-sm);
+        box-shadow: 0 4px 12px var(--shadow-md);
+        transform: translateY(-2px);
     }
 
     .caja-row.perfumeria {
@@ -275,23 +279,31 @@ body {
         }
 
 .caja-number {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: bold;
-    color: var(--primary-blue);
+    color: white;
     text-align: center;
-    padding: 4px;
-    background: var(--light-blue);
-    border: 1px solid var(--border-light);
-    border-radius: 4px;
+    padding: 8px;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    border: 2px solid var(--primary-blue);
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(74, 144, 226, 0.3);
+    transition: all 0.2s;
 }
 
+    .caja-number:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(74, 144, 226, 0.4);
+    }
+
     .caja-number.dynamic-label {
-        background: var(--accent-teal);
+        background: linear-gradient(135deg, var(--accent-teal) 0%, #00ACC1 100%);
+        border-color: var(--accent-teal);
         color: white;
         display: flex;
         flex-direction: column;
         gap: 4px;
-        padding: 2px 4px;
+        padding: 4px 6px;
         position: relative;
     }
 
@@ -355,64 +367,81 @@ body {
 
 /* ========== TURNO BLOCK ========== */
 .turno-block {
-    background: var(--bg-tertiary);
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, #f0f2f5 100%);
     border: 1px solid var(--border-light);
-    border-radius: 4px;
-    padding: 4px 6px;
+    border-radius: 6px;
+    padding: 6px 8px;
+    transition: all 0.2s;
 }
+
+    .turno-block:hover {
+        border-color: var(--primary-blue);
+        background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+    }
 
 .turno-content {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
 }
 
 .name-dropzone {
     background: white;
-    border: 1px dashed var(--border-medium);
-    border-radius: 4px;
-    padding: 3px 6px;
-    min-height: 22px;
+    border: 2px dashed var(--border-medium);
+    border-radius: 6px;
+    padding: 4px 8px;
+    min-height: 28px;
     min-width: 80px;
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-light);
-    font-size: 10px;
+    font-size: 11px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
     .name-dropzone:hover {
         border-color: var(--primary-blue);
         background: var(--light-blue);
+        transform: scale(1.02);
+        box-shadow: 0 2px 6px rgba(74, 144, 226, 0.2);
     }
 
     .name-dropzone.drag-over {
         border-color: var(--primary-blue);
         background: var(--light-blue);
         border-style: solid;
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
     }
 
     .name-dropzone.has-name {
-        background: var(--primary-blue);
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
         border-color: var(--primary-blue);
         color: white;
         font-weight: 600;
         border-style: solid;
         cursor: move;
+        box-shadow: 0 2px 6px rgba(74, 144, 226, 0.3);
     }
+
+        .name-dropzone.has-name:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.4);
+        }
 
         .name-dropzone.has-name.dragging {
             opacity: 0.5;
         }
 
         .name-dropzone.has-name.repeated-warning {
-            background: var(--warning-red);
+            background: linear-gradient(135deg, var(--warning-red) 0%, #D32F2F 100%);
             border-color: var(--warning-red-border);
             color: white;
             font-weight: 700;
@@ -570,6 +599,18 @@ body {
         cursor: pointer;
     }
 
+        .person-chip.selected .schedule-info {
+            color: white;
+        }
+
+        .person-chip.selected .person-hours {
+            color: white;
+        }
+
+        .person-chip.selected .person-name {
+            color: white;
+        }
+
 @keyframes pulse-warning {
     0%, 100% {
         box-shadow: 0 0 0 0 rgba(239, 83, 80, 0.7);
@@ -679,36 +720,38 @@ body {
 
 /* ========== FRANCOS (EN SCHEDULE AREA) ========== */
 .francos-section {
-    margin-top: 20px;
+    margin-top: 25px;
     border-top: 3px solid var(--primary-blue);
-    padding-top: 15px;
+    padding-top: 20px;
 }
 
 .francos-section-title {
-    font-size: 16px;
-    font-weight: bold;
-    color: var(--text-dark);
-    margin-bottom: 10px;
-    padding: 8px 12px;
-    background: linear-gradient(135deg, var(--light-green) 0%, #F1F8E9 100%);
-    border-radius: 6px;
-    border-left: 4px solid var(--primary-green);
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 12px;
+    padding: 10px 15px;
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+    border-radius: 8px;
+    border-left: 5px solid var(--dark-green);
+    box-shadow: 0 3px 10px rgba(102, 187, 106, 0.3);
 }
 
 .francos-dropzone {
-    background: var(--light-green);
+    background: linear-gradient(135deg, var(--light-green) 0%, #F1F8E9 100%);
     border: 2px dashed var(--primary-green);
-    border-radius: 6px;
-    padding: 12px;
-    min-height: 80px;
-    transition: all 0.3s;
+    border-radius: 8px;
+    padding: 15px;
+    min-height: 90px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
     .francos-dropzone.drag-over {
-        border-color: var(--primary-blue);
-        background: var(--light-blue);
+        border-color: var(--dark-green);
+        background: linear-gradient(135deg, #C8E6C9 0%, #A5D6A7 100%);
         border-style: solid;
-        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+        box-shadow: 0 6px 16px rgba(102, 187, 106, 0.4);
+        transform: scale(1.02);
     }
 
 .francos-dropzone-title {
@@ -723,27 +766,29 @@ body {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
     justify-content: flex-start;
 }
 
 .franco-chip {
     background: white;
     border: 2px solid var(--primary-green);
-    border-radius: 6px;
-    padding: 6px 12px;
+    border-radius: 8px;
+    padding: 8px 14px;
     font-weight: 600;
-    font-size: 12px;
+    font-size: 13px;
     color: var(--dark-green);
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(102, 187, 106, 0.2);
 }
 
     .franco-chip:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(67, 160, 71, 0.3);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(102, 187, 106, 0.4);
+        background: linear-gradient(135deg, #ffffff 0%, #F1F8E9 100%);
     }
 
 /* ========== LICENCIAS ========== */
@@ -1655,8 +1700,14 @@ body {
     }
 
 .person-name-row {
+    display: flex;
     align-items: center;
     font-weight: 600;
+}
+
+.person-name {
+    font-size: 11px;
+    color: inherit;
 }
 
 .person-main {
@@ -1674,3 +1725,16 @@ body {
     white-space: nowrap;
 }
 
+
+
+
+/* Badge para cajeros forzados */
+.forced-cajero-badge {
+    background: linear-gradient(135deg, var(--primary-orange) 0%, #FB8C00 100%);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 6px;
+}

@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Horarios</title>
-    <link rel="stylesheet" href="css/style.css?v=2.0">
+    <link rel="stylesheet" href="css/style.css?v=2.2">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
-    <!-- ✅ VERSIÓN CORREGIDA - SIN VACACIONES DUPLICADAS ✅ -->
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -23,6 +22,7 @@
             </div>
 
             <div class="header-right">
+                <!-- Pestañas de días -->
                 <div class="day-tabs">
                     <button class="day-tab active" data-day="0">LUN</button>
                     <button class="day-tab" data-day="1">MAR</button>
@@ -56,10 +56,6 @@
                     <button class="menu-item" onclick="window.location.href='horarios-cajeros.html'">
                         <span class="menu-icon">📊</span>
                         <span class="menu-text">Ver Horarios por Cajero</span>
-                    </button>
-                    <button class="menu-item" onclick="window.location.href='encargados.html'">
-                        <span class="menu-icon">👔</span>
-                        <span class="menu-text">Horarios de Encargados</span>
                     </button>
                     <button class="menu-item" onclick="window.location.href='codigos.html'">
                         <span class="menu-icon">🔢</span>
@@ -115,15 +111,16 @@
             <button id="managePersonnel"></button>
             <button id="clearData"></button>
         </div>
+
         <!-- Main Content -->
         <div class="main-content">
             <!-- Schedule Area -->
-            <div class="schedule-area">
+            <div class="schedule-area" id="scheduleArea">
                 <div class="schedule-grid" id="scheduleGrid">
                     <!-- Las 26 cajas se generarán dinámicamente con JavaScript -->
                 </div>
 
-                <!-- Francos - Ahora en el área de schedule -->
+                <!-- Francos -->
                 <div class="francos-section">
                     <div class="francos-section-title">🏖️ Francos</div>
                     <div class="francos-dropzone" id="francosDropzone" data-dropzone="francos">
@@ -138,14 +135,14 @@
             <div class="sidebar">
                 <!-- Personal Disponible -->
                 <div class="sidebar-section">
-                    <div class="sidebar-title">👥 Personal Disponible</div>
+                    <div class="sidebar-title" id="personnelTitle">👥 Personal Disponible</div>
                     <div id="personnelList" class="personnel-list">
                         <!-- Se generará dinámicamente -->
                     </div>
                 </div>
 
                 <!-- Licencias -->
-                <div class="sidebar-section">
+                <div class="sidebar-section" id="licenciasSection">
                     <div class="sidebar-title">🏥 Licencias</div>
                     <div class="licencias-dropzone" id="licenciasDropzone" data-dropzone="licencias">
                         <div class="licencias-dropzone-title">Arrastra aquí para asignar licencia</div>
@@ -155,8 +152,8 @@
                     </div>
                 </div>
 
-                <!-- ⭐ ÚNICA SECCIÓN DE VACACIONES ⭐ -->
-                <div class="sidebar-section">
+                <!-- Vacaciones -->
+                <div class="sidebar-section" id="vacacionesSection">
                     <div class="sidebar-title">✈️ Vacaciones</div>
                     <div class="vacaciones-dropzone" id="vacacionesDropzone" data-dropzone="vacaciones">
                         <div class="vacaciones-dropzone-title">Arrastra aquí para asignar vacaciones</div>
@@ -165,7 +162,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- ⭐ FIN ÚNICA SECCIÓN DE VACACIONES ⭐ -->
             </div>
         </div>
     </div>
@@ -200,7 +196,6 @@
                                 <th>Nombre</th>
                                 <th>Estado</th>
                                 <th>Contrato</th>
-                                <th>Rol</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -214,5 +209,6 @@
     </div>
 
     <script src="js/main.js?v=2.1"></script>
+    <script src="js/apply-styles.js?v=1.0"></script>
 </body>
 </html>
