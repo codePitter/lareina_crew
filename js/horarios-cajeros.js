@@ -3,6 +3,7 @@ let PERSONNEL = [];
 let scheduleData = {};
 let scheduleCodes = {}; // Códigos cargados desde /crew/Schedule codes.json  { "08:00-13:00+17:00-21:00": { codigo: "00353", alternativas: [...] } }
 let viewMode = 'codes'; // 'codes' o 'schedules'
+let managersSchedule = {}; // Horarios de encargados cargados desde localStorage
 
 // ========== CARGA DE DATOS ==========
 async function loadPersonnelFromJSON() {
@@ -13,10 +14,10 @@ async function loadPersonnelFromJSON() {
         }
         const data = await response.json();
         PERSONNEL = data.personnel.filter(person => person.active);
-        console.log(`? Personal cargado: ${PERSONNEL.length} personas`);
+        console.log(`✅ Personal cargado: ${PERSONNEL.length} personas`);
         return true;
     } catch (error) {
-        console.error('? Error al cargar personal:', error);
+        console.error('❌ Error al cargar personal:', error);
         return false;
     }
 }
@@ -26,11 +27,25 @@ function loadScheduleFromLocalStorage() {
         const savedData = localStorage.getItem('scheduleData');
         if (savedData) {
             scheduleData = JSON.parse(savedData);
-            console.log('? Horarios cargados del localStorage');
+            console.log('✅ Horarios cargados del localStorage');
             return true;
         }
     } catch (error) {
         console.error('Error al cargar horarios:', error);
+    }
+    return false;
+}
+
+function loadManagersScheduleFromLocalStorage() {
+    try {
+        const savedData = localStorage.getItem('managersSchedule');
+        if (savedData) {
+            managersSchedule = JSON.parse(savedData);
+            console.log('✅ Horarios de encargados cargados del localStorage');
+            return true;
+        }
+    } catch (error) {
+        console.error('❌ Error al cargar horarios de encargados:', error);
     }
     return false;
 }
@@ -51,9 +66,9 @@ async function loadScheduleCodesFromJSON() {
     }
 }
 
-// ========== GENERACI�N DE C�DIGOS ==========
+// ========== GENERACIÓN DE CÓDIGOS ==========
 function getScheduleSignature(daySchedule) {
-    // Crear una firma �nica para identificar el horario
+    // Crear una firma única para identificar el horario
     const signatures = [];
 
     // Recorrer todas las cajas y turnos
@@ -74,23 +89,24 @@ function getScheduleSignature(daySchedule) {
         return null;
     }
 
-    // Ordenar y unir para crear firma �nica
+    // Ordenar y unir para crear firma única
     signatures.sort();
     return signatures.join(' / ');
 }
 
-function calculateHours(scheduleSignature) {
-    if (!scheduleSignature || typeof scheduleSignature !== 'string') return 0;
+function calculateHours(timeRange) {
+    // Puede recibir: "08:00-16:00" o "08:00-13:00+17:00-21:00"
+    if (!timeRange || typeof timeRange !== 'string') return 0;
 
-    const segments = scheduleSignature.split('+');
+    const segments = timeRange.split('+');
     let totalMinutes = 0;
 
     segments.forEach(segment => {
         const [start, end] = segment.split('-');
         if (!start || !end) return;
 
-        const [sh, sm] = start.split(':').map(Number);
-        const [eh, em] = end.split(':').map(Number);
+        const [sh, sm] = start.trim().split(':').map(Number);
+        const [eh, em] = end.trim().split(':').map(Number);
 
         if (
             isNaN(sh) || isNaN(sm) ||
@@ -107,7 +123,6 @@ function calculateHours(scheduleSignature) {
 
     return totalMinutes / 60;
 }
-
 
 function lookupCode(signature) {
     // signature formato: "08:00-13:00+17:00-21:00" o "08:00-16:00"
@@ -132,25 +147,28 @@ function lookupCode(signature) {
     };
 }
 
-function getCodeForPerson(personId, day) {
+function getCodeForPerson(personName, day) {
     if (!scheduleData[day]) {
         return { code: '-', hours: 0, schedule: '-', type: 'empty' };
     }
 
     const dayData = scheduleData[day];
 
+    // 🔹 IMPORTANTE: personName es el NOMBRE completo de la persona
+    // porque en index.html se guarda con person.name
+
     // Verificar francos
-    if (dayData.francos && dayData.francos.includes(personId)) {
+    if (dayData.francos && dayData.francos.includes(personName)) {
         return { code: 'F', hours: 0, schedule: 'Franco', type: 'franco' };
     }
 
     // Verificar licencias
-    if (dayData.licencias && dayData.licencias.includes(personId)) {
+    if (dayData.licencias && dayData.licencias.includes(personName)) {
         return { code: 'L', hours: 0, schedule: 'Licencia', type: 'licencia' };
     }
 
     // Verificar vacaciones
-    if (dayData.vacaciones && dayData.vacaciones.includes(personId)) {
+    if (dayData.vacaciones && dayData.vacaciones.includes(personName)) {
         return { code: 'V', hours: 0, schedule: 'Vacaciones', type: 'vacaciones' };
     }
 
@@ -160,7 +178,8 @@ function getCodeForPerson(personId, day) {
     for (let caja in dayData.cajas) {
         for (let turno in dayData.cajas[caja]) {
             const turnoData = dayData.cajas[caja][turno];
-            if (turnoData.name === personId) {
+            // 🔹 Aquí comparamos con personName (que es el nombre completo)
+            if (turnoData.name === personName) {
                 const entrada = turnoData.entrada || '';
                 const salida = turnoData.salida || '';
                 if (entrada && salida) {
@@ -181,8 +200,33 @@ function getCodeForPerson(personId, day) {
     return { ...lookupCode(signature), type: 'normal' };
 }
 
+function getCodeForManager(manager, day) {
+    // 👔 Función para obtener código y horario de un encargado
+    if (!managersSchedule[day]) {
+        return { code: '-', hours: 0, schedule: '-', type: 'empty' };
+    }
 
-// ========== GENERACI�N DE LA TABLA ==========
+    // Obtener los turnos del encargado
+    let segments = [];
+    for (let turno in manager.shifts) {
+        const shift = manager.shifts[turno];
+        if (shift.entrada && shift.salida) {
+            segments.push(`${shift.entrada}-${shift.salida}`);
+        }
+    }
+
+    if (segments.length === 0) {
+        return { code: '-', hours: 0, schedule: '-', type: 'empty' };
+    }
+
+    // Ordenar y crear firma
+    segments.sort();
+    const signature = segments.join('+');
+
+    return { ...lookupCode(signature), type: 'manager' };
+}
+
+// ========== GENERACIÓN DE LA TABLA ==========
 function generateScheduleTable() {
     const tbody = document.getElementById('scheduleTableBody');
     tbody.innerHTML = '';
@@ -194,7 +238,8 @@ function generateScheduleTable() {
 
     // Aplicar filtros
     if (contractFilter !== 'all') {
-        filteredPersonnel = filteredPersonnel.filter(p => p.contractType === contractFilter);
+        // 🔹 IMPORTANTE: comparar con weeklyHours, no con contractType
+        filteredPersonnel = filteredPersonnel.filter(p => p.weeklyHours === parseInt(contractFilter));
     }
 
     if (searchText) {
@@ -211,7 +256,7 @@ function generateScheduleTable() {
         return a.name.localeCompare(b.name);
     });
 
-    // Generar filas
+    // ========== AGREGAR CAJEROS ==========
     filteredPersonnel.forEach(person => {
         const row = document.createElement('tr');
         row.className = person.contractType === 'Full-time' ? 'full-time' : 'part-time';
@@ -219,7 +264,7 @@ function generateScheduleTable() {
         // Contrato
         const contractCell = document.createElement('td');
         contractCell.className = 'contract-cell';
-        contractCell.innerHTML = `<span class="contract-badge ${person.contractType === 'Full-time' ? 'full-time' : 'part-time'}">${person.contractType}</span>`;
+        contractCell.innerHTML = `<span class="contract-badge ${person.contractType === 'Full-time' ? 'full-time' : 'part-time'}">${person.contractType} - ${person.weeklyHours}hs</span>`;
         row.appendChild(contractCell);
 
         // ID
@@ -237,6 +282,7 @@ function generateScheduleTable() {
         // Días de la semana
         let totalWeekHours = 0;
         for (let day = 0; day < 7; day++) {
+            // 🔹 IMPORTANTE: pasar person.name (el nombre completo)
             const codeInfo = getCodeForPerson(person.name, day);
             const dayCell = document.createElement('td');
             dayCell.className = `code-cell ${codeInfo.type}`;
@@ -294,6 +340,133 @@ function generateScheduleTable() {
         tbody.appendChild(row);
     });
 
+    // ========== AGREGAR ENCARGADOS 👔 ==========
+    if (managersSchedule && Object.keys(managersSchedule).length > 0) {
+        // Recopilar todos los encargados únicos
+        const allManagers = new Map();
+
+        for (let day in managersSchedule) {
+            const dayData = managersSchedule[day];
+            if (dayData.managers) {
+                dayData.managers.forEach(manager => {
+                    if (!allManagers.has(manager.name)) {
+                        allManagers.set(manager.name, manager);
+                    }
+                });
+            }
+        }
+
+        // Filtrar por búsqueda si aplica
+        let filteredManagers = Array.from(allManagers.values());
+
+        if (searchText) {
+            filteredManagers = filteredManagers.filter(m =>
+                m.name.toLowerCase().includes(searchText)
+            );
+        }
+
+        // Ordenar por nombre
+        filteredManagers.sort((a, b) => a.name.localeCompare(b.name));
+
+        // Agregar filas de encargados
+        filteredManagers.forEach(manager => {
+            const row = document.createElement('tr');
+            row.className = 'manager-row'; // Clase especial para encargados
+
+            // Contrato (Encargado)
+            const contractCell = document.createElement('td');
+            contractCell.className = 'contract-cell manager-badge';
+            contractCell.innerHTML = `<span class="contract-badge manager-badge">👔 Encargado - 48hs</span>`;
+            row.appendChild(contractCell);
+
+            // ID
+            const idCell = document.createElement('td');
+            idCell.className = 'id-cell';
+            idCell.textContent = '-';
+            row.appendChild(idCell);
+
+            // Nombre con icono
+            const nameCell = document.createElement('td');
+            nameCell.className = 'name-cell manager-name';
+            nameCell.textContent = manager.name;
+            row.appendChild(nameCell);
+
+            // Días de la semana
+            let totalWeekHours = 0;
+            for (let day = 0; day < 7; day++) {
+                let dayData = null;
+
+                // Buscar los datos del encargado para este día
+                if (managersSchedule[day]) {
+                    const found = managersSchedule[day].managers.find(m => m.name === manager.name);
+                    if (found) {
+                        dayData = found;
+                    }
+                }
+
+                const dayCell = document.createElement('td');
+
+                if (dayData) {
+                    // Obtener código y horarios
+                    const codeInfo = getCodeForManager(dayData, day);
+
+                    dayCell.className = `code-cell ${codeInfo.type}`;
+
+                    if (viewMode === 'codes') {
+                        dayCell.textContent = codeInfo.code;
+                        dayCell.title = codeInfo.schedule;
+                    } else {
+                        dayCell.innerHTML = `
+                            <div class="code-with-schedule">
+                                <div class="code-part">${codeInfo.code}</div>
+                                <div class="schedule-part">${codeInfo.schedule}</div>
+                            </div>
+                        `;
+                        dayCell.classList.add('schedule-view');
+                    }
+
+                    totalWeekHours += Number(codeInfo.hours) || 0;
+                } else {
+                    dayCell.className = 'code-cell empty';
+                    dayCell.textContent = '-';
+                }
+
+                row.appendChild(dayCell);
+            }
+
+            // Total de horas (Encargados siempre 48hs)
+            const totalCell = document.createElement('td');
+            totalCell.className = 'total-cell manager-hours';
+
+            if (totalWeekHours < 48) {
+                totalCell.classList.add('under-hours');
+            } else if (totalWeekHours > 48) {
+                totalCell.classList.add('over-hours');
+            }
+
+            totalCell.textContent = `${totalWeekHours}h / 48h`;
+            row.appendChild(totalCell);
+
+            // Horas extras
+            const extraHoursCell = document.createElement('td');
+            extraHoursCell.className = 'extra-hours-cell';
+            const extraHours = totalWeekHours - 48;
+
+            if (extraHours > 0) {
+                extraHoursCell.classList.add('has-extra');
+                extraHoursCell.textContent = `+${extraHours}h`;
+            } else if (extraHours < 0) {
+                extraHoursCell.classList.add('has-deficit');
+                extraHoursCell.textContent = `${extraHours}h`;
+            } else {
+                extraHoursCell.textContent = '0h';
+            }
+            row.appendChild(extraHoursCell);
+
+            tbody.appendChild(row);
+        });
+    }
+
     updateStats(filteredPersonnel.length);
 }
 
@@ -303,12 +476,12 @@ function updateStats(filteredCount) {
     document.getElementById('activeEmployees').textContent = `Mostrando: ${filteredCount}`;
 }
 
-// ========== LEYENDA DE C�DIGOS ==========
+// ========== LEYENDA DE CÓDIGOS ==========
 function generateLegend() {
     const legendContent = document.getElementById('legendContent');
     legendContent.innerHTML = '';
 
-    // Agregar c�digos especiales
+    // Agregar códigos especiales
     const specialCodes = [
         { code: 'F', schedule: 'Franco', hours: 0 },
         { code: 'L', schedule: 'Licencia', hours: 0 },
@@ -321,7 +494,7 @@ function generateLegend() {
         legendContent.appendChild(item);
     });
 
-    // Agregar c�digos de horarios
+    // Agregar códigos de horarios
     const sortedCodes = Object.values(scheduleCodes).sort((a, b) => a.code - b.code);
     sortedCodes.forEach(codeData => {
         const item = createLegendItem(codeData.code, codeData.schedule, codeData.hours);
@@ -342,7 +515,7 @@ function createLegendItem(code, schedule, hours) {
     return item;
 }
 
-// ========== MODAL DE C�DIGOS ==========
+// ========== MODAL DE CÓDIGOS ==========
 function openCodesModal() {
     const modal = document.getElementById('codesModal');
     modal.classList.add('show');
@@ -382,19 +555,20 @@ function exportToExcel() {
 
     // Encabezados
     scheduleData.push([
-        'Contrato', 'ID', 'Cajero/a', 'Lun', 'Mar', 'Mi�', 'Jue', 'Vie', 'S�b', 'Dom', 'Total Hrs'
+        'Contrato', 'ID', 'Cajero/a', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom', 'Total Hrs'
     ]);
 
     // Datos
     PERSONNEL.forEach(person => {
         const row = [
-            person.weeklyHours || 48,
+            `${person.contractType} - ${person.weeklyHours}hs`,
             person.id,
             person.name
         ];
 
         let totalWeekHours = 0;
         for (let day = 0; day < 7; day++) {
+            // 🔹 IMPORTANTE: pasar person.name (el nombre completo)
             const codeInfo = getCodeForPerson(person.name, day);
             row.push(codeInfo.code);
             totalWeekHours += codeInfo.hours;
@@ -404,27 +578,69 @@ function exportToExcel() {
         scheduleData.push(row);
     });
 
+    // Agregar encargados
+    if (managersSchedule && Object.keys(managersSchedule).length > 0) {
+        scheduleData.push([]); // Fila vacía separadora
+        scheduleData.push(['👔 ENCARGADOS', '', '', '', '', '', '', '', '', '', '']);
+
+        const allManagers = new Map();
+        for (let day in managersSchedule) {
+            const dayData = managersSchedule[day];
+            if (dayData.managers) {
+                dayData.managers.forEach(manager => {
+                    if (!allManagers.has(manager.name)) {
+                        allManagers.set(manager.name, manager);
+                    }
+                });
+            }
+        }
+
+        Array.from(allManagers.values()).sort((a, b) => a.name.localeCompare(b.name)).forEach(manager => {
+            const row = [
+                '👔 Encargado - 48hs',
+                '-',
+                manager.name
+            ];
+
+            let totalWeekHours = 0;
+            for (let day = 0; day < 7; day++) {
+                let codeInfo = { code: '-', hours: 0 };
+                if (managersSchedule[day]) {
+                    const found = managersSchedule[day].managers.find(m => m.name === manager.name);
+                    if (found) {
+                        codeInfo = getCodeForManager(found, day);
+                    }
+                }
+                row.push(codeInfo.code);
+                totalWeekHours += codeInfo.hours;
+            }
+
+            row.push(`${totalWeekHours}h / 48h`);
+            scheduleData.push(row);
+        });
+    }
+
     const ws1 = XLSX.utils.aoa_to_sheet(scheduleData);
     XLSX.utils.book_append_sheet(wb, ws1, 'Horarios');
 
-    // Hoja 2: Leyenda de C�digos
+    // Hoja 2: Leyenda de Códigos
     const legendData = [];
-    legendData.push(['C�digo', 'Horario', 'Horas']);
+    legendData.push(['Código', 'Horario', 'Horas']);
 
-    // C�digos especiales
+    // Códigos especiales
     legendData.push(['F', 'Franco', '0h']);
     legendData.push(['L', 'Licencia', '0h']);
     legendData.push(['V', 'Vacaciones', '0h']);
     legendData.push(['-', 'Sin asignar', '0h']);
 
-    // C�digos de horarios
+    // Códigos de horarios
     const sortedCodes = Object.values(scheduleCodes).sort((a, b) => a.code - b.code);
     sortedCodes.forEach(codeData => {
         legendData.push([codeData.code, codeData.schedule, `${codeData.hours}h`]);
     });
 
     const ws2 = XLSX.utils.aoa_to_sheet(legendData);
-    XLSX.utils.book_append_sheet(wb, ws2, 'C�digos');
+    XLSX.utils.book_append_sheet(wb, ws2, 'Códigos');
 
     // Obtener fecha
     const dateInput = document.getElementById('weekDate');
@@ -434,7 +650,7 @@ function exportToExcel() {
     XLSX.writeFile(wb, `Horarios_Cajeros_${selectedDate}.xlsx`);
 }
 
-// ========== EXPORTAR/IMPORTAR C�DIGOS ==========
+// ========== EXPORTAR/IMPORTAR CÓDIGOS ==========
 function exportCodesToJSON() {
     const dataStr = JSON.stringify(scheduleCodes, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
@@ -444,7 +660,7 @@ function exportCodesToJSON() {
     link.download = `codigos_horarios_${new Date().toISOString().split('T')[0]}.json`;
     link.click();
     URL.revokeObjectURL(url);
-    alert('? C�digos exportados correctamente');
+    alert('✅ Códigos exportados correctamente');
 }
 
 function importCodesFromJSON() {
@@ -465,13 +681,13 @@ function importCodesFromJSON() {
                     renderCodesTable();
                     generateScheduleTable();
                     generateLegend();
-                    alert('? C�digos importados correctamente');
+                    alert('✅ Códigos importados correctamente');
                 } else {
-                    alert('? El archivo no tiene el formato correcto');
+                    alert('❌ El archivo no tiene el formato correcto');
                 }
             } catch (error) {
                 console.error('Error al importar:', error);
-                alert('? Error al leer el archivo');
+                alert('❌ Error al leer el archivo');
             }
         };
         reader.readAsText(file);
@@ -567,16 +783,21 @@ function setupEventListeners() {
             monday.setDate(selectedDate.getDate() - daysToSubtract);
             input.valueAsDate = monday;
         }
+
+        // Recargar datos al cambiar fecha
+        loadManagersScheduleFromLocalStorage();
+        generateScheduleTable();
     });
 }
 
-// ========== INICIALIZACI�N ==========
+// ========== INICIALIZACIÓN ==========
 document.addEventListener('DOMContentLoaded', async function () {
-    console.log('?? Iniciando sistema de horarios por cajero...');
+    console.log('🚀 Iniciando sistema de horarios por cajero...');
 
     // Cargar datos
     await loadPersonnelFromJSON();
     loadScheduleFromLocalStorage();
+    loadManagersScheduleFromLocalStorage(); // 👔 Cargar horarios de encargados
     await loadScheduleCodesFromJSON();
 
     // Inicializar interfaz
@@ -585,7 +806,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     generateScheduleTable();
     generateLegend();
 
-    console.log('? Sistema iniciado correctamente');
+    console.log('✅ Sistema iniciado correctamente');
 });
 
 
@@ -670,7 +891,9 @@ function setupHamburgerMenu() {
             closeMenu();
         }
     });
-}// ========== VARIABLES PARA MODAL DE CÓDIGOS ==========
+}
+
+// ========== VARIABLES PARA MODAL DE CÓDIGOS ==========
 let currentEditingSchedule = null;
 let filteredCodes = null;
 
@@ -895,3 +1118,37 @@ function saveCodesToLocalStorage() {
 // ========== HACER FUNCIONES GLOBALES ==========
 window.openEditCodeModal = openEditCodeModal;
 window.deleteCodeConfirm = deleteCodeConfirm;
+
+// ========== FUNCIÓN AUXILIAR PARA OBTENER CÓDIGOS USADOS ==========
+function getUsedCodesThisWeek() {
+    const usedCodes = new Set();
+
+    for (let day = 0; day < 7; day++) {
+        if (!scheduleData[day]) continue;
+
+        const dayData = scheduleData[day];
+
+        // Recorrer todas las cajas
+        for (let caja in dayData.cajas) {
+            for (let turno in dayData.cajas[caja]) {
+                const turnoData = dayData.cajas[caja][turno];
+                if (turnoData.name && turnoData.entrada && turnoData.salida) {
+                    const signature = `${turnoData.entrada}-${turnoData.salida}`;
+                    usedCodes.add(signature);
+                }
+            }
+        }
+    }
+
+    // Convertir a array de objetos con código, horario y horas
+    const result = Array.from(usedCodes).map(signature => {
+        const codeInfo = lookupCode(signature);
+        return {
+            code: codeInfo.code,
+            schedule: codeInfo.schedule,
+            hours: codeInfo.hours
+        };
+    });
+
+    return result;
+}
