@@ -13,25 +13,26 @@
         <!-- Header -->
         <div class="header">
             <div class="header-left">
-                <h1>👔 Horarios de Encargados</h1>
+                <h1>👔 Crew Encargados</h1>
                 <div class="date-selector">
                     <label>📅</label>
                     <input type="date" id="weekDate" value="">
                 </div>
+                <!-- Pestañas de días -->
+<div class="day-tabs">
+    <button class="day-tab active" data-day="0">LUN</button>
+    <button class="day-tab" data-day="1">MAR</button>
+    <button class="day-tab" data-day="2">MIÉ</button>
+    <button class="day-tab" data-day="3">JUE</button>
+    <button class="day-tab" data-day="4">VIE</button>
+    <button class="day-tab" data-day="5">SÁB</button>
+    <button class="day-tab" data-day="6">DOM</button>
+</div>
+
             </div>
 
             <div class="header-right">
-                <!-- Pestañas de días -->
-                <div class="day-tabs">
-                    <button class="day-tab active" data-day="0">LUN</button>
-                    <button class="day-tab" data-day="1">MAR</button>
-                    <button class="day-tab" data-day="2">MIÉ</button>
-                    <button class="day-tab" data-day="3">JUE</button>
-                    <button class="day-tab" data-day="4">VIE</button>
-                    <button class="day-tab" data-day="5">SÁB</button>
-                    <button class="day-tab" data-day="6">DOM</button>
-                </div>
-
+                
                 <!-- Botón Hamburguesa -->
                 <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menú">
                     <span></span>
@@ -58,7 +59,7 @@
                     </button>
                     <button class="menu-item" onclick="window.location.href='horarios-cajeros.html'">
                         <span class="menu-icon">📊</span>
-                        <span class="menu-text">Ver Horarios por Cajero</span>
+                        <span class="menu-text">Planilla de Horarios</span>
                     </button>
                     <button class="menu-item" onclick="window.location.href='codigos.html'">
                         <span class="menu-icon">🔢</span>

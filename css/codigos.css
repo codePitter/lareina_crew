@@ -63,6 +63,7 @@ body {
         font-weight: 700;
         color: white;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        width: 300px;
     }
 
 .header-left {
@@ -103,6 +104,7 @@ body {
 .btn-import {
     background: var(--primary-orange);
     color: white;
+    margin-right:10px;
 }
 
     .btn-import:hover {
@@ -112,6 +114,7 @@ body {
 .btn-export {
     background: var(--primary-green);
     color: white;
+    margin-right: 10px;
 }
 
     .btn-export:hover {
@@ -121,6 +124,7 @@ body {
 .btn-excel {
     background: #10b981;
     color: white;
+    margin-right: 10px;
 }
 
     .btn-excel:hover {
@@ -130,6 +134,7 @@ body {
 .btn-print {
     background: var(--accent-teal);
     color: white;
+    margin-right: 10px;
 }
 
     .btn-print:hover {
