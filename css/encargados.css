@@ -980,7 +980,7 @@ body {
     top: 0;
     right: -350px;
     width: 350px;
-    height: 100vh;
+    height: auto;
     background: var(--bg-main);
     box-shadow: -4px 0 15px rgba(0, 0, 0, 0.2);
     z-index: 1000;
@@ -1036,7 +1036,7 @@ body {
 
 .menu-item {
     width: 100%;
-    padding: 14px 18px;
+    padding: 2px 4px;
     background: var(--bg-secondary);
     border: 1px solid var(--border-light);
     border-radius: 8px;
