@@ -2130,7 +2130,6 @@ function setupPersonnelModalListeners() {
 // ========== AGREGAR A LA INICIALIZACIÓN ==========
 // Esta función debe llamarse después de que se cargue el DOM
 // Se agregará al final del archivo main.js existente
--e
 // Inicializar listeners del modal de personal
 
 function calculateHours(entrada, salida) {
