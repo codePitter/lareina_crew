@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Personal</title>
+    <link rel="stylesheet" href="css/personal.css?v=1.0">
+    <script src="js/unified-storage.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>👥 Gestión de Personal</h1>
+            </div>
+
+            <div class="header-right">
+                <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menú">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menú Lateral -->
+        <div class="side-menu" id="sideMenu">
+            <div class="side-menu-header">
+                <h2>⚙️ Opciones</h2>
+                <button class="close-menu-btn" id="closeMenuBtn">&times;</button>
+            </div>
+
+            <div class="side-menu-content">
+                <!-- Sección Navegación -->
+                <div class="menu-section">
+                    <div class="menu-section-title">📍 Navegación</div>
+                    <button class="menu-item" onclick="window.location.href='index.html'">
+                        <span class="menu-icon">📋</span>
+                        <span class="menu-text">Crew Horarios</span>
+                    </button>
+                    <button class="menu-item" onclick="window.location.href='encargados.html'">
+                        <span class="menu-icon">👔</span>
+                        <span class="menu-text">Crew Encargados</span>
+                    </button>
+                    <button class="menu-item" onclick="window.location.href='horarios-cajeros.html'">
+                        <span class="menu-icon">📊</span>
+                        <span class="menu-text">Planilla de Horarios</span>
+                    </button>
+                    <button class="menu-item" onclick="window.location.href='codigos.html'">
+                        <span class="menu-icon">🔢</span>
+                        <span class="menu-text">Gestionar Códigos</span>
+                    </button>
+                </div>
+
+                <!-- Sección Acciones -->
+                <div class="menu-section">
+                    <div class="menu-section-title">🔧 Acciones</div>
+                    <button class="menu-item" id="menuAddPerson">
+                        <span class="menu-icon">➕</span>
+                        <span class="menu-text">Agregar Personal</span>
+                    </button>
+                    <button class="menu-item" id="menuExportJSON">
+                        <span class="menu-icon">📥</span>
+                        <span class="menu-text">Exportar JSON</span>
+                    </button>
+                    <button class="menu-item" id="menuImportJSON">
+                        <span class="menu-icon">📂</span>
+                        <span class="menu-text">Importar JSON</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overlay para cerrar menú -->
+        <div class="menu-overlay" id="menuOverlay"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label>Filtrar por estado:</label>
+                    <select id="statusFilter">
+                        <option value="all">Todos</option>
+                        <option value="active">Activos</option>
+                        <option value="inactive">Inactivos</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Filtrar por tipo:</label>
+                    <select id="typeFilter">
+                        <option value="all">Todos</option>
+                        <option value="manager">Encargados</option>
+                        <option value="cashier">Cajeros</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Filtrar por contrato:</label>
+                    <select id="contractFilter">
+                        <option value="all">Todos</option>
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Buscar:</label>
+                    <input type="text" id="searchInput" placeholder="Nombre o ID...">
+                </div>
+
+                <div class="stats">
+                    <span id="totalPersonnel">Total: 0</span>
+                    <span id="activePersonnel">Activos: 0</span>
+                    <span id="managersCount">Encargados: 0</span>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="action-buttons">
+                <button class="btn-primary" id="addPersonBtn">➕ Agregar Personal</button>
+                <button class="btn-secondary" id="exportJSONBtn">💾 Exportar JSON</button>
+                <button class="btn-secondary" id="importJSONBtn">📂 Importar JSON</button>
+            </div>
+
+            <!-- Tabla de personal -->
+            <div class="personnel-table-container">
+                <table class="personnel-table" id="personnelTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Estado</th>
+                            <th>Tipo</th>
+                            <th>Contrato</th>
+                            <th>Horas Semanales</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="personnelTableBody">
+                        <!-- Se llenará dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar/Editar Personal -->
+    <div id="personModal" class="modal">
+        <div class="modal-content modal-medium">
+            <div class="modal-header">
+                <h2 id="personModalTitle">➕ Agregar Personal</h2>
+                <span class="close-modal" id="closePersonModal">&times;</span>
+            </div>
+
+            <div class="modal-body">
+                <form id="personForm">
+                    <div class="form-group">
+                        <label for="personId">ID *</label>
+                        <input type="number" id="personId" placeholder="Ej: 1" required>
+                        <small>Número único de identificación</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="personName">Nombre Completo *</label>
+                        <input type="text" id="personName" placeholder="Ej: García María" required>
+                        <small>Apellido Nombre</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="personActive">Estado *</label>
+                        <select id="personActive" required>
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="personIsManager">Tipo *</label>
+                        <select id="personIsManager" required>
+                            <option value="false">Cajero/a</option>
+                            <option value="true">Encargado/a</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="personContract">Tipo de Contrato *</label>
+                        <select id="personContract" required>
+                            <option value="Full-time">Full-time (48h)</option>
+                            <option value="Part-time">Part-time (30h o 36h)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="personHours">Horas Semanales *</label>
+                        <select id="personHours" required>
+                            <option value="48">48 horas</option>
+                            <option value="36">36 horas</option>
+                            <option value="30">30 horas</option>
+                        </select>
+                        <small>Selecciona las horas semanales según el contrato</small>
+                    </div>
+
+                    <div class="modal-form-actions">
+                        <button type="button" class="btn-cancel" id="cancelPersonEdit">Cancelar</button>
+                        <button type="submit" class="btn-save">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input oculto para importar archivo -->
+    <input type="file" id="importFileInput" accept=".json" style="display: none;">
+
+    <script src="js/personal.js?v=1.0"></script>
+</body>
+</html>

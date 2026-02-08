@@ -6,6 +6,8 @@
     <title>Horarios por Cajero/a</title>
     <link rel="stylesheet" href="css/horarios-cajeros.css?v=2.1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="js/personnel-manager.js"></script>
+    <script src="js/unified-storage.js"></script>
 </head>
 <body>
     <div class="container">
@@ -48,6 +50,10 @@
                         <span class="menu-icon">👔</span>
                         <span class="menu-text">Crew Encargados</span>
                     </button>
+                    <button class="menu-item" onclick="window.location.href='personal.html'">
+                        <span class="menu-icon">👥</span>
+                        <span class="menu-text">Gestionar Personal</span>
+                    </button>
                     <button class="menu-item" onclick="window.location.href='codigos.html'">
                         <span class="menu-icon">🔢</span>
                         <span class="menu-text">Gestionar Códigos</span>
@@ -64,7 +70,7 @@
                     <button class="menu-item" id="menuSaveSchedule">
                         <span class="menu-icon">💾</span>
                         <span class="menu-text">Guardar</span>
-                    </button>
+                    </button>                    
                     <button class="menu-item" id="menuManageCodes">
                         <span class="menu-icon">⚙️</span>
                         <span class="menu-text">Gestionar Códigos</span>

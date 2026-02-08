@@ -12,82 +12,82 @@ let draggedName = null;
 
 // ========== CARGA DE ENCARGADOS Y PERSONAL ==========
 async function loadManagersFromJSON() {
-    try {
-        const response = await fetch('crew/personnel.json');
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    // Intentar auto-migrar si no hay personal
+    await PersonnelManager.autoMigrateIfNeeded();
 
-        const data = await response.json();
+    // Cargar encargados activos
+    const managers = PersonnelManager.getActiveManagers();
+    MANAGERS_LIST = managers.map(person => person.name);
 
-        MANAGERS_LIST = data.personnel
-            .filter(person => person.active && person.isManager)
-            .map(person => person.name)
-            .sort();
+    // Cargar todo el personal activo
+    const allPersonnel = PersonnelManager.getAllActive();
+    ALL_PERSONNEL_LIST = allPersonnel.map(person => person.name);
 
-        ALL_PERSONNEL_LIST = data.personnel
-            .filter(person => person.active)
-            .map(person => person.name)
-            .sort();
+    console.log(`✅ Encargados cargados desde PersonnelManager: ${MANAGERS_LIST.length}`);
+    console.log(`✅ Personal total desde PersonnelManager: ${ALL_PERSONNEL_LIST.length}`);
 
-        console.log(`✅ Encargados cargados: ${MANAGERS_LIST.length}`);
-        console.log(`✅ Personal total: ${ALL_PERSONNEL_LIST.length}`);
-        return true;
-    } catch (error) {
-        console.error('❌ Error al cargar personal:', error);
-        MANAGERS_LIST = [];
-        ALL_PERSONNEL_LIST = [];
-        return false;
-    }
+    return MANAGERS_LIST.length > 0;
+}
+
+// AGREGAR estas funciones helper para obtener datos completos del personal
+function getManagersData() {
+    return PersonnelManager.getActiveManagers();
+}
+
+function getAllPersonnelData() {
+    return PersonnelManager.getAllActive();
+}
+
+function getPersonByName(name) {
+    return PersonnelManager.getPersonByName(name);
 }
 
 // ========== ALMACENAMIENTO LOCAL ==========
 function saveToLocalStorage() {
     try {
-        localStorage.setItem('managersScheduleData', JSON.stringify(managersScheduleData));
-        console.log('💾 Datos guardados');
+        // Guardar en el sistema unificado
+        UnifiedStorage.updateSection('encargados', 'scheduleData', managersScheduleData);
+        console.log('✅ Horarios de encargados guardados');
     } catch (error) {
-        console.error('Error al guardar:', error);
+        console.error('❌ Error al guardar:', error);
     }
 }
 
 function loadFromLocalStorage() {
     try {
-        const savedData = localStorage.getItem('managersScheduleData');
-        if (savedData) {
-            managersScheduleData = JSON.parse(savedData);
-            console.log('✅ Datos cargados');
+        // Cargar desde el sistema unificado
+        const savedData = UnifiedStorage.getSection('encargados', 'scheduleData');
+        if (savedData && Object.keys(savedData).length > 0) {
+            managersScheduleData = savedData;
+            console.log('✅ Horarios de encargados cargados');
             return true;
         }
     } catch (error) {
-        console.error('Error al cargar:', error);
+        console.error('❌ Error al cargar:', error);
     }
     return false;
 }
 
 function saveDynamicRowsToLocalStorage() {
-    try {
-        localStorage.setItem('managersDynamicRows', JSON.stringify(dynamicRows));
-    } catch (error) {
-        console.error('Error al guardar filas dinámicas:', error);
-    }
+    UnifiedStorage.updateSection('encargados', 'dynamicRows', dynamicRows);
+    console.log('✅ Cajas dinámicas de encargados guardadas');
 }
 
 function loadDynamicRowsFromLocalStorage() {
-    try {
-        const saved = localStorage.getItem('managersDynamicRows');
-        if (saved) {
-            dynamicRows = JSON.parse(saved);
-            console.log('Filas dinámicas cargadas:', dynamicRows.length);
-        }
-    } catch (error) {
-        console.error('Error al cargar filas dinámicas:', error);
-        dynamicRows = [];
+    const saved = UnifiedStorage.getSection('encargados', 'dynamicRows');
+    if (saved && saved.length > 0) {
+        dynamicRows = saved;
+        console.log('✅ Cajas dinámicas cargadas:', dynamicRows.length);
     }
 }
 
 function clearAllData() {
     if (!confirm('¿Eliminar TODOS los horarios? Esta acción no se puede deshacer.')) return;
-    localStorage.removeItem('managersScheduleData');
-    localStorage.removeItem('managersDynamicRows');
+
+    // Limpiar solo la sección de encargados
+    UnifiedStorage.updateSection('encargados', 'scheduleData', {});
+    UnifiedStorage.updateSection('encargados', 'dynamicRows', []);
+
     dynamicRows = [];
     initializeScheduleData();
     regenerateScheduleGrid();
@@ -158,6 +158,11 @@ function initializeScheduleData() {
 // ========== INICIALIZACIÓN ==========
 document.addEventListener('DOMContentLoaded', async function () {
     console.log('🚀 Iniciando sistema de encargados...');
+
+    // Auto-migrar datos al cargar
+    if (typeof UnifiedStorage !== 'undefined') {
+        UnifiedStorage.migrateOldData();
+    }
 
     await loadManagersFromJSON();
     loadDynamicRowsFromLocalStorage();
@@ -1240,3 +1245,102 @@ function setupHamburgerMenu() {
 
 // ========== FUNCIONES GLOBALES ==========
 window.removeDynamicRow = removeDynamicRow;
+
+// ========== EXPORTAR/IMPORTAR CON SISTEMA UNIFICADO ==========
+function exportToJSON_unified() {
+    try {
+        const allData = UnifiedStorage.loadAll();
+
+        const exportOnlyManagers = confirm('¿Exportar SOLO horarios de encargados?\n\nOK = Solo encargados\nCancelar = TODO el sistema');
+
+        let dataToExport;
+        let filename;
+
+        if (exportOnlyManagers) {
+            dataToExport = {
+                version: allData.version,
+                encargados: allData.encargados,
+                exportedAt: new Date().toISOString()
+            };
+            filename = `encargados_${new Date().toISOString().split('T')[0]}.json`;
+        } else {
+            dataToExport = allData;
+            filename = `backup_completo_${new Date().toISOString().split('T')[0]}.json`;
+        }
+
+        const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        console.log('📥 Exportado:', filename);
+        alert('✅ Guardado correctamente');
+    } catch (error) {
+        console.error('❌ Error al exportar:', error);
+        alert('Error al exportar');
+    }
+}
+
+function importFromJSON_unified() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const data = JSON.parse(event.target.result);
+
+                // Si es backup del sistema antiguo
+                if (data.managersScheduleData || (!data.version && !data.encargados)) {
+                    const unified = UnifiedStorage.loadAll();
+                    unified.encargados.scheduleData = data.managersScheduleData || data;
+                    if (data.managersDynamicRows) {
+                        unified.encargados.dynamicRows = data.managersDynamicRows;
+                    }
+                    UnifiedStorage.saveAll(unified);
+                }
+                // Si es backup del sistema nuevo (solo encargados)
+                else if (data.encargados) {
+                    const unified = UnifiedStorage.loadAll();
+                    unified.encargados = data.encargados;
+                    UnifiedStorage.saveAll(unified);
+                }
+                // Si es backup completo
+                else if (data.version && data.cajeros) {
+                    UnifiedStorage.importAll(data);
+                }
+
+                // Recargar página
+                location.reload();
+            } catch (error) {
+                console.error('❌ Error al importar:', error);
+                alert('Error al importar backup');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+    function getManagersData() {
+        return PersonnelManager.getActiveManagers();
+    }
+
+    function getAllPersonnelData() {
+        return PersonnelManager.getAllActive();
+    }
+
+    function getPersonByName(name) {
+        return PersonnelManager.getPersonByName(name);
+    }
+}
+
+// Reemplazar las funciones originales
+window.exportToJSON_old = exportToJSON;
+window.importFromJSON_old = importFromJSON;
+exportToJSON = exportToJSON_unified;
+importFromJSON = importFromJSON_unified;

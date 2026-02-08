@@ -193,10 +193,148 @@ body {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
+/* ========== ESTILOS PARA GRID-ROW (FILAS GENERADAS DINÁMICAMENTE) ========== */
 .schedule-grid {
-    display: grid;
-    gap: 8px;
+    display: block;
+    width: 100%;
 }
+
+.grid-row {
+    display: grid;
+    grid-template-columns: 80px repeat(3, 1fr 100px 100px);
+    gap: 8px;
+    padding: 10px;
+    background: white;
+    border: 2px solid var(--border-light);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+    .grid-row:hover {
+        border-color: var(--primary-blue);
+        box-shadow: 0 4px 12px var(--shadow-md);
+        transform: translateY(-2px);
+    }
+
+    .grid-row.grid-header {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        color: white;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-color: var(--secondary-blue);
+    }
+
+    .grid-row.dynamic-row {
+        background: linear-gradient(135deg, #E8F4F8 0%, #D4E9F2 100%);
+        border: 2px dashed var(--accent-teal);
+    }
+
+.grid-cell {
+    padding: 8px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+    .grid-cell.caja-number {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        color: white;
+        font-weight: bold;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(74, 144, 226, 0.3);
+        position: relative;
+    }
+
+    .grid-cell.name-dropzone {
+        min-height: 40px;
+        background: #f5f5f5;
+        border: 2px dashed #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+
+        .grid-cell.name-dropzone:empty::before {
+            content: 'Arrastrar';
+            color: #999;
+            font-size: 11px;
+        }
+
+        .grid-cell.name-dropzone:hover {
+            background: #e3f2fd;
+            border-color: var(--primary-blue);
+        }
+
+        .grid-cell.name-dropzone.drag-over {
+            background: #bbdefb;
+            border-color: #1976d2;
+            transform: scale(1.02);
+        }
+
+        .grid-cell.name-dropzone.selected-dropzone {
+            background: #c8e6c9;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.3);
+        }
+
+    .grid-cell.time-input {
+        padding: 0;
+    }
+
+    .grid-cell input[type="time"],
+    input[type="time"].grid-cell {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 13px;
+        text-align: center;
+        background: white;
+        transition: all 0.2s;
+    }
+
+        .grid-cell input[type="time"]:focus,
+        input[type="time"].grid-cell:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+/* Botón para eliminar cajas dinámicas */
+.delete-dynamic-box {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: var(--warning-red);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+    .delete-dynamic-box:hover {
+        background: #D32F2F;
+        transform: scale(1.1);
+    }
 
 /* ========== CAJA ROW ========== */
 .header-row {

@@ -1,53 +1,174 @@
 ﻿// // ========== VARIABLES GLOBALES ==========
 let PERSONNEL = [];
 let scheduleData = {};
-let scheduleCodes = {}; // Códigos cargados desde /crew/Schedule codes.json  { "08:00-13:00+17:00-21:00": { codigo: "00353", alternativas: [...] } }
-let viewMode = 'codes'; // 'codes' o 'schedules'
-let managersSchedule = {}; // Horarios de encargados cargados desde localStorage
+let scheduleCodes = {};
+let viewMode = 'codes';
+let managersSchedule = {};
 
-// ========== CARGA DE DATOS ==========
-async function loadPersonnelFromJSON() {
+// ========== FUNCIONES DE CARGA DEL SISTEMA UNIFICADO ==========
+function loadScheduleData() {
     try {
-        const response = await fetch('crew/personnel.json');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        const savedData = UnifiedStorage.getSection('cajeros', 'scheduleData');
+        if (savedData && Object.keys(savedData).length > 0) {
+            scheduleData = savedData;
+            console.log('✅ Horarios de cajeros cargados para la tabla');
+            return true;
+        } else {
+            console.log('ℹ️ No hay horarios de cajeros guardados');
+            scheduleData = {};
         }
-        const data = await response.json();
-        PERSONNEL = data.personnel.filter(person => person.active);
-        console.log(`✅ Personal cargado: ${PERSONNEL.length} personas`);
+    } catch (error) {
+        console.error('❌ Error al cargar horarios de cajeros:', error);
+        scheduleData = {};
+    }
+    return false;
+}
+
+function loadManagersSchedule() {
+    try {
+        const savedData = UnifiedStorage.getSection('encargados', 'scheduleData');
+        if (savedData && Object.keys(savedData).length > 0) {
+            managersSchedule = savedData;
+            console.log('✅ Horarios de encargados cargados para la tabla');
+            transformManagersData();
+            return true;
+        } else {
+            console.log('ℹ️ No hay horarios de encargados guardados');
+            managersSchedule = {};
+        }
+    } catch (error) {
+        console.error('❌ Error al cargar horarios de encargados:', error);
+        managersSchedule = {};
+    }
+    return false;
+}
+
+function transformManagersData() {
+    if (!managersSchedule || Object.keys(managersSchedule).length === 0) {
+        console.log('ℹ️ No hay datos de encargados para transformar');
+        return;
+    }
+
+    const transformedData = {};
+
+    for (let day = 0; day < 7; day++) {
+        const dayData = managersSchedule[day];
+        if (!dayData || !dayData.cajas) continue;
+
+        const managersMap = new Map();
+
+        for (let caja in dayData.cajas) {
+            for (let turnoKey in dayData.cajas[caja]) {
+                const turnoData = dayData.cajas[caja][turnoKey];
+                if (turnoData.name) {
+                    const name = turnoData.name;
+                    if (!managersMap.has(name)) {
+                        managersMap.set(name, { name: name, shifts: {} });
+                    }
+                    if (turnoData.entrada && turnoData.salida) {
+                        const manager = managersMap.get(name);
+                        manager.shifts[turnoKey] = {
+                            entrada: turnoData.entrada,
+                            salida: turnoData.salida
+                        };
+                    }
+                }
+            }
+        }
+
+        transformedData[day] = {
+            managers: Array.from(managersMap.values()),
+            francos: dayData.francos || [],
+            licencias: dayData.licencias || [],
+            vacaciones: dayData.vacaciones || []
+        };
+    }
+
+    managersSchedule = transformedData;
+    console.log('✅ Datos de encargados transformados correctamente');
+}
+
+function loadScheduleCodesUnified() {
+    try {
+        const savedCodes = UnifiedStorage.getSection('codes');
+        if (savedCodes && Object.keys(savedCodes).length > 0) {
+            scheduleCodes = savedCodes;
+            console.log('✅ Códigos cargados:', Object.keys(scheduleCodes).length);
+            return true;
+        }
+
+        const oldCodes = localStorage.getItem('scheduleCodes');
+        if (oldCodes) {
+            try {
+                const parsed = JSON.parse(oldCodes);
+                scheduleCodes = parsed;
+                UnifiedStorage.updateSection('codes', null, scheduleCodes);
+                console.log('✅ Códigos migrados al sistema unificado');
+                return true;
+            } catch (e) {
+                console.error('❌ Error al migrar códigos:', e);
+            }
+        }
+
+        console.log('ℹ️ No hay códigos guardados');
+        scheduleCodes = {};
+    } catch (error) {
+        console.error('❌ Error al cargar códigos:', error);
+        scheduleCodes = {};
+    }
+    return false;
+}
+
+function saveScheduleCodesUnified() {
+    try {
+        UnifiedStorage.updateSection('codes', null, scheduleCodes);
+        console.log('✅ Códigos guardados en sistema unificado');
         return true;
     } catch (error) {
-        console.error('❌ Error al cargar personal:', error);
+        console.error('❌ Error al guardar códigos:', error);
         return false;
     }
 }
 
-function loadScheduleFromLocalStorage() {
+// ========== CARGA DE PERSONAL ==========
+async function loadPersonnelData() {
     try {
-        const savedData = localStorage.getItem('scheduleData');
-        if (savedData) {
-            scheduleData = JSON.parse(savedData);
-            console.log('✅ Horarios cargados del localStorage');
-            return true;
-        }
+        // Intentar auto-migrar si no hay personal
+        await PersonnelManager.autoMigrateIfNeeded();
+
+        // Cargar todo el personal activo
+        const allPersonnel = PersonnelManager.getAllActive();
+
+        // ⭐ CRÍTICO: Asignar a la variable global
+        PERSONNEL = allPersonnel;
+
+        console.log(`✅ Personal cargado desde PersonnelManager: ${PERSONNEL.length} personas`);
+        console.log('📋 Personal:', PERSONNEL);
+
+        return true;
     } catch (error) {
-        console.error('Error al cargar horarios:', error);
+        console.error('❌ Error al cargar personal:', error);
+        PERSONNEL = [];
+        return false;
     }
-    return false;
+}
+
+// Funciones helper
+function getPersonById(id) {
+    return PersonnelManager.getPersonById(id);
+}
+
+function getPersonByName(name) {
+    return PersonnelManager.getPersonByName(name);
+}
+
+// ========== FUNCIONES WRAPPER PARA COMPATIBILIDAD ==========
+function loadScheduleFromLocalStorage() {
+    return loadScheduleData();
 }
 
 function loadManagersScheduleFromLocalStorage() {
-    try {
-        const savedData = localStorage.getItem('managersSchedule');
-        if (savedData) {
-            managersSchedule = JSON.parse(savedData);
-            console.log('✅ Horarios de encargados cargados del localStorage');
-            return true;
-        }
-    } catch (error) {
-        console.error('❌ Error al cargar horarios de encargados:', error);
-    }
-    return false;
+    return loadManagersSchedule();
 }
 
 async function loadScheduleCodesFromJSON() {
@@ -56,13 +177,14 @@ async function loadScheduleCodesFromJSON() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        scheduleCodes = await response.json();
+        const data = await response.json();
+        scheduleCodes = data;
+        UnifiedStorage.updateSection('codes', null, scheduleCodes);
         console.log(`✅ Códigos cargados: ${Object.keys(scheduleCodes).length} combinaciones`);
         return true;
     } catch (error) {
         console.error('❌ Error al cargar schedule_codes.json:', error);
-        scheduleCodes = {};
-        return false;
+        return loadScheduleCodesUnified();
     }
 }
 
@@ -206,12 +328,30 @@ function getCodeForManager(manager, day) {
         return { code: '-', hours: 0, schedule: '-', type: 'empty' };
     }
 
+    const dayData = managersSchedule[day];
+
+    // Verificar estados especiales (franco, licencia, vacaciones)
+    if (dayData.francos && dayData.francos.includes(manager.name)) {
+        return { code: 'F', hours: 0, schedule: 'Franco', type: 'franco' };
+    }
+
+    if (dayData.licencias && dayData.licencias.includes(manager.name)) {
+        return { code: 'L', hours: 0, schedule: 'Licencia', type: 'licencia' };
+    }
+
+    if (dayData.vacaciones && dayData.vacaciones.includes(manager.name)) {
+        return { code: 'V', hours: 0, schedule: 'Vacaciones', type: 'vacaciones' };
+    }
+
     // Obtener los turnos del encargado
     let segments = [];
-    for (let turno in manager.shifts) {
-        const shift = manager.shifts[turno];
-        if (shift.entrada && shift.salida) {
-            segments.push(`${shift.entrada}-${shift.salida}`);
+
+    if (manager.shifts) {
+        for (let turno in manager.shifts) {
+            const shift = manager.shifts[turno];
+            if (shift.entrada && shift.salida) {
+                segments.push(`${shift.entrada}-${shift.salida}`);
+            }
         }
     }
 
@@ -256,8 +396,11 @@ function generateScheduleTable() {
         return a.name.localeCompare(b.name);
     });
 
-    // ========== AGREGAR CAJEROS ==========
-    filteredPersonnel.forEach(person => {
+    // ========== AGREGAR CAJEROS (SIN ENCARGADOS) ==========
+    // 🔹 FILTRAR SOLO CAJEROS: excluir encargados (isManager === true)
+    const cashiersOnly = filteredPersonnel.filter(person => !person.isManager);
+
+    cashiersOnly.forEach(person => {
         const row = document.createElement('tr');
         row.className = person.contractType === 'Full-time' ? 'full-time' : 'part-time';
 
@@ -341,131 +484,136 @@ function generateScheduleTable() {
     });
 
     // ========== AGREGAR ENCARGADOS 👔 ==========
-    if (managersSchedule && Object.keys(managersSchedule).length > 0) {
-        // Recopilar todos los encargados únicos
-        const allManagers = new Map();
+    // 🔹 Obtener TODOS los encargados de PERSONNEL (los que tienen isManager === true)
+    const managers = filteredPersonnel.filter(person => person.isManager);
 
-        for (let day in managersSchedule) {
-            const dayData = managersSchedule[day];
-            if (dayData.managers) {
-                dayData.managers.forEach(manager => {
-                    if (!allManagers.has(manager.name)) {
-                        allManagers.set(manager.name, manager);
-                    }
-                });
+    // Ordenar por nombre
+    managers.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Agregar filas de encargados
+    managers.forEach(manager => {
+        const row = document.createElement('tr');
+        row.className = 'manager-row';
+
+        // Contrato (Encargado)
+        const contractCell = document.createElement('td');
+        contractCell.className = 'contract-cell manager-badge';
+        contractCell.innerHTML = `<span class="contract-badge manager-badge">👔 Encargado - 48hs</span>`;
+        row.appendChild(contractCell);
+
+        // ID
+        const idCell = document.createElement('td');
+        idCell.className = 'id-cell';
+        idCell.textContent = manager.id; // 🔹 Usar el ID real del encargado
+        row.appendChild(idCell);
+
+        // Nombre
+        const nameCell = document.createElement('td');
+        nameCell.className = 'name-cell manager-name';
+        nameCell.textContent = manager.name; // 🔹 Usar manager.name
+        row.appendChild(nameCell);
+
+        // Días de la semana
+        let totalWeekHours = 0;
+        for (let day = 0; day < 7; day++) {
+            const dayCell = document.createElement('td');
+
+            // Buscar los datos del encargado para este día
+            let managerData = null;
+
+            if (managersSchedule[day] && managersSchedule[day].managers) {
+                managerData = managersSchedule[day].managers.find(m => m.name === manager.name); // 🔹 Usar manager.name
             }
-        }
 
-        // Filtrar por búsqueda si aplica
-        let filteredManagers = Array.from(allManagers.values());
+            if (managerData) {
+                // Obtener código y horarios
+                const codeInfo = getCodeForManager(managerData, day);
 
-        if (searchText) {
-            filteredManagers = filteredManagers.filter(m =>
-                m.name.toLowerCase().includes(searchText)
-            );
-        }
+                dayCell.className = `code-cell ${codeInfo.type}`;
 
-        // Ordenar por nombre
-        filteredManagers.sort((a, b) => a.name.localeCompare(b.name));
-
-        // Agregar filas de encargados
-        filteredManagers.forEach(manager => {
-            const row = document.createElement('tr');
-            row.className = 'manager-row'; // Clase especial para encargados
-
-            // Contrato (Encargado)
-            const contractCell = document.createElement('td');
-            contractCell.className = 'contract-cell manager-badge';
-            contractCell.innerHTML = `<span class="contract-badge manager-badge">👔 Encargado - 48hs</span>`;
-            row.appendChild(contractCell);
-
-            // ID
-            const idCell = document.createElement('td');
-            idCell.className = 'id-cell';
-            idCell.textContent = '-';
-            row.appendChild(idCell);
-
-            // Nombre con icono
-            const nameCell = document.createElement('td');
-            nameCell.className = 'name-cell manager-name';
-            nameCell.textContent = manager.name;
-            row.appendChild(nameCell);
-
-            // Días de la semana
-            let totalWeekHours = 0;
-            for (let day = 0; day < 7; day++) {
-                let dayData = null;
-
-                // Buscar los datos del encargado para este día
-                if (managersSchedule[day]) {
-                    const found = managersSchedule[day].managers.find(m => m.name === manager.name);
-                    if (found) {
-                        dayData = found;
-                    }
-                }
-
-                const dayCell = document.createElement('td');
-
-                if (dayData) {
-                    // Obtener código y horarios
-                    const codeInfo = getCodeForManager(dayData, day);
-
-                    dayCell.className = `code-cell ${codeInfo.type}`;
-
-                    if (viewMode === 'codes') {
-                        dayCell.textContent = codeInfo.code;
-                        dayCell.title = codeInfo.schedule;
-                    } else {
-                        dayCell.innerHTML = `
+                if (viewMode === 'codes') {
+                    dayCell.textContent = codeInfo.code;
+                    dayCell.title = codeInfo.schedule;
+                } else {
+                    dayCell.innerHTML = `
                             <div class="code-with-schedule">
                                 <div class="code-part">${codeInfo.code}</div>
                                 <div class="schedule-part">${codeInfo.schedule}</div>
                             </div>
                         `;
+                    dayCell.classList.add('schedule-view');
+                }
+
+                totalWeekHours += Number(codeInfo.hours) || 0;
+            } else {
+                // Verificar si está en estados especiales sin horarios
+                let specialState = null;
+
+                if (managersSchedule[day]) {
+                    if (managersSchedule[day].francos && managersSchedule[day].francos.includes(manager.name)) { // 🔹 Usar manager.name
+                        specialState = { code: 'F', type: 'franco', schedule: 'Franco' };
+                    } else if (managersSchedule[day].licencias && managersSchedule[day].licencias.includes(manager.name)) { // 🔹 Usar manager.name
+                        specialState = { code: 'L', type: 'licencia', schedule: 'Licencia' };
+                    } else if (managersSchedule[day].vacaciones && managersSchedule[day].vacaciones.includes(manager.name)) { // 🔹 Usar manager.name
+                        specialState = { code: 'V', type: 'vacaciones', schedule: 'Vacaciones' };
+                    }
+                }
+
+                if (specialState) {
+                    dayCell.className = `code-cell ${specialState.type}`;
+
+                    if (viewMode === 'codes') {
+                        dayCell.textContent = specialState.code;
+                        dayCell.title = specialState.schedule;
+                    } else {
+                        dayCell.innerHTML = `
+                                <div class="code-with-schedule">
+                                    <div class="code-part">${specialState.code}</div>
+                                    <div class="schedule-part">${specialState.schedule}</div>
+                                </div>
+                            `;
                         dayCell.classList.add('schedule-view');
                     }
-
-                    totalWeekHours += Number(codeInfo.hours) || 0;
                 } else {
                     dayCell.className = 'code-cell empty';
                     dayCell.textContent = '-';
                 }
-
-                row.appendChild(dayCell);
             }
 
-            // Total de horas (Encargados siempre 48hs)
-            const totalCell = document.createElement('td');
-            totalCell.className = 'total-cell manager-hours';
+            row.appendChild(dayCell);
+        }
 
-            if (totalWeekHours < 48) {
-                totalCell.classList.add('under-hours');
-            } else if (totalWeekHours > 48) {
-                totalCell.classList.add('over-hours');
-            }
+        // Total de horas (Encargados siempre 48hs)
+        const totalCell = document.createElement('td');
+        totalCell.className = 'total-cell manager-hours';
 
-            totalCell.textContent = `${totalWeekHours}h / 48h`;
-            row.appendChild(totalCell);
+        if (totalWeekHours < 48) {
+            totalCell.classList.add('under-hours');
+        } else if (totalWeekHours > 48) {
+            totalCell.classList.add('over-hours');
+        }
 
-            // Horas extras
-            const extraHoursCell = document.createElement('td');
-            extraHoursCell.className = 'extra-hours-cell';
-            const extraHours = totalWeekHours - 48;
+        totalCell.textContent = `${totalWeekHours}h / 48h`;
+        row.appendChild(totalCell);
 
-            if (extraHours > 0) {
-                extraHoursCell.classList.add('has-extra');
-                extraHoursCell.textContent = `+${extraHours}h`;
-            } else if (extraHours < 0) {
-                extraHoursCell.classList.add('has-deficit');
-                extraHoursCell.textContent = `${extraHours}h`;
-            } else {
-                extraHoursCell.textContent = '0h';
-            }
-            row.appendChild(extraHoursCell);
+        // Horas extras
+        const extraHoursCell = document.createElement('td');
+        extraHoursCell.className = 'extra-hours-cell';
+        const extraHours = totalWeekHours - 48;
 
-            tbody.appendChild(row);
-        });
-    }
+        if (extraHours > 0) {
+            extraHoursCell.classList.add('has-extra');
+            extraHoursCell.textContent = `+${extraHours}h`;
+        } else if (extraHours < 0) {
+            extraHoursCell.classList.add('has-deficit');
+            extraHoursCell.textContent = `${extraHours}h`;
+        } else {
+            extraHoursCell.textContent = '0h';
+        }
+        row.appendChild(extraHoursCell);
+
+        tbody.appendChild(row);
+    });
 
     updateStats(filteredPersonnel.length);
 }
@@ -795,9 +943,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log('🚀 Iniciando sistema de horarios por cajero...');
 
     // Cargar datos
-    await loadPersonnelFromJSON();
+    await loadPersonnelData();  // ✅ CORRECTO (antes era loadPersonnelFromJSON)
     loadScheduleFromLocalStorage();
-    loadManagersScheduleFromLocalStorage(); // 👔 Cargar horarios de encargados
+    loadManagersScheduleFromLocalStorage();
     await loadScheduleCodesFromJSON();
 
     // Inicializar interfaz
@@ -1107,12 +1255,7 @@ function updateCodeHoursPreview() {
 
 // ========== GUARDAR CÓDIGOS EN LOCALSTORAGE ==========
 function saveCodesToLocalStorage() {
-    try {
-        localStorage.setItem('scheduleCodes', JSON.stringify(scheduleCodes));
-        console.log('💾 Códigos guardados en localStorage');
-    } catch (error) {
-        console.error('Error al guardar códigos:', error);
-    }
+    saveScheduleCodesUnified();
 }
 
 // ========== HACER FUNCIONES GLOBALES ==========
@@ -1151,4 +1294,36 @@ function getUsedCodesThisWeek() {
     });
 
     return result;
+}
+
+// ========== FUNCIÓN HELPER PARA DEBUG ==========
+function debugStorage() {
+    if (typeof UnifiedStorage === 'undefined') {
+        console.error('❌ UnifiedStorage no está disponible');
+        return null;
+    }
+
+    const allData = UnifiedStorage.loadAll();
+    console.log('=== SISTEMA DE ALMACENAMIENTO ===');
+    console.log('Versión:', allData.version);
+    console.log('Última actualización:', allData.lastSaved);
+    console.log('Semana:', allData.week);
+    console.log('');
+    console.log('Cajeros:');
+    console.log('  - Días con horarios:', Object.keys(allData.cajeros.scheduleData).length);
+    console.log('  - Cajas dinámicas:', allData.cajeros.dynamicRows.length);
+    console.log('');
+    console.log('Encargados:');
+    console.log('  - Días con horarios:', Object.keys(allData.encargados.scheduleData).length);
+    console.log('  - Cajas dinámicas:', allData.encargados.dynamicRows.length);
+    console.log('');
+    console.log('Códigos:', Object.keys(allData.codes || {}).length);
+    console.log('');
+    console.log('Objeto completo:', allData);
+    return allData;
+}
+
+// Hacer la función disponible globalmente para debugging
+if (typeof window !== 'undefined') {
+    window.debugStorage = debugStorage;
 }

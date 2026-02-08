@@ -58,36 +58,40 @@ async function loadPersonnelFromJSON() {
 // ========== FUNCIONES DE ALMACENAMIENTO LOCAL ==========
 function saveToLocalStorage() {
     try {
-        localStorage.setItem('scheduleData', JSON.stringify(scheduleData));
-        console.log('Datos guardados correctamente');
+        // Guardar en el sistema unificado
+        UnifiedStorage.updateSection('cajeros', 'scheduleData', scheduleData);
+        console.log('✅ Horarios de cajeros guardados');
     } catch (error) {
-        console.error('Error al guardar datos:', error);
+        console.error('❌ Error al guardar datos:', error);
     }
 }
 
 function loadFromLocalStorage() {
     try {
-        const savedData = localStorage.getItem('scheduleData');
-        if (savedData) {
-            scheduleData = JSON.parse(savedData);
-            console.log('Datos cargados correctamente');
+        // Cargar desde el sistema unificado
+        const savedData = UnifiedStorage.getSection('cajeros', 'scheduleData');
+        if (savedData && Object.keys(savedData).length > 0) {
+            scheduleData = savedData;
+            console.log('✅ Horarios de cajeros cargados');
             return true;
         }
     } catch (error) {
-        console.error('Error al cargar datos:', error);
+        console.error('❌ Error al cargar datos:', error);
     }
     return false;
 }
 
 function clearLocalStorage() {
     if (confirm('¿Estás seguro de que deseas borrar todos los horarios guardados? Esta acción no se puede deshacer.')) {
-        localStorage.removeItem('scheduleData');
-        localStorage.removeItem('dynamicRows');
+        // Limpiar solo la sección de cajeros
+        UnifiedStorage.updateSection('cajeros', 'scheduleData', {});
+        UnifiedStorage.updateSection('cajeros', 'dynamicRows', []);
+
         dynamicRows = [];
         initScheduleData();
         regenerateScheduleGrid();
         generatePersonnelList();
-        alert('Todos los horarios han sido borrados.');
+        alert('✅ Todos los horarios de cajeros han sido borrados.');
     }
 }
 
@@ -235,6 +239,13 @@ function setupHamburgerMenu() {
     });
 }
 document.addEventListener('DOMContentLoaded', async function () {
+    console.log('🚀 Iniciando sistema de horarios...');
+
+    // Auto-migrar datos al cargar
+    if (typeof UnifiedStorage !== 'undefined') {
+        UnifiedStorage.migrateOldData();
+    }
+
     // 1. Cargar personal desde JSON primero
     console.log('🔄 Cargando lista de personal...');
     await loadPersonnelFromJSON();
@@ -1809,19 +1820,28 @@ function closePersonnelModal() {
 }
 
 // ========== CARGAR DATOS DE PERSONAL ==========
-function loadPersonnelData() {
-    // Convertir el array PERSONNEL actual a formato de datos
-    if (personnelData.personnel.length === 0) {
-        // Primera vez: crear desde PERSONNEL
-        personnelData.personnel = PERSONNEL.map((name, index) => ({
-            id: index + 1,
-            name: name,
-            active: true
-        }));
-        personnelData.metadata.total = personnelData.personnel.length;
-    }
+async function loadPersonnelFromJSON() {
+    // Intentar auto-migrar si no hay personal
+    await PersonnelManager.autoMigrateIfNeeded();
+
+    // Cargar cajeros activos (sin encargados)
+    const cashiers = PersonnelManager.getActiveCashiers();
+    PERSONNEL = cashiers.map(person => person.name);
+
+    console.log(`✅ Personal cargado desde PersonnelManager: ${PERSONNEL.length} cajeros`);
+    console.log('📋 Lista:', PERSONNEL);
+
+    return PERSONNEL.length > 0;
 }
 
+// AGREGAR esta función helper para obtener datos completos del personal
+function getPersonnelData() {
+    return PersonnelManager.getActiveCashiers();
+}
+
+function getPersonByName(name) {
+    return PersonnelManager.getPersonByName(name);
+}
 // ========== RENDERIZAR TABLA ==========
 function renderPersonnelTable() {
     const tbody = document.getElementById('personnelTableBody');
@@ -2126,6 +2146,62 @@ function calculateHours(entrada, salida) {
     if (end < start) end += 24 * 60;
 
     return (end - start) / 60;
+}
+
+
+
+// ========== FUNCIONES DE CAJAS DINÁMICAS (SISTEMA UNIFICADO) ==========
+function saveDynamicRowsToLocalStorage() {
+    UnifiedStorage.updateSection('cajeros', 'dynamicRows', dynamicRows);
+    console.log('✅ Cajas dinámicas guardadas');
+}
+
+function loadDynamicRowsFromLocalStorage() {
+    const saved = UnifiedStorage.getSection('cajeros', 'dynamicRows');
+    if (saved && saved.length > 0) {
+        dynamicRows = saved;
+        console.log('✅ Cajas dinámicas cargadas:', dynamicRows.length);
+    }
+}
+
+// ========== EXPORTAR BACKUP (SISTEMA UNIFICADO) ==========
+function exportBackup() {
+    try {
+        UnifiedStorage.exportAll();
+    } catch (error) {
+        console.error('❌ Error al exportar backup:', error);
+        alert('Error al exportar backup');
+    }
+}
+
+// ========== IMPORTAR BACKUP (SISTEMA UNIFICADO) ==========
+function handleBackupImport(fileContent) {
+    try {
+        const data = JSON.parse(fileContent);
+
+        // Si es backup del sistema antiguo
+        if (data.scheduleData || data.managersSchedule) {
+            const unified = UnifiedStorage.loadAll();
+
+            if (data.scheduleData) {
+                unified.cajeros.scheduleData = data.scheduleData;
+            }
+            if (data.dynamicRows) {
+                unified.cajeros.dynamicRows = data.dynamicRows;
+            }
+
+            UnifiedStorage.saveAll(unified);
+        } else if (data.version && data.cajeros) {
+            // Es backup del sistema nuevo
+            UnifiedStorage.importAll(data);
+        }
+
+        // Recargar página
+        location.reload();
+    } catch (error) {
+        console.error('❌ Error al importar:', error);
+        alert('Error al importar backup');
+    }
 }
 
 setupPersonnelModalListeners();
