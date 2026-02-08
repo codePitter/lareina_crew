@@ -111,13 +111,13 @@ cd lareina_crew
 lareina_crew/
 │
 ├── index.html                  # Página principal - Crear Horarios
-├── horarios-cajeros.html       # Página - Horarios por Cajero/a
+├── planilla-horarios.html       # Página - Horarios por Cajero/a
 ├── css/
 │   ├── style.css               # Estilos página principal
-│   └── horarios-cajeros.css    # Estilos vista cajeros
+│   └── planilla-horarios.css    # Estilos vista cajeros
 ├── js/
 │   ├── main.js                 # Lógica página principal
-│   └── horarios-cajeros.js     # Lógica vista cajeros
+│   └── planilla-horarios.js     # Lógica vista cajeros
 ├── crew/
 │   └── personnel.json          # Base de datos de personal
 └── README.md                   # Este archivo
@@ -168,7 +168,7 @@ Navega a `http://localhost:8000` si usas servidor local, o simplemente abre el a
 3. La nueva fila se agregará al final
 4. Click en "✕ Eliminar" para quitar la fila
 
-### 6️⃣ Ver Horarios por Cajero (horarios-cajeros.html)
+### 6️⃣ Ver Horarios por Cajero (planilla-horarios.html)
 1. Click en el botón "📊 Ver Horarios por Cajero"
 2. Selecciona la semana que deseas ver
 3. Usa los filtros:
@@ -189,7 +189,7 @@ Navega a `http://localhost:8000` si usas servidor local, o simplemente abre el a
 6. **Exportar/Importar**: Usa los botones para guardar/cargar el JSON
 
 ### 8️⃣ Gestionar Códigos de Horario
-1. En horarios-cajeros.html, click en "⚙️ Gestionar Códigos"
+1. En planilla-horarios.html, click en "⚙️ Gestionar Códigos"
 2. Visualiza todos los códigos generados automáticamente
 3. Edita el número de código si deseas personalizarlo
 4. Guarda los cambios
@@ -197,7 +197,7 @@ Navega a `http://localhost:8000` si usas servidor local, o simplemente abre el a
 
 ### 9️⃣ Exportar y Guardar
 - **📥 PDF**: Genera un documento PDF del día actual (index.html)
-- **📥 Exportar Excel**: Descarga tabla de horarios en .xlsx (horarios-cajeros.html)
+- **📥 Exportar Excel**: Descarga tabla de horarios en .xlsx (planilla-horarios.html)
 - **💾 Guardar**: Descarga un archivo JSON con todos los horarios
 - **📂 Cargar**: Restaura un backup previo
 - **🗑️ Limpiar**: Borra todos los datos (requiere confirmación)

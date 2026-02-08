@@ -1483,6 +1483,22 @@ body {
     align-items: center;
     gap: 15px;
 }
+.btn-delete {
+    padding: 6px 12px;
+    background: var(--warning-red);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+    .btn-delete:hover {
+        background: #dc2626;
+        transform: scale(1.05);
+    }
 
 /* ========== BOTÓN HAMBURGUESA ========== */
 .hamburger-btn {
