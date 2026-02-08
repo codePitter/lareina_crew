@@ -348,7 +348,7 @@ body {
     border-radius: 8px;
     overflow: auto;
     box-shadow: 0 2px 6px var(--shadow-sm);
-    max-height: calc(100vh - 340px);
+    max-height: auto;
 }
 
 .personnel-table {
