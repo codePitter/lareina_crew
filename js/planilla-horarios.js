@@ -388,11 +388,13 @@ function generateScheduleTable() {
         );
     }
 
-    // Ordenar por contrato y luego por nombre
+    // Ordenar por horas de contrato (menor a mayor) y luego por nombre
     filteredPersonnel.sort((a, b) => {
-        if (a.contractType !== b.contractType) {
-            return b.contractType.localeCompare(a.contractType); // Full-time primero
+        // Primero por horas (30hs, 36hs, 48hs)
+        if (a.weeklyHours !== b.weeklyHours) {
+            return a.weeklyHours - b.weeklyHours; // Menor a mayor
         }
+        // Si tienen las mismas horas, ordenar alfabéticamente
         return a.name.localeCompare(b.name);
     });
 
@@ -866,9 +868,6 @@ function toggleViewMode() {
 
 // ========== EVENT LISTENERS ==========
 function setupEventListeners() {
-    // Botón de imprimir
-    document.getElementById('printScheduleBtn').addEventListener('click', printSchedule);
-
     // Botones principales
     document.getElementById('manageCodesBtn').addEventListener('click', openCodesModal);
     document.getElementById('manageCodesMainBtn').addEventListener('click', openCodesModal);
@@ -954,6 +953,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Inicializar interfaz
     setupEventListeners();
     setupHamburgerMenu();
+    setupSortableHeaders();
     generateScheduleTable();
     generateLegend();
 
@@ -1336,4 +1336,96 @@ function printSchedule() {
     // Simplemente llamar a window.print()
     // Los estilos CSS @media print se encargan del resto
     window.print();
+}
+
+// ========== FUNCIONALIDAD DE ORDENAMIENTO DE TABLA ==========
+function setupSortableHeaders() {
+    const sortableHeaders = document.querySelectorAll('.schedule-table th.sortable');
+
+    // Marcar la columna "Contrato" como ordenada ascendentemente por defecto
+    const contratoHeader = document.querySelector('.schedule-table th.sortable[data-column="contrato"]');
+    if (contratoHeader) {
+        contratoHeader.classList.add('asc');
+    }
+
+    sortableHeaders.forEach(header => {
+        header.addEventListener('click', function () {
+            const column = this.dataset.column;
+            const tbody = document.getElementById('scheduleTableBody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            // Determinar dirección del ordenamiento
+            let direction = 'asc';
+            if (this.classList.contains('asc')) {
+                direction = 'desc';
+            }
+
+            // Remover clases de todos los headers
+            sortableHeaders.forEach(h => {
+                h.classList.remove('asc', 'desc');
+            });
+
+            // Agregar clase al header actual
+            this.classList.add(direction);
+
+            // Ordenar las filas
+            rows.sort((rowA, rowB) => {
+                let valueA, valueB;
+
+                switch (column) {
+                    case 'contrato':
+                        // Extraer las horas del texto (ej: "Part-time - 30hs" -> 30, "Encargado - 48hs" -> 48)
+                        const hoursMatchA = rowA.cells[0].textContent.match(/(\d+)hs/);
+                        const hoursMatchB = rowB.cells[0].textContent.match(/(\d+)hs/);
+                        valueA = hoursMatchA ? parseInt(hoursMatchA[1]) : 0;
+                        valueB = hoursMatchB ? parseInt(hoursMatchB[1]) : 0;
+
+                        // Si las horas son iguales, ordenar alfabéticamente por nombre
+                        if (valueA === valueB) {
+                            const nameA = rowA.cells[2].textContent.trim().toLowerCase();
+                            const nameB = rowB.cells[2].textContent.trim().toLowerCase();
+                            return direction === 'asc' ?
+                                nameA.localeCompare(nameB) :
+                                nameB.localeCompare(nameA);
+                        }
+
+                        return direction === 'asc' ? valueA - valueB : valueB - valueA;
+
+                    case 'id':
+                        valueA = parseInt(rowA.cells[1].textContent) || 0;
+                        valueB = parseInt(rowB.cells[1].textContent) || 0;
+                        return direction === 'asc' ? valueA - valueB : valueB - valueA;
+
+                    case 'nombre':
+                        valueA = rowA.cells[2].textContent.trim().toLowerCase();
+                        valueB = rowB.cells[2].textContent.trim().toLowerCase();
+                        return direction === 'asc' ?
+                            valueA.localeCompare(valueB) :
+                            valueB.localeCompare(valueA);
+
+                    case 'total':
+                        // Extraer solo el número de horas trabajadas (ej: "40h / 48h" -> 40)
+                        const totalA = rowA.cells[10].textContent.match(/(\d+)h\s*\//);
+                        const totalB = rowB.cells[10].textContent.match(/(\d+)h\s*\//);
+                        valueA = totalA ? parseInt(totalA[1]) : 0;
+                        valueB = totalB ? parseInt(totalB[1]) : 0;
+                        return direction === 'asc' ? valueA - valueB : valueB - valueA;
+
+                    case 'extras':
+                        // Extraer horas extras (puede ser +5h, -3h, o 0h)
+                        const extrasTextA = rowA.cells[11].textContent.trim();
+                        const extrasTextB = rowB.cells[11].textContent.trim();
+                        valueA = parseInt(extrasTextA.replace('h', '')) || 0;
+                        valueB = parseInt(extrasTextB.replace('h', '')) || 0;
+                        return direction === 'asc' ? valueA - valueB : valueB - valueA;
+
+                    default:
+                        return 0;
+                }
+            });
+
+            // Reordenar el DOM
+            rows.forEach(row => tbody.appendChild(row));
+        });
+    });
 }

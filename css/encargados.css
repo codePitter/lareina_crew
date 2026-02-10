@@ -122,7 +122,7 @@ body {
     align-items: center;
 }
 
-.print-schedule-btn {
+/*.print-schedule-btn {
     padding: 6px 10px;
     background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
     border: 2px solid var(--dark-green);
@@ -138,7 +138,22 @@ body {
     justify-content: center;
     margin-left: 6px;
 }
-
+*/
+.print-schedule-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid white;
+    color: white;
+    font-size: 1.5rem;
+    width: 40px;
+    height: 34px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+}
     .print-schedule-btn:hover {
         background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
         box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);

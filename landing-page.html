@@ -65,12 +65,33 @@
             position: relative;
             z-index: 10;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            text-align: center;
             padding: 20px;
+            gap: 40px;
+        }
+
+        .left-content {
+            flex-shrink: 0;
+            width: clamp(200px, 30vw, 400px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .left-content svg {
+                width: 100%;
+                height: auto;
+                max-width: 100%;
+            }
+
+        .right-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
 
         .title-container {
@@ -160,49 +181,60 @@
             background: var(--primary-orange);
         }
 
-        /* Animaciones para las ondas */
-        @keyframes waveFloat1 {
+        /* Animación de las ondas con transform */
+        @keyframes waveMove1 {
             0%, 100% {
-                d: path("M0,0 L1920,0 L1920,300 C1400,150 700,350 0,200 Z");
+                transform: translateY(0) translateX(0);
             }
 
             50% {
-                d: path("M0,0 L1920,0 L1920,250 C1500,400 600,100 0,280 Z");
+                transform: translateY(-20px) translateX(10px);
             }
         }
 
-        @keyframes waveFloat2 {
+        @keyframes waveMove2 {
             0%, 100% {
-                d: path("M0,0 L1920,0 L1920,220 C1300,320 800,80 0,240 Z");
+                transform: translateY(0) translateX(0);
             }
 
             50% {
-                d: path("M0,0 L1920,0 L1920,180 C1450,80 750,400 0,160 Z");
+                transform: translateY(-15px) translateX(-10px);
             }
         }
 
-        @keyframes rotateSun {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes pulse {
+        @keyframes waveMove3 {
             0%, 100% {
-                opacity: 0.5;
+                transform: translateY(0) translateX(0);
             }
 
             50% {
-                opacity: 1;
+                transform: translateY(-25px) translateX(15px);
             }
+        }
+
+        .wave-1 {
+            animation: waveMove1 20s ease-in-out infinite;
+        }
+
+        .wave-2 {
+            animation: waveMove2 25s ease-in-out infinite;
+        }
+
+        .wave-3 {
+            animation: waveMove3 18s ease-in-out infinite;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .left-content {
+                width: clamp(150px, 50vw, 250px);
+                margin-bottom: 20px;
+            }
+
             .buttons-container {
                 flex-direction: column;
                 width: 100%;
@@ -237,71 +269,23 @@
                 </radialGradient>
             </defs>
 
-            <!-- ONDAS SUPERIORES (animadas) -->
-            <path fill="#1565C0" opacity="0.25">
-                <animate attributeName="d" dur="20s" repeatCount="indefinite"
-                         values="M0,0 L1920,0 L1920,300 C1400,150 700,350 0,200 Z;
-                                 M0,0 L1920,0 L1920,250 C1500,400 600,100 0,280 Z;
-                                 M0,0 L1920,0 L1920,300 C1400,150 700,350 0,200 Z" />
-            </path>
+            <!-- ONDAS SUPERIORES (animadas con CSS) -->
+            <path class="wave-1" fill="#1565C0" opacity="0.25" d="M0,0 L1920,0 L1920,300 C1400,150 700,350 0,200 Z" />
 
-            <path fill="#1976D2" opacity="0.3">
-                <animate attributeName="d" dur="25s" repeatCount="indefinite"
-                         values="M0,50 L1920,50 L1920,280 C1300,320 800,80 0,240 Z;
-                                 M0,50 L1920,50 L1920,200 C1450,80 750,400 0,180 Z;
-                                 M0,50 L1920,50 L1920,280 C1300,320 800,80 0,240 Z" />
-            </path>
+            <path class="wave-2" fill="#1976D2" opacity="0.3" d="M0,50 L1920,50 L1920,280 C1300,320 800,80 0,240 Z" />
 
-            <path fill="#42A5F5" opacity="0.25">
-                <animate attributeName="d" dur="18s" repeatCount="indefinite"
-                         values="M0,100 L1920,100 L1920,350 C1200,200 900,450 0,300 Z;
-                                 M0,100 L1920,100 L1920,280 C1350,500 650,150 0,350 Z;
-                                 M0,100 L1920,100 L1920,350 C1200,200 900,450 0,300 Z" />
-            </path>
-
-            <!--<path fill="#90CAF9" opacity="0.2">
-                <animate attributeName="d" dur="22s" repeatCount="indefinite"
-                         values="M0,150 L1920,150 L1920,400 C1100,250 1000,500 0,350 Z;
-                                 M0,150 L1920,150 L1920,320 C1250,550 550,200 0,380 Z;
-                                 M0,150 L1920,150 L1920,400 C1100,250 1000,500 0,350 Z" />
-            </path>-->
-
+            <path class="wave-3" fill="#42A5F5" opacity="0.25" d="M0,100 L1920,100 L1920,350 C1200,200 900,450 0,300 Z" />
 
             <!-- ONDAS INFERIORES (multicolor, animadas) -->
-            <path fill="url(#grad-green)" opacity="0.7">
-                <animate attributeName="d" dur="16s" repeatCount="indefinite"
-                         values="M0,1080 L1920,1080 L1920,750 C1400,850 700,950 0,800 Z;
-                                 M0,1080 L1920,1080 L1920,800 C1500,700 600,1000 0,850 Z;
-                                 M0,1080 L1920,1080 L1920,750 C1400,850 700,950 0,800 Z" />
-            </path>
+            <path class="wave-1" fill="url(#grad-green)" opacity="0.7" d="M0,1080 L1920,1080 L1920,750 C1400,850 700,950 0,800 Z" />
 
-            <path fill="#FDD835" opacity="0.6">
-                <animate attributeName="d" dur="18s" repeatCount="indefinite"
-                         values="M0,1080 L1920,1080 L1920,850 C1300,950 800,750 0,900 Z;
-                                 M0,1080 L1920,1080 L1920,900 C1450,800 750,1000 0,850 Z;
-                                 M0,1080 L1920,1080 L1920,850 C1300,950 800,750 0,900 Z" />
-            </path>
+            <path class="wave-2" fill="#FDD835" opacity="0.6" d="M0,1080 L1920,1080 L1920,850 C1300,950 800,750 0,900 Z" />
 
-            <path fill="#FF9800" opacity="0.65">
-                <animate attributeName="d" dur="20s" repeatCount="indefinite"
-                         values="M0,1080 L1920,1080 L1920,920 C1200,1000 900,820 0,950 Z;
-                                 M0,1080 L1920,1080 L1920,950 C1350,850 650,1050 0,920 Z;
-                                 M0,1080 L1920,1080 L1920,920 C1200,1000 900,820 0,950 Z" />
-            </path>
+            <path class="wave-3" fill="#FF9800" opacity="0.65" d="M0,1080 L1920,1080 L1920,920 C1200,1000 900,820 0,950 Z" />
 
-            <path fill="#4FC3F7" opacity="0.5">
-                <animate attributeName="d" dur="14s" repeatCount="indefinite"
-                         values="M0,1080 L1920,1080 L1920,980 C1100,900 1000,1050 0,980 Z;
-                                 M0,1080 L1920,1080 L1920,1000 C1250,950 550,1100 0,1000 Z;
-                                 M0,1080 L1920,1080 L1920,980 C1100,900 1000,1050 0,980 Z" />
-            </path>
+            <path class="wave-1" fill="#4FC3F7" opacity="0.5" d="M0,1080 L1920,1080 L1920,980 C1100,900 1000,1050 0,980 Z" />
 
-            <path fill="#1976D2" opacity="0.6">
-                <animate attributeName="d" dur="22s" repeatCount="indefinite"
-                         values="M0,1080 L1920,1080 L1920,1020 C1000,950 1200,1080 0,1030 Z;
-                                 M0,1080 L1920,1080 L1920,1040 C1150,1000 800,1100 0,1050 Z;
-                                 M0,1080 L1920,1080 L1920,1020 C1000,950 1200,1080 0,1030 Z" />
-            </path>
+            <path class="wave-2" fill="#1976D2" opacity="0.6" d="M0,1080 L1920,1080 L1920,1020 C1000,950 1200,1080 0,1030 Z" />
 
             <!-- Puntos decorativos inferiores -->
             <g opacity="0.5">
@@ -331,18 +315,20 @@
 
     <div class="content">
         <div class="left-content">
-            
+            <object type="image/svg+xml" data="img/main.svg"></object>
         </div>
-        <div class="title-container">
-            <h1>
-                <span class="title-crew">Crew</span>
-                <span class="title-planner">Planner</span>
-            </h1>
-        </div>
-        <p class="subtitle">Efficient Team Management & Scheduling</p>
-        <div class="buttons-container">
-            <button class="btn-primary">Get Started</button>
-            <button class="btn-secondary">Learn More</button>
+        <div class="right-content">
+            <div class="title-container">
+                <h1>
+                    <span class="title-crew">Crew</span>
+                    <span class="title-planner">Planner</span>
+                </h1>
+            </div>
+            <p class="subtitle">Efficient Team Management & Scheduling</p>
+            <div class="buttons-container">
+                <button class="btn-primary">Get Started</button>
+                <button class="btn-secondary">Learn More</button>
+            </div>
         </div>
     </div>
 

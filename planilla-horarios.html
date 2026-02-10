@@ -20,10 +20,12 @@
                     <label>📅</label>
                     <input type="date" id="weekDate" value="">
                 </div>
+
+                <button class="print-schedule-btn" id="printScheduleBtn" title="Imprimir Planilla">🖨️</button>
+
             </div>
 
             <div class="header-right">
-                <button class="print-schedule-btn" id="printScheduleBtn" title="Imprimir Planilla">🖨️</button>
                 <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menú">
                     <span></span>
                     <span></span>
@@ -140,9 +142,9 @@
                 <table class="schedule-table" id="scheduleTable">
                     <thead>
                         <tr>
-                            <th>Contrato</th>
-                            <th>ID</th>
-                            <th>Cajero/a</th>
+                            <th class="sortable" data-column="contrato">Contrato <span class="sort-icon"></span></th>
+                            <th class="sortable" data-column="id">ID <span class="sort-icon"></span></th>
+                            <th class="sortable" data-column="nombre">Cajero/a <span class="sort-icon"></span></th>
                             <th>Lun</th>
                             <th>Mar</th>
                             <th>Mié</th>
@@ -150,8 +152,8 @@
                             <th>Vie</th>
                             <th>Sáb</th>
                             <th>Dom</th>
-                            <th>Total Hrs</th>
-                            <th>Hs Extras</th>
+                            <th class="sortable" data-column="total">Total Hrs <span class="sort-icon"></span></th>
+                            <th class="sortable" data-column="extras">Hs Extras <span class="sort-icon"></span></th>
                         </tr>
                     </thead>
                     <tbody id="scheduleTableBody">

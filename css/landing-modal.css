@@ -1,0 +1,296 @@
+﻿/* Landing Page Modal Styles — Window Mode */
+
+/* Overlay oscuro de fondo */
+#landingModal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 20, 40, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    overflow: auto;
+    align-items: center;
+    justify-content: center;
+}
+
+    #landingModal.show {
+        display: flex;
+    }
+
+/* ── Ventana flotante ── */
+.landing-window {
+    position: relative;
+    z-index: 10;
+    background: linear-gradient(160deg, #E8F4F8 0%, #D4E9F5 100%);
+    border-radius: 20px;
+    box-shadow: 0 30px 80px rgba(10, 30, 70, 0.35), 0 8px 24px rgba(10, 30, 70, 0.18), inset 0 1px 0 rgba(255,255,255,0.7);
+    overflow: hidden;
+    width: clamp(320px, 88vw, 920px);
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    animation: windowIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes windowIn {
+    from {
+        opacity: 0;
+        transform: scale(0.88) translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Barra de título estilo ventana */
+.landing-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px 10px;
+    background: rgba(255,255,255,0.45);
+    border-bottom: 1px solid rgba(21, 101, 192, 0.12);
+    flex-shrink: 0;
+}
+
+.titlebar-dot {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+    .titlebar-dot.red {
+        background: #ff5f56;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.12);
+    }
+
+    .titlebar-dot.yellow {
+        background: #ffbd2e;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.12);
+    }
+
+    .titlebar-dot.green {
+        background: #27c93f;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.12);
+    }
+
+.titlebar-label {
+    flex: 1;
+    text-align: center;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #78909C;
+    letter-spacing: 0.5px;
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    user-select: none;
+    margin-right: 39px;
+}
+
+/* Área SVG de fondo dentro de la ventana */
+.landing-background-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Contenido principal */
+.landing-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 22px 30px 30px;
+    gap: 26px;
+    flex: 1;
+}
+
+.landing-left {
+    flex-shrink: 0;
+    width: clamp(140px, 22vw, 280px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .landing-left object {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+        pointer-events: none;
+    }
+
+.landing-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width:50%;
+}
+
+.landing-title-container {
+    margin-bottom: 10px;
+}
+
+    .landing-title-container h1 {
+        font-size: clamp(2.8rem, 7vw, 5.5rem);
+        font-weight: 900;
+        letter-spacing: -2px;
+        margin: 0;
+        line-height: 1.1;
+        font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    }
+
+.landing-title-crew {
+    color: #1565C0;
+    display: inline-block;
+}
+
+.landing-title-planner {
+    color: #66BB6A;
+    display: inline-block;
+}
+
+.landing-subtitle {
+    color: #90A4AE;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 400;
+    margin-top: 5px;
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+}
+
+.landing-buttons {
+    margin-top: 32px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.landing-btn {
+    border: none;
+    padding: 15px 40px;
+    border-radius: 12px;
+    font-size: clamp(0.95rem, 1.8vw, 1.2rem);
+    font-weight: 700;
+    cursor: pointer;
+    color: white;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+}
+
+    .landing-btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.5s, height 0.5s;
+    }
+
+    .landing-btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .landing-btn:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 14px 28px rgba(0,0,0,0.22);
+    }
+
+    .landing-btn:active {
+        transform: translateY(-1px);
+    }
+
+.landing-btn-primary {
+    background: #1565C0;
+}
+
+.landing-btn-secondary {
+    background: #FF9800;
+}
+
+/* Animaciones de ondas */
+.wave-1 {
+    animation: waveMove1 20s ease-in-out infinite;
+}
+
+.wave-2 {
+    animation: waveMove2 25s ease-in-out infinite;
+}
+
+.wave-3 {
+    animation: waveMove3 18s ease-in-out infinite;
+}
+
+@keyframes waveMove1 {
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+    }
+
+    50% {
+        transform: translateY(-20px) translateX(10px);
+    }
+}
+
+@keyframes waveMove2 {
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+    }
+
+    50% {
+        transform: translateY(-15px) translateX(-10px);
+    }
+}
+
+@keyframes waveMove3 {
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+    }
+
+    50% {
+        transform: translateY(-25px) translateX(15px);
+    }
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+    .landing-content {
+        flex-direction: column;
+        padding: 24px 20px 32px;
+    }
+
+    .landing-left {
+        width: clamp(110px, 40vw, 180px);
+        margin-bottom: 8px;
+    }
+
+    .landing-buttons {
+        flex-direction: column;
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .landing-btn {
+        width: 100%;
+    }
+}

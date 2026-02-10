@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Horarios</title>
+    <link rel="stylesheet" href="css/landing-modal.css">
     <link rel="stylesheet" href="css/style.css?v=2.2">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -11,6 +12,108 @@
     <script src="js/unified-storage.js"></script>
 </head>
 <body>
+    <!-- Modal de Landing Page -->
+    <div id="landingModal" class="show">
+        <div class="landing-window">
+
+            <!-- Barra de título estilo ventana -->
+            <div class="landing-titlebar">
+                <span class="titlebar-dot red"></span>
+                <span class="titlebar-dot yellow"></span>
+                <span class="titlebar-dot green"></span>
+                <!--<span class="titlebar-label">Crew Planner</span>-->
+            </div>
+
+            <div class="landing-background-svg">
+                <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="grad-green" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#4CAF50" />
+                            <stop offset="100%" style="stop-color:#66BB6A" />
+                        </linearGradient>
+                        <linearGradient id="grad-blue-top" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#1565C0" />
+                            <stop offset="100%" style="stop-color:#42A5F5" />
+                        </linearGradient>
+                        <radialGradient id="sunGrad">
+                            <stop offset="0%" style="stop-color:#FFB74D" />
+                            <stop offset="100%" style="stop-color:#FF9800" />
+                        </radialGradient>
+                    </defs>
+
+                    <!-- ONDAS SUPERIORES (animadas con CSS) -->
+                    <path class="wave-1" fill="#1565C0" opacity="0.25" d="M0,0 L1920,0 L1920,300 C1400,150 700,350 0,200 Z" />
+                    <path class="wave-2" fill="#1976D2" opacity="0.3" d="M0,50 L1920,50 L1920,280 C1300,320 800,80 0,240 Z" />
+                    <path class="wave-3" fill="#42A5F5" opacity="0.25" d="M0,100 L1920,100 L1920,350 C1200,200 900,450 0,300 Z" />
+
+                    <!-- ONDAS INFERIORES (multicolor, animadas) -->
+                    <path class="wave-1" fill="url(#grad-green)" opacity="0.7" d="M0,1080 L1920,1080 L1920,750 C1400,850 700,950 0,800 Z" />
+                    <path class="wave-2" fill="#FDD835" opacity="0.6" d="M0,1080 L1920,1080 L1920,850 C1300,950 800,750 0,900 Z" />
+                    <path class="wave-3" fill="#FF9800" opacity="0.65" d="M0,1080 L1920,1080 L1920,920 C1200,1000 900,820 0,950 Z" />
+                    <path class="wave-1" fill="#4FC3F7" opacity="0.5" d="M0,1080 L1920,1080 L1920,980 C1100,900 1000,1050 0,980 Z" />
+                    <path class="wave-2" fill="#1976D2" opacity="0.6" d="M0,1080 L1920,1080 L1920,1020 C1000,950 1200,1080 0,1030 Z" />
+
+                    <!-- Puntos decorativos inferiores -->
+                    <g opacity="0.5">
+                        <circle cx="1580" cy="880" r="4" fill="#1976D2" />
+                        <circle cx="1600" cy="880" r="4" fill="#1976D2" />
+                        <circle cx="1620" cy="880" r="4" fill="#1976D2" />
+                        <circle cx="1640" cy="880" r="4" fill="#1976D2" />
+                        <circle cx="1660" cy="880" r="4" fill="#1976D2" />
+                        <circle cx="1580" cy="900" r="4" fill="#1976D2" />
+                        <circle cx="1600" cy="900" r="4" fill="#1976D2" />
+                        <circle cx="1620" cy="900" r="4" fill="#1976D2" />
+                        <circle cx="1640" cy="900" r="4" fill="#1976D2" />
+                        <circle cx="1660" cy="900" r="4" fill="#1976D2" />
+                        <circle cx="1580" cy="920" r="4" fill="#1976D2" />
+                        <circle cx="1600" cy="920" r="4" fill="#1976D2" />
+                        <circle cx="1620" cy="920" r="4" fill="#1976D2" />
+                        <circle cx="1640" cy="920" r="4" fill="#1976D2" />
+                        <circle cx="1660" cy="920" r="4" fill="#1976D2" />
+                        <animate attributeName="opacity" dur="4s" repeatCount="indefinite" values="0.3; 0.7; 0.3" />
+                    </g>
+                </svg>
+            </div>
+
+            <div class="landing-content">
+                <div class="landing-left">
+                    <object type="image/svg+xml" data="img/main.svg"></object>
+                </div>
+                <div class="landing-right">
+                    <div class="landing-title-container">
+                        <h1>
+                            <span class="landing-title-crew">Crew</span>
+                            <span class="landing-title-planner">Planner</span>
+                        </h1>
+                    </div>
+                    <p class="landing-subtitle">Efficient Team Management & Scheduling</p>
+                    <div class="landing-buttons">
+                        <button class="landing-btn landing-btn-primary" onclick="closeLandingModal()">Iniciar</button>
+                        <!--<button class="landing-btn landing-btn-secondary">Learn More</button>-->
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.landing-window -->
+    </div>
+
+    <script>
+        // Mostrar el modal al cargar la página
+        window.addEventListener('DOMContentLoaded', function () {
+            const landingModal = document.getElementById('landingModal');
+            const hasVisited = sessionStorage.getItem('hasVisitedLanding');
+
+            if (!hasVisited) {
+                landingModal.classList.add('show');
+            }
+        });
+
+        // Función para cerrar el modal
+        function closeLandingModal() {
+            const landingModal = document.getElementById('landingModal');
+            landingModal.classList.remove('show');
+            sessionStorage.setItem('hasVisitedLanding', 'true');
+        }
+    </script>
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -31,7 +134,7 @@
                     <button class="day-tab" data-day="4">VIE</button>
                     <button class="day-tab" data-day="5">SÁB</button>
                     <button class="day-tab" data-day="6">DOM</button>
-                    <button onclick="openPrintConfigModal()" class="print-schedule-btn">🖨️</button>
+                    <button onclick="openPrintConfigModal()" class="print1-schedule-btn">🖨️</button>
                     <button onclick="openWeekPrintConfigModal()" class="print-schedule-btn" style="background: var(--accent-teal); border-color: #00ACC1;">🗓️ Imprimir semana</button>
 
                 </div>
