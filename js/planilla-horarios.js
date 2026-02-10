@@ -866,6 +866,9 @@ function toggleViewMode() {
 
 // ========== EVENT LISTENERS ==========
 function setupEventListeners() {
+    // Botón de imprimir
+    document.getElementById('printScheduleBtn').addEventListener('click', printSchedule);
+
     // Botones principales
     document.getElementById('manageCodesBtn').addEventListener('click', openCodesModal);
     document.getElementById('manageCodesMainBtn').addEventListener('click', openCodesModal);
@@ -1326,4 +1329,11 @@ function debugStorage() {
 // Hacer la función disponible globalmente para debugging
 if (typeof window !== 'undefined') {
     window.debugStorage = debugStorage;
+}
+
+// ========== FUNCIÓN DE IMPRESIÓN ==========
+function printSchedule() {
+    // Simplemente llamar a window.print()
+    // Los estilos CSS @media print se encargan del resto
+    window.print();
 }

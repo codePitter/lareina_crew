@@ -77,6 +77,33 @@ body {
 }
 
 /* ========== BOTÓN HAMBURGUESA ========== */
+/* Botón de Imprimir */
+.print-schedule-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid white;
+    color: white;
+    font-size: 1.5rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+}
+
+    .print-schedule-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .print-schedule-btn:active {
+        transform: translateY(0);
+    }
+
 .hamburger-btn {
     background: transparent;
     border: none;
@@ -1246,4 +1273,120 @@ body {
 /* Compactar container de tabla */
 .schedule-table-container {
     margin-top: 15px !important;
+}
+
+/* ========== ESTILOS DE IMPRESIÓN ========== */
+@media print {
+    /* Ocultar todo excepto schedule-table-container */
+    .header,
+    .side-menu,
+    .menu-overlay,
+    .hamburger-btn,
+    .print-schedule-btn,
+    .filters-section,
+    .legend-section {
+        display: none !important;
+    }
+
+    /* Asegurar que solo se vea la tabla */
+    body {
+        background: white;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        display: block;
+        background: white;
+    }
+
+    .main-content {
+        margin: 0;
+        padding: 0;
+        max-width: 100%;
+        background: white;
+    }
+
+    /* Mostrar solo schedule-table-container */
+    .schedule-table-container {
+        overflow: visible !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 10px;
+    }
+
+    .schedule-table {
+        width: 100%;
+        font-size: 9px !important;
+        border-collapse: collapse;
+    }
+
+        /* MÁXIMA ESPECIFICIDAD PARA PADDING */
+        table#scheduleTable th,
+        table#scheduleTable td,
+        table.schedule-table th,
+        table.schedule-table td,
+        .schedule-table th,
+        .schedule-table td,
+        #scheduleTable th,
+        #scheduleTable td {
+            padding: 1px 3px !important;
+            border: 1px solid #333 !important;
+            page-break-inside: avoid;
+            font-size: 11px !important;
+        }
+
+        .schedule-table thead {
+            background: #f0f0f0 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+            /* TODAS LAS VARIACIONES POSIBLES PARA THEAD TH */
+            table#scheduleTable thead th,
+            table#scheduleTable thead tr th,
+            table.schedule-table thead th,
+            table.schedule-table thead tr th,
+            #scheduleTable thead th,
+            #scheduleTable thead tr th,
+            .schedule-table thead th,
+            .schedule-table thead tr th {
+                font-weight: bold !important;
+                font-size: 11px !important;
+                color: #000 !important;
+                padding: 1px 3px !important;
+                text-transform: none !important;
+                letter-spacing: normal !important;
+                height: auto !important;
+                line-height: 1.2 !important;
+                vertical-align: middle !important;
+            }
+
+        /* Asegurar que las filas no se corten entre páginas */
+        .schedule-table tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+
+        .schedule-table tbody tr:hover {
+            background: transparent !important;
+        }
+
+        .schedule-table tbody td {
+            font-size: 8px !important;
+            padding: 1px 2px !important;
+        }
+
+    /* Ajustar colores para impresión en blanco y negro */
+    @media print and (monochrome) {
+        .schedule-table thead {
+            background: #d0d0d0 !important;
+        }
+    }
+
+    /* Configuración de página A4 VERTICAL */
+    @page {
+        size: A4 portrait;
+        margin: 1cm;
+    }
 }

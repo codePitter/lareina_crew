@@ -1896,16 +1896,20 @@ body {
 
 /* ========== BOTÓN DE IMPRESIÓN DEL SCHEDULE ========== */
 .print-schedule-btn {
-    padding: 6px 14px;
-    background: var(--primary-green);
+    padding: 6px 10px;
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
     border: 2px solid var(--dark-green);
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 16px;
     color: white;
     transition: all 0.3s;
-    margin-left: 10px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
 }
 
     .print-schedule-btn:hover {
