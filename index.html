@@ -88,7 +88,7 @@
                     </div>
                     <p class="landing-subtitle">Efficient Team Management & Scheduling</p>
                     <div class="landing-buttons">
-                        <button class="landing-btn landing-btn-primary" onclick="closeLandingModal()">Iniciar</button>
+                        <button class="landing-btn landing-btn-primary" onclick="closeLandingModal()">Continuar</button>
                         <!--<button class="landing-btn landing-btn-secondary">Learn More</button>-->
                     </div>
                 </div>
@@ -100,7 +100,7 @@
         // Mostrar el modal al cargar la página
         window.addEventListener('DOMContentLoaded', function () {
             const landingModal = document.getElementById('landingModal');
-            const hasVisited = sessionStorage.getItem('hasVisitedLanding');
+            const hasVisited = localStorage.getItem('hasVisitedLanding');
 
             if (!hasVisited) {
                 landingModal.classList.add('show');
@@ -111,7 +111,7 @@
         function closeLandingModal() {
             const landingModal = document.getElementById('landingModal');
             landingModal.classList.remove('show');
-            sessionStorage.setItem('hasVisitedLanding', 'true');
+            localStorage.setItem('hasVisitedLanding', 'true');
         }
     </script>
     <div class="container">
