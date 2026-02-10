@@ -193,7 +193,90 @@ window.addEventListener('click', (event) => {
     if (event.target === modal) {
         closePrintConfigModal();
     }
+
+    const weekModal = document.getElementById('weekPrintConfigModal');
+    if (event.target === weekModal) {
+        closeWeekPrintConfigModal();
+    }
 });
+
+// ========== FUNCIONES PARA IMPRESIÓN SEMANAL ==========
+
+// Abrir modal de configuración de impresión semanal
+function openWeekPrintConfigModal() {
+    const modal = document.getElementById('weekPrintConfigModal');
+    modal.classList.add('show');
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de configuración de impresión semanal
+function closeWeekPrintConfigModal() {
+    const modal = document.getElementById('weekPrintConfigModal');
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+}
+
+// Proceder con la impresión de toda la semana
+function proceedWithWeekPrint() {
+    // Recopilar la configuración de cada día
+    const weekConfig = [];
+    for (let day = 0; day < 7; day++) {
+        const dayConfig = {
+            day: day,
+            omitTurno1: document.querySelector(`.week-print-config[data-day="${day}"][data-turno="1"]`).checked,
+            omitTurno2: document.querySelector(`.week-print-config[data-day="${day}"][data-turno="2"]`).checked,
+            omitTurno3: document.querySelector(`.week-print-config[data-day="${day}"][data-turno="3"]`).checked
+        };
+        weekConfig.push(dayConfig);
+    }
+
+    // Cerrar modal
+    closeWeekPrintConfigModal();
+
+    // Imprimir cada día secuencialmente
+    printWeekSequentially(weekConfig, 0);
+}
+
+// Imprimir cada día de la semana secuencialmente
+function printWeekSequentially(weekConfig, currentDayIndex) {
+    if (currentDayIndex >= 7) {
+        // Terminamos de imprimir todos los días
+        console.log('Impresión semanal completada');
+        return;
+    }
+
+    const dayConfig = weekConfig[currentDayIndex];
+
+    // Simular clic en el día correspondiente para cambiar la vista
+    const dayTab = document.querySelector(`.day-tab[data-day="${dayConfig.day}"]`);
+    if (dayTab) {
+        dayTab.click();
+    }
+
+    // Esperar a que se cargue el día
+    setTimeout(() => {
+        // Preparar la impresión con la configuración de este día
+        prepareCajaNumbers();
+        hideSelectedExitColumns(dayConfig.omitTurno1, dayConfig.omitTurno2, dayConfig.omitTurno3);
+        addPrintTitle();
+
+        // Esperar un momento para que se apliquen los cambios
+        setTimeout(() => {
+            // Ejecutar impresión
+            window.print();
+
+            // Esperar a que termine la impresión y limpiar
+            setTimeout(() => {
+                restoreAllColumns();
+                removePrintTitle();
+                restoreCajaNumbers();
+
+                // Continuar con el siguiente día
+                printWeekSequentially(weekConfig, currentDayIndex + 1);
+            }, 1000);
+        }, 100);
+    }, 300);
+}
 
 // Agregar efecto hover a los labels
 document.addEventListener('DOMContentLoaded', () => {
