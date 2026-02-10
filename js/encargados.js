@@ -1214,6 +1214,14 @@ function setupHamburgerMenu() {
         });
     }
 
+    // Botón de imprimir horario
+    const printScheduleBtn = document.getElementById('printScheduleBtn');
+    if (printScheduleBtn) {
+        printScheduleBtn.addEventListener('click', () => {
+            printSchedule();
+        });
+    }
+
     const menuSaveBtn = document.getElementById('menuSaveBtn');
     if (menuSaveBtn) {
         menuSaveBtn.addEventListener('click', () => {

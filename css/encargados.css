@@ -119,10 +119,39 @@ body {
 .day-tabs {
     display: flex;
     gap: 6px;
+    align-items: center;
 }
 
+.print-schedule-btn {
+    padding: 6px 10px;
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+    border: 2px solid var(--dark-green);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    color: white;
+    transition: all 0.3s;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+}
+
+    .print-schedule-btn:hover {
+        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .print-schedule-btn:active {
+        transform: translateY(0);
+    }
+
+
 .day-tab {
-    padding: 6px 14px;
+    padding: 6px 10px;
     background: rgba(255, 255, 255, 0.2);
     border: 2px solid rgba(255, 255, 255, 0.4);
     border-radius: 6px;
@@ -131,6 +160,10 @@ body {
     font-size: 13px;
     color: white;
     transition: all 0.3s;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
     .day-tab:hover {
@@ -426,7 +459,7 @@ body {
         -webkit-appearance: none;
     }
 
-   /* .time-input::-webkit-datetime-edit-ampm-field {
+    /* .time-input::-webkit-datetime-edit-ampm-field {
         display: none;
     }*/
 
@@ -1147,5 +1180,267 @@ body {
 
     .menu-text {
         font-size: 14px;
+    }
+}
+
+/* ========== ESTILOS DE IMPRESIÓN ========== */
+@media print {
+    /* Configurar márgenes de página al mínimo */
+    @page {
+        margin: 5mm;
+    }
+
+    /* Ocultar elementos no necesarios */
+    .header,
+    .sidebar,
+    .hamburger-btn,
+    .side-menu,
+    .menu-overlay,
+    .add-row-button-container,
+    .add-row-btn,
+    .remove-row-btn,
+    .print-schedule-btn,
+    .licencias-section,
+    .vacaciones-section {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    body {
+        background: white;
+        overflow: visible;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .container {
+        height: auto;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .main-content {
+        display: block;
+        height: auto;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+        /* Ocultar el schedule-area original */
+        .main-content > .schedule-area {
+            display: none !important;
+        }
+
+    /* Mostrar el contenedor de impresión semanal */
+    #weekly-print-container {
+        display: block !important;
+        visibility: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Sección de cada día */
+    .day-print-section {
+        page-break-inside: avoid;
+        margin-bottom: 1.5mm;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+        /* Primera sección (Lunes) sin margen superior */
+        .day-print-section:first-child {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+
+    /* Título de cada día */
+    .day-print-title {
+        font-size: 11pt;
+        font-weight: bold;
+        color: #000;
+        margin-bottom: 0.5mm;
+        margin-top: 0 !important;
+        padding: 0.5mm 0;
+        border-bottom: 2pt solid #000;
+        page-break-after: avoid;
+    }
+
+    /* Primer título (Lunes) sin margen ni padding superior */
+    .day-print-section:first-child .day-print-title {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    .schedule-area {
+        padding: 0 !important;
+        background: white;
+        height: auto;
+        overflow: visible;
+    }
+
+    /* Grid de horarios */
+    .schedule-grid {
+        page-break-inside: avoid;
+        width: 100%;
+        font-size: 7pt;
+    }
+
+    /* Header row */
+    .header-row {
+        background: none !important;
+        border: none !important;
+        border-bottom: 1pt solid #000 !important;
+        padding: 0.25mm 0 !important;
+        margin: 0 0 0.25px 0 !important;
+        box-shadow: none !important;
+        color: #000 !important;
+    }
+
+    .caja-number-header,
+    .turno-header {
+        color: #000 !important;
+        font-size: 7pt;
+    }
+
+    /* Filas de cajas */
+    .caja-row {
+        page-break-inside: avoid;
+        font-size: 7pt;
+        padding: 0.125px 0 !important;
+        margin: 0.25px 0 !important;
+        border: none !important;
+        border-bottom: 0.5pt solid #000 !important;
+        background: #e5e7eb !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    /* Números de caja */
+    .caja-number {
+        background: none !important;
+        color: #000 !important;
+        border: 0.5pt solid #000 !important;
+        border-right: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        font-size: 7pt;
+        font-weight: bold;
+        height: 4mm;
+        line-height: 4mm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Turno blocks */
+    .turno-block {
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .turno-content {
+        display: flex !important;
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Dropzones de nombres */
+    .name-dropzone {
+        background: white !important;
+        border: 0.5pt solid #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        height: 4mm;
+        min-height: 4mm;
+        max-height: 4mm;
+        font-size: 6pt;
+        padding: 0 0.125mm !important;
+        margin: 0 !important;
+        line-height: 4mm;
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-start;
+        color: #000 !important;
+        font-weight: normal;
+    }
+
+        .name-dropzone:empty::before {
+            content: '' !important;
+            display: none !important;
+        }
+
+        .name-dropzone:not(:empty) {
+            color: #000 !important;
+            font-weight: bold !important;
+            visibility: visible !important;
+        }
+
+    /* Sección de francos */
+    .francos-section {
+        page-break-inside: avoid;
+        margin-top: 0.25mm;
+        padding: 0.25mm;
+        border: 0.5pt solid #000;
+        border-radius: 0;
+    }
+
+    .francos-section-title {
+        font-size: 8pt;
+        font-weight: bold;
+        margin-bottom: 0.125mm;
+        color: #000;
+    }
+
+    .francos-dropzone {
+        background: #FFF3E0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        padding: 0.25mm;
+        min-height: 6mm;
+        border: 0.5pt solid #000 !important;
+    }
+
+    .francos-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.125mm;
+    }
+
+    .franco-chip {
+        color: #000 !important;
+        border: 0.5pt solid #000 !important;
+        background: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        font-size: 6pt;
+        padding: 0.125mm;
+    }
+
+    /* Ocultar botones de remover */
+    .remove-btn {
+        display: none !important;
+    }
+
+    /* Elementos arrastrables */
+    .draggable-person {
+        font-size: 6pt;
+        padding: 0.125mm;
+        margin: 0.125mm;
+        background: white !important;
+        border: 0.5pt solid #000;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color: #000 !important;
+    }
+
+    /* Contador de turno */
+    .turno-counter {
+        display: none !important;
     }
 }
