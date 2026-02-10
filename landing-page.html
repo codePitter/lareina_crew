@@ -3,1196 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crew Planner - Gestión de Equipos</title>
+    <title>Crew Planner - Gestión Eficiente de Equipos</title>
     <style>
+        :root {
+            /* Colores del cielo */
+            --sky-light: #E8F4F8;
+            --sky-medium: #D4E9F5;
+            /* Colores primarios */
+            --primary-blue: #1565C0;
+            --secondary-blue: #1976D2;
+            --light-blue: #42A5F5;
+            --very-light-blue: #90CAF9;
+            --accent-teal: #00BCD4;
+            /* Colores vibrantes */
+            --primary-green: #4CAF50;
+            --light-green: #66BB6A;
+            --dark-green: #43A047;
+            --primary-orange: #FF9800;
+            --light-orange: #FFB74D;
+            --yellow: #FDD835;
+            --cyan: #4FC3F7;
+            /* Texto */
+            --text-medium: #90A4AE;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-            background: linear-gradient(135deg, #e8f4f8 0%, #f5f9fc 100%);
+            /* Fondo celeste gradiente */
+            background: linear-gradient(180deg, var(--sky-light) 0%, var(--sky-medium) 100%);
         }
 
-        .hero-section {
-            min-height: 100vh;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-        }
-
-        /* Decoración de fondo superior */
-        .bg-decoration-top {
-            position: absolute;
+        .background-svg {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 300px;
-            overflow: hidden;
+            height: 100%;
             z-index: 0;
+            pointer-events: none;
         }
 
-        .wave-top-blue {
-            position: absolute;
-            top: -50px;
-            left: -10%;
-            width: 50%;
-            height: 250px;
-            background: linear-gradient(135deg, #2E7FE5 0%, #4A9FF5 100%);
-            border-radius: 0 0 60% 50%;
-            opacity: 0.8;
-        }
-
-        .wave-top-light {
-            position: absolute;
-            top: 20px;
-            left: 10%;
-            width: 60%;
-            height: 200px;
-            background: linear-gradient(135deg, #A8D5F2 0%, #D6EEFF 100%);
-            border-radius: 0 0 70% 40%;
-            opacity: 0.6;
-        }
-
-        .circle-green {
-            position: absolute;
-            top: 50px;
-            left: -50px;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, #93C54E 0%, #7AB03E 100%);
-            border-radius: 50%;
-            opacity: 0.4;
-        }
-
-        .circle-orange {
-            position: absolute;
-            top: 0;
-            right: -100px;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, #FF9E3D 0%, #E67E22 100%);
-            border-radius: 50%;
-            opacity: 0.3;
-        }
-
-        .dots-orange {
-            position: absolute;
-            top: 120px;
-            right: 150px;
-            display: grid;
-            grid-template-columns: repeat(6, 8px);
-            gap: 8px;
-        }
-
-        .dot-item {
-            width: 4px;
-            height: 4px;
-            background: #FF9E3D;
-            border-radius: 50%;
-            opacity: 0;
-            animation: fadeInDot 0.3s ease-out forwards;
-        }
-
-            .dot-item:nth-child(1) {
-                animation-delay: 3.0s;
-            }
-
-            .dot-item:nth-child(2) {
-                animation-delay: 3.1s;
-            }
-
-            .dot-item:nth-child(3) {
-                animation-delay: 3.2s;
-            }
-
-            .dot-item:nth-child(4) {
-                animation-delay: 3.3s;
-            }
-
-            .dot-item:nth-child(5) {
-                animation-delay: 3.4s;
-            }
-
-            .dot-item:nth-child(6) {
-                animation-delay: 3.5s;
-            }
-
-        @keyframes fadeInDot {
-            to {
-                opacity: 1;
-            }
-        }
-
-        /* Decoración de fondo inferior */
-        .bg-decoration-bottom {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 250px;
-            overflow: hidden;
-            z-index: 0;
-        }
-
-        .wave-bottom {
-            position: absolute;
-            bottom: 0;
+        svg {
+            display: block;
             width: 100%;
             height: 100%;
         }
 
-        .wave-green {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 40%;
-            height: 180px;
-            background: linear-gradient(135deg, #93C54E 0%, #7AB03E 100%);
-            border-radius: 50% 0 0 0;
-            opacity: 0.7;
-        }
-
-        .wave-yellow {
-            position: absolute;
-            bottom: 0;
-            left: 25%;
-            width: 30%;
-            height: 150px;
-            background: linear-gradient(135deg, #FFC857 0%, #FFB340 100%);
-            border-radius: 50% 50% 0 0;
-            opacity: 0.6;
-        }
-
-        .wave-orange {
-            position: absolute;
-            bottom: 0;
-            left: 45%;
-            width: 25%;
-            height: 120px;
-            background: linear-gradient(135deg, #FF9E3D 0%, #E67E22 100%);
-            border-radius: 50% 50% 0 0;
-            opacity: 0.7;
-        }
-
-        .wave-blue {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 35%;
-            height: 200px;
-            background: linear-gradient(135deg, #4A9FF5 0%, #2E7FE5 100%);
-            border-radius: 50% 0 0 0;
-            opacity: 0.7;
-        }
-
-        .dots-bottom {
-            position: absolute;
-            bottom: 60px;
-            right: 100px;
-            display: grid;
-            grid-template-columns: repeat(8, 6px);
-            gap: 6px;
-        }
-
-        /* Container principal */
-        .container {
-            max-width: 1400px;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 80px;
+        .content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            position: relative;
-            z-index: 1;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
         }
 
-        /* === LADO IZQUIERDO - ILUSTRACIÓN === */
-        .left-side {
-            position: relative;
-            opacity: 0;
-            animation: fadeInLeft 1s ease-out 0.3s forwards;
+        .title-container {
+            margin-bottom: 10px;
         }
 
-        @keyframes fadeInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
+            .title-container h1 {
+                font-size: clamp(3rem, 10vw, 7rem);
+                font-weight: 900;
+                letter-spacing: -2px;
+                margin: 0;
+                line-height: 1.1;
             }
 
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        /* Título bicolor: Crew (azul) + Planner (verde) */
+        .title-crew {
+            color: var(--primary-blue);
+            display: inline-block;
         }
 
-        .illustration-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 650px;
-            margin: 0 auto;
+        .title-planner {
+            color: var(--light-green);
+            display: inline-block;
         }
 
-        /* Línea punteada con avión de papel */
-        .dotted-line {
-            position: absolute;
-            top: 80px;
-            left: -50px;
-            width: 250px;
-            height: 200px;
-            opacity: 0;
-            animation: fadeIn 0.8s ease-out 2.5s forwards;
-        }
-
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-
-        .dashed-path {
-            stroke: #4A9FF5;
-            stroke-width: 2;
-            stroke-dasharray: 8, 8;
-            fill: none;
-            stroke-linecap: round;
-        }
-
-        .paper-plane {
-            opacity: 0;
-            animation: flyPlane 1.5s ease-out 2.5s forwards;
-        }
-
-        @keyframes flyPlane {
-            0% {
-                opacity: 0;
-                transform: translate(-50px, 50px) rotate(-45deg);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translate(0, 0) rotate(0deg);
-            }
-        }
-
-        /* SVG Illustration Container */
-        .svg-illustration {
-            width: 100%;
-            height: auto;
-            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.1));
-        }
-
-        /* Animaciones de elementos individuales */
-        .island-base {
-            opacity: 0;
-            animation: scaleIn 0.8s ease-out 0.8s forwards;
-        }
-
-        @keyframes scaleIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .leaves {
-            opacity: 0;
-            animation: growIn 0.6s ease-out 1.2s forwards;
-        }
-
-        @keyframes growIn {
-            from {
-                opacity: 0;
-                transform: scale(0) translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .calendar {
-            opacity: 0;
-            animation: slideInDown 0.8s ease-out 1.4s forwards;
-        }
-
-        @keyframes slideInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .person-1 {
-            opacity: 0;
-            animation: popInPerson 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1.8s forwards;
-        }
-
-        .person-2 {
-            opacity: 0;
-            animation: popInPerson 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 2.0s forwards;
-        }
-
-        .person-3 {
-            opacity: 0;
-            animation: popInPerson 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 2.2s forwards;
-        }
-
-        @keyframes popInPerson {
-            from {
-                opacity: 0;
-                transform: translateY(50px) scale(0.5);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .clock {
-            opacity: 0;
-            animation: rotateIn 1s ease-out 2.4s forwards;
-        }
-
-        @keyframes rotateIn {
-            from {
-                opacity: 0;
-                transform: rotate(-180deg) scale(0.3);
-            }
-
-            to {
-                opacity: 1;
-                transform: rotate(0) scale(1);
-            }
-        }
-
-        .clock-hand-hour {
-            transform-origin: 40px 40px;
-            animation: tickHour 2s linear 3.5s infinite;
-        }
-
-        .clock-hand-minute {
-            transform-origin: 40px 40px;
-            animation: tickMinute 1s linear 3.5s infinite;
-        }
-
-        @keyframes tickHour {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes tickMinute {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .airplane {
-            opacity: 0;
-            animation: flyInPlane 1.5s ease-out 2.6s forwards;
-        }
-
-        @keyframes flyInPlane {
-            from {
-                opacity: 0;
-                transform: translate(-100px, 50px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translate(0, 0);
-            }
-        }
-
-        .gears {
-            opacity: 0;
-            animation: rotateInGears 1s ease-out 2.8s forwards;
-        }
-
-        @keyframes rotateInGears {
-            from {
-                opacity: 0;
-                transform: rotate(-90deg) scale(0.5);
-            }
-
-            to {
-                opacity: 1;
-                transform: rotate(0) scale(1);
-            }
-        }
-
-        .gear-1 {
-            transform-origin: 35px 35px;
-            animation: rotateGear 4s linear 3.8s infinite;
-        }
-
-        .gear-2 {
-            transform-origin: 58px 58px;
-            animation: rotateGearReverse 3s linear 3.8s infinite;
-        }
-
-        @keyframes rotateGear {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes rotateGearReverse {
-            to {
-                transform: rotate(-360deg);
-            }
-        }
-
-        /* === LADO DERECHO - CONTENIDO === */
-        .right-side {
-            opacity: 0;
-            animation: fadeInRight 1s ease-out 0.5s forwards;
-            z-index: 2;
-        }
-
-        @keyframes fadeInRight {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .logo {
-            margin-bottom: 30px;
-            opacity: 0;
-            animation: fadeInDown 0.8s ease-out 1.2s forwards;
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .logo h1 {
-            font-size: 4.5rem;
-            font-weight: 800;
-            margin: 0;
-            line-height: 1;
-            letter-spacing: -2px;
-        }
-
-        .logo .crew {
-            color: #2E7FE5;
-        }
-
-        .logo .planner {
-            color: #5FB34E;
-        }
-
-        .tagline {
-            font-size: 1.6rem;
-            color: #7f8c8d;
-            margin-bottom: 50px;
+        .subtitle {
+            color: var(--text-medium);
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
             font-weight: 400;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease-out 1.8s forwards;
+            margin-top: 5px;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .cta-buttons {
+        .buttons-container {
+            margin-top: 40px;
             display: flex;
             gap: 20px;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
-        .btn {
-            padding: 20px 45px;
-            font-size: 1.3rem;
-            font-weight: 700;
+        button {
             border: none;
+            padding: 18px 45px;
             border-radius: 12px;
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            opacity: 0;
-            transform: translateY(20px) scale(0.9);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            color: white;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
         }
+
+            button::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transform: translate(-50%, -50%);
+                transition: width 0.5s, height 0.5s;
+            }
+
+            button:hover::before {
+                width: 300px;
+                height: 300px;
+            }
+
+            button:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+            }
+
+            button:active {
+                transform: translateY(-2px);
+            }
 
         .btn-primary {
-            background: #2E7FE5;
-            color: white;
-            animation: btnAppear 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 2.8s forwards;
+            background: var(--primary-blue);
         }
-
-            .btn-primary:hover {
-                background: #1E5BB8;
-                transform: translateY(-5px) scale(1.05);
-                box-shadow: 0 8px 25px rgba(46, 127, 229, 0.3);
-            }
 
         .btn-secondary {
-            background: #FF9E3D;
-            color: white;
-            animation: btnAppear 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 3.1s forwards;
+            background: var(--primary-orange);
         }
 
-            .btn-secondary:hover {
-                background: #E67E22;
-                transform: translateY(-5px) scale(1.05);
-                box-shadow: 0 8px 25px rgba(255, 158, 61, 0.3);
+        /* Animaciones para las ondas */
+        @keyframes waveFloat1 {
+            0%, 100% {
+                d: path("M0,0 L1920,0 L1920,300 C1400,150 700,350 0,200 Z");
             }
 
-        @keyframes btnAppear {
+            50% {
+                d: path("M0,0 L1920,0 L1920,250 C1500,400 600,100 0,280 Z");
+            }
+        }
+
+        @keyframes waveFloat2 {
+            0%, 100% {
+                d: path("M0,0 L1920,0 L1920,220 C1300,320 800,80 0,240 Z");
+            }
+
+            50% {
+                d: path("M0,0 L1920,0 L1920,180 C1450,80 750,400 0,160 Z");
+            }
+        }
+
+        @keyframes rotateSun {
+            from {
+                transform: rotate(0deg);
+            }
+
             to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.5;
+            }
+
+            50% {
                 opacity: 1;
-                transform: translateY(0) scale(1);
             }
         }
 
-        /* === RESPONSIVE === */
-        @media (max-width: 1200px) {
-            .container {
-                gap: 40px;
-            }
-
-            .logo h1 {
-                font-size: 3.5rem;
-            }
-
-            .tagline {
-                font-size: 1.3rem;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .container {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .illustration-wrapper {
-                max-width: 500px;
-            }
-
-            .cta-buttons {
-                justify-content: center;
-            }
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
-            .logo h1 {
-                font-size: 2.8rem;
-            }
-
-            .tagline {
-                font-size: 1.1rem;
-            }
-
-            .btn {
-                padding: 16px 35px;
-                font-size: 1.1rem;
-            }
-
-            .illustration-wrapper {
-                max-width: 400px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .logo h1 {
-                font-size: 2.2rem;
-            }
-
-            .tagline {
-                font-size: 1rem;
-            }
-
-            .btn {
+            .buttons-container {
+                flex-direction: column;
                 width: 100%;
-                padding: 16px 20px;
-            }
-        }
-
-        /* Features Section */
-        .features {
-            padding: 100px 20px;
-            background: white;
-            opacity: 0;
-            animation: fadeIn 1s ease-out 3.8s forwards;
-        }
-
-        .features-header {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-            .features-header h2 {
-                font-size: 2.5rem;
-                color: #2E7FE5;
-                margin-bottom: 15px;
+                max-width: 300px;
             }
 
-            .features-header p {
-                font-size: 1.2rem;
-                color: #7f8c8d;
+            button {
+                width: 100%;
             }
-
-        .features-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-        }
-
-        .feature-card {
-            padding: 40px 30px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-            .feature-card:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            }
-
-        .feature-icon {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .feature-title {
-            font-size: 1.5rem;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .feature-description {
-            color: #7f8c8d;
-            line-height: 1.7;
-            font-size: 1.05rem;
         }
     </style>
 </head>
 <body>
-    <section class="hero-section">
-        <!-- Decoración superior -->
-        <div class="bg-decoration-top">
-            <div class="wave-top-blue"></div>
-            <div class="wave-top-light"></div>
-            <div class="circle-green"></div>
-            <div class="circle-orange"></div>
-            <div class="dots-orange">
-                <span class="dot-item"></span>
-                <span class="dot-item"></span>
-                <span class="dot-item"></span>
-                <span class="dot-item"></span>
-                <span class="dot-item"></span>
-                <span class="dot-item"></span>
-            </div>
+
+    <div class="background-svg">
+        <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <!-- Gradientes -->
+                <linearGradient id="grad-green" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#4CAF50" />
+                    <stop offset="100%" style="stop-color:#66BB6A" />
+                </linearGradient>
+
+                <linearGradient id="grad-blue-top" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#1565C0" />
+                    <stop offset="100%" style="stop-color:#42A5F5" />
+                </linearGradient>
+
+                <radialGradient id="sunGrad">
+                    <stop offset="0%" style="stop-color:#FFB74D" />
+                    <stop offset="100%" style="stop-color:#FF9800" />
+                </radialGradient>
+            </defs>
+
+            <!-- ONDAS SUPERIORES (animadas) -->
+            <path fill="#1565C0" opacity="0.25">
+                <animate attributeName="d" dur="20s" repeatCount="indefinite"
+                         values="M0,0 L1920,0 L1920,300 C1400,150 700,350 0,200 Z;
+                                 M0,0 L1920,0 L1920,250 C1500,400 600,100 0,280 Z;
+                                 M0,0 L1920,0 L1920,300 C1400,150 700,350 0,200 Z" />
+            </path>
+
+            <path fill="#1976D2" opacity="0.3">
+                <animate attributeName="d" dur="25s" repeatCount="indefinite"
+                         values="M0,50 L1920,50 L1920,280 C1300,320 800,80 0,240 Z;
+                                 M0,50 L1920,50 L1920,200 C1450,80 750,400 0,180 Z;
+                                 M0,50 L1920,50 L1920,280 C1300,320 800,80 0,240 Z" />
+            </path>
+
+            <path fill="#42A5F5" opacity="0.25">
+                <animate attributeName="d" dur="18s" repeatCount="indefinite"
+                         values="M0,100 L1920,100 L1920,350 C1200,200 900,450 0,300 Z;
+                                 M0,100 L1920,100 L1920,280 C1350,500 650,150 0,350 Z;
+                                 M0,100 L1920,100 L1920,350 C1200,200 900,450 0,300 Z" />
+            </path>
+
+            <!--<path fill="#90CAF9" opacity="0.2">
+                <animate attributeName="d" dur="22s" repeatCount="indefinite"
+                         values="M0,150 L1920,150 L1920,400 C1100,250 1000,500 0,350 Z;
+                                 M0,150 L1920,150 L1920,320 C1250,550 550,200 0,380 Z;
+                                 M0,150 L1920,150 L1920,400 C1100,250 1000,500 0,350 Z" />
+            </path>-->
+
+
+            <!-- ONDAS INFERIORES (multicolor, animadas) -->
+            <path fill="url(#grad-green)" opacity="0.7">
+                <animate attributeName="d" dur="16s" repeatCount="indefinite"
+                         values="M0,1080 L1920,1080 L1920,750 C1400,850 700,950 0,800 Z;
+                                 M0,1080 L1920,1080 L1920,800 C1500,700 600,1000 0,850 Z;
+                                 M0,1080 L1920,1080 L1920,750 C1400,850 700,950 0,800 Z" />
+            </path>
+
+            <path fill="#FDD835" opacity="0.6">
+                <animate attributeName="d" dur="18s" repeatCount="indefinite"
+                         values="M0,1080 L1920,1080 L1920,850 C1300,950 800,750 0,900 Z;
+                                 M0,1080 L1920,1080 L1920,900 C1450,800 750,1000 0,850 Z;
+                                 M0,1080 L1920,1080 L1920,850 C1300,950 800,750 0,900 Z" />
+            </path>
+
+            <path fill="#FF9800" opacity="0.65">
+                <animate attributeName="d" dur="20s" repeatCount="indefinite"
+                         values="M0,1080 L1920,1080 L1920,920 C1200,1000 900,820 0,950 Z;
+                                 M0,1080 L1920,1080 L1920,950 C1350,850 650,1050 0,920 Z;
+                                 M0,1080 L1920,1080 L1920,920 C1200,1000 900,820 0,950 Z" />
+            </path>
+
+            <path fill="#4FC3F7" opacity="0.5">
+                <animate attributeName="d" dur="14s" repeatCount="indefinite"
+                         values="M0,1080 L1920,1080 L1920,980 C1100,900 1000,1050 0,980 Z;
+                                 M0,1080 L1920,1080 L1920,1000 C1250,950 550,1100 0,1000 Z;
+                                 M0,1080 L1920,1080 L1920,980 C1100,900 1000,1050 0,980 Z" />
+            </path>
+
+            <path fill="#1976D2" opacity="0.6">
+                <animate attributeName="d" dur="22s" repeatCount="indefinite"
+                         values="M0,1080 L1920,1080 L1920,1020 C1000,950 1200,1080 0,1030 Z;
+                                 M0,1080 L1920,1080 L1920,1040 C1150,1000 800,1100 0,1050 Z;
+                                 M0,1080 L1920,1080 L1920,1020 C1000,950 1200,1080 0,1030 Z" />
+            </path>
+
+            <!-- Puntos decorativos inferiores -->
+            <g opacity="0.5">
+                <circle cx="1580" cy="880" r="4" fill="#1976D2" />
+                <circle cx="1600" cy="880" r="4" fill="#1976D2" />
+                <circle cx="1620" cy="880" r="4" fill="#1976D2" />
+                <circle cx="1640" cy="880" r="4" fill="#1976D2" />
+                <circle cx="1660" cy="880" r="4" fill="#1976D2" />
+
+                <circle cx="1580" cy="900" r="4" fill="#1976D2" />
+                <circle cx="1600" cy="900" r="4" fill="#1976D2" />
+                <circle cx="1620" cy="900" r="4" fill="#1976D2" />
+                <circle cx="1640" cy="900" r="4" fill="#1976D2" />
+                <circle cx="1660" cy="900" r="4" fill="#1976D2" />
+
+                <circle cx="1580" cy="920" r="4" fill="#1976D2" />
+                <circle cx="1600" cy="920" r="4" fill="#1976D2" />
+                <circle cx="1620" cy="920" r="4" fill="#1976D2" />
+                <circle cx="1640" cy="920" r="4" fill="#1976D2" />
+                <circle cx="1660" cy="920" r="4" fill="#1976D2" />
+
+                <animate attributeName="opacity" dur="4s" repeatCount="indefinite"
+                         values="0.3; 0.7; 0.3" />
+            </g>
+        </svg>
+    </div>
+
+    <div class="content">
+        <div class="left-content">
+            
         </div>
-
-        <!-- Decoración inferior -->
-        <div class="bg-decoration-bottom">
-            <div class="wave-green"></div>
-            <div class="wave-yellow"></div>
-            <div class="wave-orange"></div>
-            <div class="wave-blue"></div>
-            <div class="dots-bottom">
-                <span class="dot-item"></span>
-                <span class="dot-item"></span>
-                <span class="dot-item"></span>
-                <span class="dot-item"></span>
-                <span class="dot-item"></span>
-                <span class="dot-item"></span>
-                <span class="dot-item"></span>
-                <span class="dot-item"></span>
-            </div>
+        <div class="title-container">
+            <h1>
+                <span class="title-crew">Crew</span>
+                <span class="title-planner">Planner</span>
+            </h1>
         </div>
-
-        <div class="container">
-            <!-- Lado Izquierdo: Ilustración Detallada -->
-            <div class="left-side">
-                <div class="illustration-wrapper">
-                    <!-- Línea punteada con avión de papel -->
-                    <svg class="dotted-line" viewBox="0 0 250 200">
-                        <path class="dashed-path" d="M 10,190 Q 80,120 150,80 Q 180,60 210,40" />
-                        <g class="paper-plane" transform="translate(150, 60) rotate(-30)">
-                            <path d="M0,0 L15,-5 L10,0 L15,5 Z" fill="#A8D5F2" />
-                            <path d="M10,0 L15,-3 L15,3 Z" fill="#7AB8E8" />
-                        </g>
-                    </svg>
-
-                    <!-- Ilustración SVG Principal -->
-                    <svg class="svg-illustration" viewBox="0 0 600 420" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Base isla flotante (centrada) -->
-                        <g class="island-base">
-                            <!-- Ondas azules base -->
-                            <ellipse cx="300" cy="320" rx="200" ry="60" fill="#D6EEFF" opacity="0.6" />
-                            <ellipse cx="300" cy="313" rx="185" ry="53" fill="#A8D5F2" opacity="0.8" />
-                            <ellipse cx="300" cy="310" rx="170" ry="48" fill="#7AB8E8" />
-
-                            <!-- Sombra inferior -->
-                            <ellipse cx="300" cy="345" rx="170" ry="22" fill="#000" opacity="0.08" />
-                        </g>
-
-                        <!-- Hojas verdes grandes -->
-                        <g class="leaves">
-                            <!-- Hoja izquierda -->
-                            <path d="M115,310 Q100,285 118,260 Q112,272 122,295 Q125,310 115,310 Z"
-                                  fill="#93C54E" opacity="0.9" />
-                            <path d="M117,303 L118,265" stroke="#7AB03E" stroke-width="2" opacity="0.5" />
-
-                            <!-- Hoja derecha grande -->
-                            <path d="M485,310 Q500,280 482,255 Q488,272 478,295 Q475,310 485,310 Z"
-                                  fill="#7AB03E" opacity="0.9" />
-                            <path d="M483,303 L482,260" stroke="#5F8E2F" stroke-width="2" opacity="0.5" />
-
-                            <!-- Hojas pequeñas adicionales -->
-                            <ellipse cx="465" cy="300" rx="22" ry="35" fill="#93C54E" opacity="0.7"
-                                     transform="rotate(-20 465 300)" />
-                            <ellipse cx="135" cy="300" rx="20" ry="33" fill="#7AB03E" opacity="0.6"
-                                     transform="rotate(15 135 300)" />
-                        </g>
-
-                        <!-- Calendario detallado -->
-                        <g class="calendar" transform="translate(115, 180)">
-                            <!-- Marco calendario -->
-                            <rect x="0" y="0" width="110" height="140" rx="8" fill="#2E7FE5" opacity="0.95" />
-                            <rect x="0" y="0" width="110" height="30" rx="8" fill="#1E5BB8" />
-
-                            <!-- Anillas -->
-                            <rect x="15" y="-5" width="8" height="15" rx="4" fill="#FFF" />
-                            <rect x="87" y="-5" width="8" height="15" rx="4" fill="#FFF" />
-
-                            <!-- Línea con checkmark verde -->
-                            <rect x="15" y="45" width="80" height="2" fill="#E8F4F8" opacity="0.5" />
-                            <circle cx="20" cy="46" r="6" fill="#93C54E" />
-                            <path d="M17,46 L19,48 L23,44" stroke="#FFF" stroke-width="2"
-                                  fill="none" stroke-linecap="round" />
-
-                            <!-- Línea con checkmark naranja -->
-                            <rect x="15" y="70" width="80" height="2" fill="#E8F4F8" opacity="0.5" />
-                            <circle cx="20" cy="71" r="6" fill="#FF9E3D" />
-                            <path d="M17,71 L19,73 L23,69" stroke="#FFF" stroke-width="2"
-                                  fill="none" stroke-linecap="round" />
-
-                            <!-- Líneas adicionales -->
-                            <rect x="15" y="95" width="80" height="2" fill="#E8F4F8" opacity="0.3" />
-                            <rect x="15" y="110" width="60" height="2" fill="#E8F4F8" opacity="0.3" />
-                        </g>
-
-                        <!-- Persona 1: Hombre con tablet azul y audífonos -->
-                        <g class="person-1" transform="translate(180, 230)">
-                            <!-- Sombra -->
-                            <ellipse cx="35" cy="80" rx="28" ry="8" fill="#000" opacity="0.15" />
-
-                            <!-- Piernas -->
-                            <rect x="28" y="52" width="14" height="28" rx="7" fill="#34495e" />
-
-                            <!-- Cuerpo con camisa azul -->
-                            <rect x="20" y="25" width="30" height="32" rx="6" fill="#2E7FE5" />
-                            <rect x="23" y="27" width="24" height="7" rx="2" fill="#1E5BB8" opacity="0.5" />
-
-                            <!-- Brazos -->
-                            <rect x="12" y="30" width="10" height="25" rx="5" fill="#2E7FE5" />
-                            <rect x="48" y="30" width="10" height="25" rx="5" fill="#2E7FE5" />
-
-                            <!-- Manos sosteniendo tablet -->
-                            <ellipse cx="17" cy="54" rx="5" ry="6" fill="#FFD4A3" />
-                            <ellipse cx="53" cy="54" rx="5" ry="6" fill="#FFD4A3" />
-
-                            <!-- Tablet negro -->
-                            <rect x="20" y="48" width="30" height="20" rx="2" fill="#2c3e50" />
-                            <rect x="22" y="50" width="26" height="16" rx="1" fill="#34495e" />
-                            <circle cx="35" cy="66" r="2" fill="#7f8c8d" />
-
-                            <!-- Cuello -->
-                            <rect x="30" y="18" width="10" height="8" rx="2" fill="#FFD4A3" />
-
-                            <!-- Cabeza -->
-                            <circle cx="35" cy="10" r="13" fill="#FFD4A3" />
-
-                            <!-- Cabello marrón -->
-                            <path d="M23,10 Q35,0 47,10 Q47,16 45,19 Q42,8 35,6 Q28,8 25,19 Q23,16 23,10 Z"
-                                  fill="#8B4513" />
-
-                            <!-- Audífonos -->
-                            <rect x="19" y="7" width="3" height="6" rx="1.5" fill="#34495e" />
-                            <rect x="48" y="7" width="3" height="6" rx="1.5" fill="#34495e" />
-                            <path d="M22,5 Q35,0 48,5" stroke="#34495e" stroke-width="2.5" fill="none" />
-
-                            <!-- Rostro -->
-                            <circle cx="30" cy="10" r="1.5" fill="#2c3e50" />
-                            <circle cx="40" cy="10" r="1.5" fill="#2c3e50" />
-                            <path d="M30,15 Q35,17 40,15" stroke="#2c3e50" stroke-width="1.2" fill="none" />
-                        </g>
-
-                        <!-- Persona 2: Mujer con tablet verde -->
-                        <g class="person-2" transform="translate(270, 225)">
-                            <!-- Sombra -->
-                            <ellipse cx="35" cy="85" rx="28" ry="8" fill="#000" opacity="0.15" />
-
-                            <!-- Piernas -->
-                            <rect x="28" y="55" width="14" height="30" rx="7" fill="#7f8c8d" />
-
-                            <!-- Cuerpo con camisa verde -->
-                            <rect x="20" y="27" width="30" height="33" rx="6" fill="#5FB34E" />
-                            <polygon points="35,27 39,38 31,38" fill="#4A9F3E" opacity="0.7" />
-
-                            <!-- Brazos -->
-                            <rect x="12" y="32" width="10" height="27" rx="5" fill="#5FB34E" />
-                            <rect x="48" y="32" width="10" height="27" rx="5" fill="#5FB34E" />
-
-                            <!-- Manos con tablet -->
-                            <ellipse cx="17" cy="58" rx="5" ry="6" fill="#FFD4A3" />
-                            <ellipse cx="53" cy="58" rx="5" ry="6" fill="#FFD4A3" />
-
-                            <!-- Tablet blanca -->
-                            <rect x="20" y="52" width="30" height="20" rx="2" fill="#ecf0f1" />
-                            <rect x="22" y="54" width="26" height="16" rx="1" fill="#fff" />
-                            <line x1="26" y1="58" x2="44" y2="58" stroke="#bdc3c7" stroke-width="1" />
-                            <line x1="26" y1="62" x2="44" y2="62" stroke="#bdc3c7" stroke-width="1" />
-                            <line x1="26" y1="66" x2="38" y2="66" stroke="#bdc3c7" stroke-width="1" />
-
-                            <!-- Cuello -->
-                            <rect x="30" y="20" width="10" height="8" rx="2" fill="#FFD4A3" />
-
-                            <!-- Cabeza -->
-                            <circle cx="35" cy="12" r="13" fill="#FFD4A3" />
-
-                            <!-- Cabello largo negro -->
-                            <ellipse cx="35" cy="6" rx="15" ry="16" fill="#1a1a1a" />
-                            <ellipse cx="35" cy="14" rx="14" ry="19" fill="#1a1a1a" />
-                            <path d="M22,14 Q22,28 25,34" stroke="#1a1a1a" stroke-width="7" stroke-linecap="round" />
-                            <path d="M48,14 Q48,28 45,34" stroke="#1a1a1a" stroke-width="7" stroke-linecap="round" />
-
-                            <!-- Rostro -->
-                            <circle cx="30" cy="12" r="1.5" fill="#2c3e50" />
-                            <circle cx="40" cy="12" r="1.5" fill="#2c3e50" />
-                            <path d="M30,17 Q35,18.5 40,17" stroke="#2c3e50" stroke-width="1.2" fill="none" />
-                        </g>
-
-                        <!-- Persona 3: Trabajador con casco naranja -->
-                        <g class="person-3" transform="translate(365, 228)">
-                            <!-- Sombra -->
-                            <ellipse cx="35" cy="82" rx="28" ry="8" fill="#000" opacity="0.15" />
-
-                            <!-- Piernas con zapatos -->
-                            <rect x="28" y="54" width="14" height="28" rx="7" fill="#8B4513" />
-                            <ellipse cx="35" cy="82" rx="11" ry="4" fill="#654321" />
-
-                            <!-- Cuerpo con chaleco naranja reflectivo -->
-                            <rect x="20" y="26" width="30" height="32" rx="6" fill="#2c3e50" />
-                            <path d="M25,26 L35,38 L45,26 L45,56 L25,56 Z" fill="#FF9E3D" opacity="0.9" />
-                            <rect x="32" y="30" width="6" height="22" fill="#FFD700" opacity="0.6" />
-
-                            <!-- Brazos -->
-                            <rect x="12" y="30" width="10" height="25" rx="5" fill="#FF9E3D" />
-                            <rect x="48" y="30" width="10" height="25" rx="5" fill="#FF9E3D" />
-
-                            <!-- Manos con portapapeles -->
-                            <ellipse cx="17" cy="54" rx="5" ry="6" fill="#D4A574" />
-                            <ellipse cx="53" cy="54" rx="5" ry="6" fill="#D4A574" />
-
-                            <!-- Portapapeles marrón -->
-                            <rect x="20" y="48" width="30" height="22" rx="2" fill="#8B4513" />
-                            <rect x="22" y="50" width="26" height="18" rx="1" fill="#D2B48C" />
-                            <circle cx="35" cy="47" r="2.5" fill="#654321" />
-                            <line x1="26" y1="55" x2="44" y2="55" stroke="#8B4513" stroke-width="1" />
-                            <line x1="26" y1="59" x2="44" y2="59" stroke="#8B4513" stroke-width="1" />
-                            <line x1="26" y1="63" x2="38" y2="63" stroke="#8B4513" stroke-width="1" />
-
-                            <!-- Cuello -->
-                            <rect x="30" y="20" width="10" height="7" rx="2" fill="#D4A574" />
-
-                            <!-- Cabeza -->
-                            <circle cx="35" cy="12" r="13" fill="#D4A574" />
-
-                            <!-- Casco naranja de seguridad -->
-                            <ellipse cx="35" cy="4" rx="15" ry="11" fill="#FF9E3D" />
-                            <ellipse cx="35" cy="1" rx="14" ry="9" fill="#FFB366" />
-                            <rect x="33" y="-2" width="4" height="5" rx="2" fill="#FFD700" />
-                            <ellipse cx="35" cy="9" rx="16" ry="3" fill="#E67E22" opacity="0.6" />
-
-                            <!-- Rostro -->
-                            <circle cx="30" cy="12" r="1.5" fill="#2c3e50" />
-                            <circle cx="40" cy="12" r="1.5" fill="#2c3e50" />
-                            <path d="M30,17 Q35,18.5 40,17" stroke="#2c3e50" stroke-width="1.2" fill="none" />
-
-                            <!-- Pequeña sombra del casco en cara -->
-                            <ellipse cx="35" cy="10" rx="13" ry="2" fill="#000" opacity="0.1" />
-                        </g>
-
-                        <!-- Reloj grande -->
-                        <g class="clock" transform="translate(330, 120)">
-                            <!-- Círculo exterior azul claro -->
-                            <circle cx="40" cy="40" r="38" fill="#A8D5F2" opacity="0.9" />
-                            <circle cx="40" cy="40" r="35" fill="#D6EEFF" />
-
-                            <!-- Cara blanca del reloj -->
-                            <circle cx="40" cy="40" r="30" fill="#fff" />
-
-                            <!-- Marcas de horas -->
-                            <circle cx="40" cy="15" r="1.5" fill="#2E7FE5" />
-                            <circle cx="40" cy="65" r="1.5" fill="#2E7FE5" />
-                            <circle cx="15" cy="40" r="1.5" fill="#2E7FE5" />
-                            <circle cx="65" cy="40" r="1.5" fill="#2E7FE5" />
-                            <circle cx="27" cy="21" r="1" fill="#7f8c8d" />
-                            <circle cx="53" cy="21" r="1" fill="#7f8c8d" />
-                            <circle cx="27" cy="59" r="1" fill="#7f8c8d" />
-                            <circle cx="53" cy="59" r="1" fill="#7f8c8d" />
-                            <circle cx="21" cy="27" r="1" fill="#7f8c8d" />
-                            <circle cx="59" cy="27" r="1" fill="#7f8c8d" />
-                            <circle cx="21" cy="53" r="1" fill="#7f8c8d" />
-                            <circle cx="59" cy="53" r="1" fill="#7f8c8d" />
-
-                            <!-- Manecilla de hora (azul) -->
-                            <line class="clock-hand-hour" x1="40" y1="40" x2="40" y2="25"
-                                  stroke="#2E7FE5" stroke-width="3" stroke-linecap="round" />
-
-                            <!-- Manecilla de minuto (verde) -->
-                            <line class="clock-hand-minute" x1="40" y1="40" x2="57" y2="40"
-                                  stroke="#5FB34E" stroke-width="2.5" stroke-linecap="round" />
-
-                            <!-- Centro naranja -->
-                            <circle cx="40" cy="40" r="3" fill="#FF9E3D" />
-                            <circle cx="40" cy="40" r="1.5" fill="#fff" />
-                        </g>
-
-                        <!-- Avión -->
-                        <g class="airplane" transform="translate(195, 90)">
-                            <!-- Cuerpo principal -->
-                            <ellipse cx="30" cy="16" rx="32" ry="10" fill="#4A9FF5" />
-                            <ellipse cx="30" cy="16" rx="28" ry="8" fill="#7AB8E8" />
-
-                            <!-- Ventanas -->
-                            <circle cx="17" cy="15" r="2.5" fill="#D6EEFF" opacity="0.8" />
-                            <circle cx="24" cy="15" r="2.5" fill="#D6EEFF" opacity="0.8" />
-                            <circle cx="31" cy="15" r="2.5" fill="#D6EEFF" opacity="0.8" />
-
-                            <!-- Alas -->
-                            <ellipse cx="25" cy="20" rx="20" ry="6" fill="#7AB8E8"
-                                     transform="rotate(-10 25 20)" />
-                            <ellipse cx="35" cy="12" rx="20" ry="6" fill="#7AB8E8"
-                                     transform="rotate(10 35 12)" />
-
-                            <!-- Cola -->
-                            <path d="M5,16 Q0,16 2,12 L9,15 Z" fill="#4A9FF5" />
-                            <path d="M7,15 L5,8 L11,13 Z" fill="#7AB8E8" />
-                        </g>
-
-                        <!-- Engranajes -->
-                        <g class="gears" transform="translate(410, 200)">
-                            <!-- Engranaje grande azul -->
-                            <g class="gear-1">
-                                <circle cx="35" cy="35" r="25" fill="#7AB8E8" opacity="0.9" />
-                                <circle cx="35" cy="35" r="14" fill="#fff" />
-                                <!-- Dientes del engranaje -->
-                                <rect x="32" y="10" width="6" height="10" rx="2" fill="#4A9FF5" />
-                                <rect x="32" y="50" width="6" height="10" rx="2" fill="#4A9FF5" />
-                                <rect x="10" y="32" width="10" height="6" rx="2" fill="#4A9FF5" />
-                                <rect x="50" y="32" width="10" height="6" rx="2" fill="#4A9FF5" />
-                                <rect x="18" y="16" width="8" height="8" rx="2" fill="#4A9FF5"
-                                      transform="rotate(45 22 20)" />
-                                <rect x="44" y="16" width="8" height="8" rx="2" fill="#4A9FF5"
-                                      transform="rotate(-45 48 20)" />
-                                <rect x="18" y="46" width="8" height="8" rx="2" fill="#4A9FF5"
-                                      transform="rotate(-45 22 50)" />
-                                <rect x="44" y="46" width="8" height="8" rx="2" fill="#4A9FF5"
-                                      transform="rotate(45 48 50)" />
-                                <!-- Centro -->
-                                <circle cx="35" cy="35" r="6" fill="#2E7FE5" />
-                            </g>
-
-                            <!-- Engranaje pequeño verde -->
-                            <g class="gear-2">
-                                <circle cx="58" cy="58" r="17" fill="#93C54E" opacity="0.9" />
-                                <circle cx="58" cy="58" r="9" fill="#fff" />
-                                <!-- Dientes -->
-                                <rect x="56" y="41" width="4" height="8" rx="1.5" fill="#7AB03E" />
-                                <rect x="56" y="67" width="4" height="8" rx="1.5" fill="#7AB03E" />
-                                <rect x="41" y="56" width="8" height="4" rx="1.5" fill="#7AB03E" />
-                                <rect x="67" y="56" width="8" height="4" rx="1.5" fill="#7AB03E" />
-                                <rect x="45" y="45" width="6" height="6" rx="1.5" fill="#7AB03E"
-                                      transform="rotate(45 48 48)" />
-                                <rect x="64" y="45" width="6" height="6" rx="1.5" fill="#7AB03E"
-                                      transform="rotate(-45 67 48)" />
-                                <rect x="45" y="64" width="6" height="6" rx="1.5" fill="#7AB03E"
-                                      transform="rotate(-45 48 67)" />
-                                <rect x="64" y="64" width="6" height="6" rx="1.5" fill="#7AB03E"
-                                      transform="rotate(45 67 67)" />
-                                <!-- Centro -->
-                                <circle cx="58" cy="58" r="4.5" fill="#5F8E2F" />
-                            </g>
-
-                            <!-- Burbujas decorativas -->
-                            <circle cx="24" cy="12" r="5" fill="#D6EEFF" opacity="0.6" />
-                            <circle cx="78" cy="20" r="6" fill="#D6EEFF" opacity="0.5" />
-                            <circle cx="85" cy="38" r="4" fill="#D6EEFF" opacity="0.7" />
-                        </g>
-                    </svg>
-                </div>
-            </div>
-
-            <!-- Lado Derecho: Contenido -->
-            <div class="right-side">
-                <div class="logo">
-                    <h1>
-                        <span class="crew">Crew</span><span class="planner">Planner</span>
-                    </h1>
-                </div>
-
-                <p class="tagline">
-                    Gestión y Planificación Eficiente de Equipos
-                </p>
-
-                <div class="cta-buttons">
-                    <a href="index.html" class="btn btn-primary">Empieza Ahora</a>
-                    <a href="#features" class="btn btn-secondary">Más Información</a>
-                </div>
-            </div>
+        <p class="subtitle">Efficient Team Management & Scheduling</p>
+        <div class="buttons-container">
+            <button class="btn-primary">Get Started</button>
+            <button class="btn-secondary">Learn More</button>
         </div>
-    </section>
+    </div>
 
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="features-header">
-            <h2>Características Principales</h2>
-            <p>Todo lo que necesitas para gestionar tu equipo eficientemente</p>
-        </div>
-
-        <div class="features-container">
-            <div class="feature-card">
-                <span class="feature-icon">📅</span>
-                <h3 class="feature-title">Planificación Inteligente</h3>
-                <p class="feature-description">
-                    Crea horarios optimizados con drag & drop. Asigna turnos, francos y licencias en segundos.
-                </p>
-            </div>
-
-            <div class="feature-card">
-                <span class="feature-icon">👥</span>
-                <h3 class="feature-title">Gestión de Personal</h3>
-                <p class="feature-description">
-                    Administra cajeros, encargados, contratos (full-time, part-time) y horas semanales.
-                </p>
-            </div>
-
-            <div class="feature-card">
-                <span class="feature-icon">📊</span>
-                <h3 class="feature-title">Reportes Completos</h3>
-                <p class="feature-description">
-                    Exporta planillas en Excel y PDF. Visualiza horas trabajadas y extras automáticamente.
-                </p>
-            </div>
-
-            <div class="feature-card">
-                <span class="feature-icon">⚡</span>
-                <h3 class="feature-title">Rápido y Eficiente</h3>
-                <p class="feature-description">
-                    Interfaz optimizada. Crea horarios semanales completos en minutos, no horas.
-                </p>
-            </div>
-
-            <div class="feature-card">
-                <span class="feature-icon">💾</span>
-                <h3 class="feature-title">Almacenamiento Local</h3>
-                <p class="feature-description">
-                    Tus datos se guardan automáticamente. Trabaja sin conexión, siempre disponible.
-                </p>
-            </div>
-
-            <div class="feature-card">
-                <span class="feature-icon">🔄</span>
-                <h3 class="feature-title">Sincronización Total</h3>
-                <p class="feature-description">
-                    Cambios en tiempo real entre módulos. Cajeros, encargados y reportes conectados.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <script>
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Parallax suave
-        let ticking = false;
-        window.addEventListener('scroll', () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    const scrolled = window.pageYOffset;
-                    const illustration = document.querySelector('.illustration-wrapper');
-                    const decorations = document.querySelectorAll('.bg-decoration-top, .bg-decoration-bottom');
-
-                    if (illustration) {
-                        illustration.style.transform = `translateY(${scrolled * 0.3}px)`;
-                    }
-
-                    decorations.forEach(el => {
-                        el.style.transform = `translateY(${scrolled * 0.2}px)`;
-                    });
-
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        });
-    </script>
 </body>
 </html>

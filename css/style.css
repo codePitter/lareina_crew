@@ -470,7 +470,7 @@ body {
         transform: scale(1.05);
     }
 
-/* ========== BOT�N AGREGAR FILA ========== */
+/* ========== BOTÓN AGREGAR FILA ========== */
 .add-row-button-container {
     padding: 15px 0;
     display: flex;
@@ -618,10 +618,6 @@ body {
     .time-input::-webkit-calendar-picker-indicator {
         display: none;
         -webkit-appearance: none;
-    }
-
-    .time-input::-webkit-datetime-edit-ampm-field {
-        display: none;
     }
 
     .time-input::-webkit-inner-spin-button,
@@ -794,7 +790,7 @@ body {
     color: #0097A7;
 }
 
-/* ========== MEN? CONTEXTUAL ========== */
+/* ========== MENÚ CONTEXTUAL ========== */
 .context-menu {
     background: white;
     border: 2px solid var(--primary-blue);
@@ -1065,7 +1061,7 @@ body {
     }
 }
 
-/* Para pantallas peque?as pero manteniendo layout horizontal */
+/* Para pantallas pequeñas pero manteniendo layout horizontal */
 @media (max-width: 992px) {
     .main-content {
         flex-direction: row; /* Mantener horizontal */
@@ -1085,14 +1081,14 @@ body {
     }
 }
 
-/* Para pantallas muy peque?as - agregar scroll horizontal si es necesario */
+/* Para pantallas muy pequeñas - agregar scroll horizontal si es necesario */
 @media (max-width: 768px) {
     body {
         overflow-x: auto;
     }
 
     .container {
-        min-width: 768px; /* Ancho m?nimo para mantener el layout */
+        min-width: 768px; /* Ancho mínimo para mantener el layout */
     }
 
     .sidebar {
@@ -1114,7 +1110,7 @@ body {
     }
 }
 
-/* ========== MODAL DE GESTI?N DE PERSONAL ========== */
+/* ========== MODAL DE GESTIÓN DE PERSONAL ========== */
 .modal {
     display: none;
     position: fixed;
@@ -1483,6 +1479,7 @@ body {
     align-items: center;
     gap: 15px;
 }
+
 .btn-delete {
     padding: 6px 12px;
     background: var(--warning-red);
@@ -1712,11 +1709,14 @@ body {
 }
 
 /* ========== OCULTAR BOTONES ORIGINALES (ahora están en el menú) ========== */
-.export-btn, .backup-btn, .view-schedules-btn, .manage-btn, .clear-btn {
-    /* ========== BOTÓN DE ENCARGADO ========== */
-    .toggle-manager-btn
 
-{
+/* ========== OCULTAR BOTONES ORIGINALES (ahora están en el menú) ========== */
+.export-btn, .backup-btn, .view-schedules-btn, .manage-btn, .clear-btn {
+    display: none;
+}
+
+/* ========== BOTÓN DE ENCARGADO ========== */
+.toggle-manager-btn {
     background: transparent;
     border: 2px solid #d1d5db;
     padding: 8px 14px;
@@ -1729,16 +1729,16 @@ body {
     justify-content: center;
 }
 
-.toggle-manager-btn:hover {
-    transform: scale(1.1);
-    border-color: #9ca3af;
-}
+    .toggle-manager-btn:hover {
+        transform: scale(1.1);
+        border-color: #9ca3af;
+    }
 
-.toggle-manager-btn.is-manager {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: #667eea;
-    animation: pulseManager 2s infinite;
-}
+    .toggle-manager-btn.is-manager {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        animation: pulseManager 2s infinite;
+    }
 
 @keyframes pulseManager {
     0%, 100% {
@@ -1868,7 +1868,7 @@ body {
     order: 1;
     display: flex;
     flex-direction: column;
-    flex: 1; /* 🔥 esto hace que ocupe todo el espacio disponible */
+    flex: 1;
 }
 
 .person-hours {
@@ -1879,9 +1879,6 @@ body {
     white-space: nowrap;
 }
 
-
-
-
 /* Badge para cajeros forzados */
 .forced-cajero-badge {
     background: linear-gradient(135deg, var(--primary-orange) 0%, #FB8C00 100%);
@@ -1891,4 +1888,372 @@ body {
     font-size: 10px;
     font-weight: 600;
     margin-left: 6px;
+}
+
+/* ========== BOTÓN DE IMPRESIÓN DEL SCHEDULE ========== */
+.print-schedule-btn {
+    padding: 6px 14px;
+    background: var(--primary-green);
+    border: 2px solid var(--dark-green);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    color: white;
+    transition: all 0.3s;
+    margin-left: 10px;
+}
+
+    .print-schedule-btn:hover {
+        background: var(--dark-green);
+        box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+    }
+
+/* ========== ESTILOS PARA IMPRESIÓN DEL SCHEDULE ========== */
+@media print {
+    /* Configuración de página A4 */
+    @page {
+        size: A4 portrait;
+        margin: 8mm;
+    }
+
+    /* Resetear body y html */
+    html, body {
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+        /* Ocultar todo excepto el scheduleArea */
+        body * {
+            visibility: hidden;
+        }
+
+    #scheduleArea,
+    #scheduleArea * {
+        visibility: visible;
+    }
+
+    #scheduleArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        max-width: 194mm; /* 210mm - 16mm de márgenes */
+        padding: 0;
+        margin: 0;
+        transform: scale(0.95);
+        transform-origin: top left;
+    }
+
+    /* Ocultar elementos que no se deben imprimir */
+    .header,
+    .sidebar,
+    .hamburger-btn,
+    .side-menu,
+    .menu-overlay,
+    .print-schedule-btn {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Ajustes para mejor impresión */
+    .schedule-area {
+        padding: 3mm;
+        background: white;
+        height: auto;
+        overflow: visible;
+    }
+
+    /* Título de impresión */
+    #print-title {
+        display: block !important;
+        visibility: visible !important;
+        text-align: center;
+        font-size: 11pt;
+        font-weight: bold;
+        margin-bottom: 5mm;
+        color: #000;
+        page-break-after: avoid;
+    }
+
+    /* Grid de horarios - MUY COMPACTO */
+    .schedule-grid {
+        page-break-inside: avoid;
+        width: 100%;
+        font-size: 7pt;
+        display: block !important;
+        gap: 2px !important;
+    }
+
+    /* Ocultar header-row y solo dejar borde inferior */
+    .header-row {
+        background: none !important;
+        border: none !important;
+        border-bottom: 2pt solid #000 !important;
+        padding: 2mm 0 !important;
+        margin: 0 0 2px 0 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        color: #000 !important;
+    }
+
+    .grid-row {
+        page-break-inside: avoid;
+        font-size: 7pt;
+        padding: 1px 0 !important;
+        margin: 2px 0 !important;
+        border: none !important;
+        border-bottom: 0.5pt solid #000 !important;
+        line-height: 1.1;
+        color: #000 !important;
+        background: #d1d5db !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+        .grid-row.grid-header {
+            background: none !important;
+            color: #000 !important;
+            font-weight: bold;
+            font-size: 7pt;
+            padding: 2px 0 !important;
+            margin: 2px 0 !important;
+            border-bottom: 1pt solid #000 !important;
+        }
+
+    /* Quitar estilos de caja-number - solo mostrar número con borde */
+    .caja-number {
+        background: none !important;
+        color: #000 !important;
+        border: 0.5pt solid #000 !important;
+        border-right: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+        font-size: 7pt;
+        font-weight: bold;
+        text-align: center;
+        min-width: 15mm;
+        height: 5mm;
+        line-height: 5mm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, sans-serif;
+    }
+
+    .grid-cell {
+        font-size: 7pt;
+        padding: 0 !important;
+        margin: 0 !important;
+        line-height: 1.1;
+        color: #000 !important;
+    }
+
+        .grid-cell.caja-number {
+            background: none !important;
+            color: #000 !important;
+            border: 0.5pt solid #000 !important;
+            border-right: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            font-weight: bold;
+            font-size: 7pt;
+            height: 5mm;
+            line-height: 5mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Dropzone con bordes conectados */
+        .grid-cell.name-dropzone,
+        .name-dropzone {
+            background: white !important;
+            border: 0.5pt solid #000 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            height: 5mm;
+            min-height: 5mm;
+            max-height: 5mm;
+            font-size: 7pt;
+            padding: 0 1mm !important;
+            margin: 0 !important;
+            line-height: 5mm;
+            display: flex !important;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: visible !important;
+            white-space: nowrap;
+            color: #000 !important;
+            font-weight: normal;
+        }
+
+            /* Mostrar nombres en dropzones */
+            .name-dropzone.has-name,
+            .grid-cell.name-dropzone.has-name {
+                color: #000 !important;
+                font-weight: bold !important;
+            }
+
+            /* Ocultar placeholder "Arrastrar" en dropzones vacíos */
+            .name-dropzone:empty::before,
+            .grid-cell.name-dropzone:empty::before {
+                content: '' !important;
+                display: none !important;
+            }
+
+            /* Asegurar que el texto se vea cuando NO está vacío */
+            .name-dropzone:not(:empty),
+            .grid-cell.name-dropzone:not(:empty) {
+                color: #000 !important;
+                visibility: visible !important;
+            }
+
+    /* Inputs de tiempo con bordes conectados */
+    input[type="time"],
+    .time-input {
+        border: 0.5pt solid #000 !important;
+        border-left: none !important;
+        font-size: 7pt;
+        padding: 0 1mm !important;
+        margin: 0 !important;
+        height: 5mm;
+        min-height: 5mm;
+        max-height: 5mm;
+        line-height: 5mm;
+        box-sizing: border-box;
+        color: #000 !important;
+        background: transparent !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Primer input de tiempo (entrada) sin borde izquierdo */
+    .turno-content > input[type="time"]:first-of-type,
+    .turno-content > .time-input:first-of-type {
+        border-left: none !important;
+    }
+
+    /* Separador de flecha sin bordes */
+    .time-separator {
+        font-size: 7pt;
+        margin: 0;
+        padding: 0 1mm;
+        border: none !important;
+        background: transparent !important;
+        height: 5mm;
+        line-height: 5mm;
+        display: inline-flex;
+        align-items: center;
+        color: #000 !important;
+    }
+
+    /* Turno block y turno content - conectar todo */
+    .turno-block {
+        display: flex !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: none !important;
+        border: none !important;
+    }
+
+    .turno-content {
+        display: flex !important;
+        flex: 1;
+        align-items: stretch;
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+    }
+
+        .turno-content > * {
+            margin: 0 !important;
+        }
+
+    /* Sección de francos - MUY COMPACTA */
+    .francos-section {
+        page-break-inside: avoid;
+        margin-top: 2mm;
+        padding: 2mm;
+        border: 1pt solid #000;
+        border-radius: 2mm;
+    }
+
+    .francos-section-title {
+        font-size: 9pt;
+        font-weight: bold;
+        margin-bottom: 1mm;
+        color: #000;
+    }
+
+    .francos-dropzone {
+        background: #FFF3E0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        padding: 2mm;
+        min-height: 10mm;
+        border: 0.5pt solid #000 !important;
+    }
+
+    .francos-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1mm;
+    }
+
+    .francos-dropzone-title {
+        display: none;
+    }
+
+    .franco-chip {
+        color: #000 !important;
+        border: 0.5pt solid #000 !important;
+    }
+
+    /* Ajustar elementos arrastrables */
+    .person-card,
+    .draggable-person {
+        font-size: 7pt;
+        padding: 1mm;
+        margin: 0.5mm;
+        background: white !important;
+        border: 0.5pt solid #000;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        line-height: 1.1;
+        color: #000 !important;
+    }
+
+    /* Quitar estilos de caja-row en impresión */
+    .caja-row {
+        background: #d1d5db !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        border: none !important;
+        padding: 1px 0 !important;
+        margin: 2px 0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+        color: #000 !important;
+    }
+
+    /* Ocultar botón de agregar fila en impresión */
+    .add-row-button-container,
+    .add-row-btn {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Headers de turnos */
+    .caja-number-header,
+    .turno-header {
+        color: #000 !important;
+    }
 }

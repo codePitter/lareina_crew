@@ -426,9 +426,9 @@ body {
         -webkit-appearance: none;
     }
 
-    .time-input::-webkit-datetime-edit-ampm-field {
+   /* .time-input::-webkit-datetime-edit-ampm-field {
         display: none;
-    }
+    }*/
 
     .time-input::-webkit-inner-spin-button,
     .time-input::-webkit-outer-spin-button {

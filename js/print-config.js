@@ -1,0 +1,211 @@
+// ========== FUNCIONES PARA CONFIGURACIÓN DE IMPRESIÓN ==========
+
+// Abrir modal de configuración de impresión
+function openPrintConfigModal() {
+    const modal = document.getElementById('printConfigModal');
+    modal.classList.add('show');
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de configuración de impresión
+function closePrintConfigModal() {
+    const modal = document.getElementById('printConfigModal');
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+}
+
+// Proceder con la impresión después de configurar
+function proceedWithPrint() {
+    // Obtener configuración de checkboxes
+    const omitTurno1 = document.getElementById('omitTurno1Salida').checked;
+    const omitTurno2 = document.getElementById('omitTurno2Salida').checked;
+    const omitTurno3 = document.getElementById('omitTurno3Salida').checked;
+
+    // Preparar números de caja (quitar emojis)
+    prepareCajaNumbers();
+
+    // Ocultar las columnas de salida seleccionadas
+    hideSelectedExitColumns(omitTurno1, omitTurno2, omitTurno3);
+
+    // Agregar título con fecha
+    addPrintTitle();
+
+    // Cerrar modal
+    closePrintConfigModal();
+
+    // Esperar un momento para que se apliquen los cambios
+    setTimeout(() => {
+        // Ejecutar impresión
+        window.print();
+
+        // Restaurar las columnas y remover el título después de imprimir
+        setTimeout(() => {
+            restoreAllColumns();
+            removePrintTitle();
+            restoreCajaNumbers();
+        }, 500);
+    }, 100);
+}
+
+// Preparar números de caja para impresión (quitar emojis)
+function prepareCajaNumbers() {
+    const cajaNumbers = document.querySelectorAll('.caja-number');
+    cajaNumbers.forEach(caja => {
+        // Obtener el texto sin emojis (solo números y letras)
+        const text = caja.textContent || caja.innerText;
+        const textWithoutEmojis = text.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
+
+        // Guardar el contenido HTML original
+        caja.setAttribute('data-original-html', caja.innerHTML);
+
+        // Reemplazar el contenido con solo el texto sin emojis
+        caja.textContent = textWithoutEmojis;
+    });
+}
+
+// Restaurar números de caja después de impresión
+function restoreCajaNumbers() {
+    const cajaNumbers = document.querySelectorAll('.caja-number');
+    cajaNumbers.forEach(caja => {
+        // Restaurar contenido HTML original
+        const originalHTML = caja.getAttribute('data-original-html');
+        if (originalHTML) {
+            caja.innerHTML = originalHTML;
+            caja.removeAttribute('data-original-html');
+        }
+    });
+}
+
+// Agregar título con fecha para impresión
+function addPrintTitle() {
+    // Remover título anterior si existe
+    removePrintTitle();
+
+    // Obtener la fecha seleccionada
+    const weekDateInput = document.getElementById('weekDate');
+    let dateStr = 'Horario de Cajas';
+
+    if (weekDateInput && weekDateInput.value) {
+        const selectedDate = new Date(weekDateInput.value + 'T00:00:00');
+
+        // Obtener el día de la semana activo
+        const activeDayTab = document.querySelector('.day-tab.active');
+        let dayOffset = 0;
+        if (activeDayTab) {
+            dayOffset = parseInt(activeDayTab.dataset.day) || 0;
+        }
+
+        // Calcular la fecha del día seleccionado
+        const targetDate = new Date(selectedDate);
+        targetDate.setDate(selectedDate.getDate() + dayOffset);
+
+        // Formatear la fecha
+        const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+        const diaSemana = dias[targetDate.getDay()];
+        const dia = targetDate.getDate();
+        const mes = meses[targetDate.getMonth()];
+        const año = targetDate.getFullYear();
+
+        dateStr = `Horario de Cajas - ${diaSemana} ${dia} de ${mes} de ${año}`;
+    }
+
+    // Crear el elemento de título
+    const titleElement = document.createElement('div');
+    titleElement.id = 'print-title';
+    titleElement.textContent = dateStr;
+    titleElement.style.display = 'none'; // Oculto por defecto, visible solo en impresión
+
+    // Insertar al inicio del área de horario
+    const scheduleArea = document.getElementById('scheduleArea');
+    if (scheduleArea) {
+        scheduleArea.insertBefore(titleElement, scheduleArea.firstChild);
+    }
+}
+
+// Remover título de impresión
+function removePrintTitle() {
+    const existingTitle = document.getElementById('print-title');
+    if (existingTitle) {
+        existingTitle.remove();
+    }
+}
+
+// Ocultar columnas de salida seleccionadas
+function hideSelectedExitColumns(omitTurno1, omitTurno2, omitTurno3) {
+    // Crear estilos dinámicos para ocultar columnas
+    let styleElement = document.getElementById('print-hide-columns-style');
+    if (!styleElement) {
+        styleElement = document.createElement('style');
+        styleElement.id = 'print-hide-columns-style';
+        document.head.appendChild(styleElement);
+    }
+
+    let css = '@media print {';
+
+    if (omitTurno1) {
+        css += `
+            input[data-turno="turno1"][data-field="salida"],
+            .time-input[data-turno="turno1"][data-field="salida"] {
+                display: none !important;
+                visibility: hidden !important;
+            }
+        `;
+    }
+
+    if (omitTurno2) {
+        css += `
+            input[data-turno="turno2"][data-field="salida"],
+            .time-input[data-turno="turno2"][data-field="salida"] {
+                display: none !important;
+                visibility: hidden !important;
+            }
+        `;
+    }
+
+    if (omitTurno3) {
+        css += `
+            input[data-turno="turno3"][data-field="salida"],
+            .time-input[data-turno="turno3"][data-field="salida"] {
+                display: none !important;
+                visibility: hidden !important;
+            }
+        `;
+    }
+
+    css += '}';
+    styleElement.textContent = css;
+}
+
+// Restaurar todas las columnas
+function restoreAllColumns() {
+    const styleElement = document.getElementById('print-hide-columns-style');
+    if (styleElement) {
+        styleElement.textContent = '';
+    }
+}
+
+// Cerrar modal al hacer clic fuera de él
+window.addEventListener('click', (event) => {
+    const modal = document.getElementById('printConfigModal');
+    if (event.target === modal) {
+        closePrintConfigModal();
+    }
+});
+
+// Agregar efecto hover a los labels
+document.addEventListener('DOMContentLoaded', () => {
+    const labels = document.querySelectorAll('#printConfigModal label');
+    labels.forEach(label => {
+        label.addEventListener('mouseenter', () => {
+            label.style.background = 'var(--light-blue)';
+            label.style.transform = 'translateX(3px)';
+        });
+        label.addEventListener('mouseleave', () => {
+            label.style.background = 'var(--bg-secondary)';
+            label.style.transform = 'translateX(0)';
+        });
+    });
+});

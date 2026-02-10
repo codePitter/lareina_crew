@@ -543,7 +543,7 @@ function createTurnoBlock(cajaNum, turnoNum) {
     // Dropzone para nombre
     const dropzone = document.createElement('div');
     dropzone.className = 'name-dropzone';
-    dropzone.textContent = 'Arrastrar';
+    dropzone.textContent = '';
     dropzone.dataset.caja = cajaNum;
     dropzone.dataset.turno = `turno${turnoNum}`;
     dropzone.dataset.dropzone = 'name';
@@ -1023,7 +1023,7 @@ function handleDropzoneDblClick(e) {
         const turnoKey = dropzone.dataset.turno;
 
         scheduleData[currentDay].cajas[cajaNum][turnoKey].name = '';
-        dropzone.textContent = 'Arrastrar';
+        dropzone.textContent = '';
         dropzone.classList.remove('has-name');
 
         updatePersonnelStatus();
@@ -1533,7 +1533,7 @@ function loadSchedule(day) {
 
     // Limpiar todo
     document.querySelectorAll('.name-dropzone').forEach(dropzone => {
-        dropzone.textContent = 'Arrastrar';
+        dropzone.textContent = '';
         dropzone.classList.remove('has-name');
         dropzone.draggable = false;
         dropzone.style.cursor = 'pointer';
@@ -2204,3 +2204,46 @@ function handleBackupImport(fileContent) {
 }
 
 setupPersonnelModalListeners();
+// ========== FUNCIÓN PARA IMPRIMIR SOLO EL SCHEDULE AREA ==========
+function printScheduleArea() {
+    // Obtener información del día actual
+    const dayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+    const dateInput = document.getElementById('weekDate');
+    const dateStr = dateInput.value || new Date().toISOString().split('T')[0];
+    const date = new Date(dateStr + 'T00:00:00');
+
+    // Formato: Lunes 09 de Febrero de 2026
+    const dayName = dayNames[currentDay];
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+
+    const formattedDate = `${dayName} ${day} de ${month} de ${year}`;
+
+    // Crear título para la impresión
+    const printTitle = document.createElement('div');
+    printTitle.id = 'print-title';
+    printTitle.style.cssText = 'display: none;';
+    printTitle.textContent = formattedDate;
+
+    // Insertar el título al inicio del scheduleArea
+    const scheduleArea = document.getElementById('scheduleArea');
+    scheduleArea.insertBefore(printTitle, scheduleArea.firstChild);
+
+    // Mostrar título solo para impresión
+    const style = document.createElement('style');
+    style.id = 'print-title-style';
+    style.innerHTML = '@media print { #print-title { display: block !important; } }';
+    document.head.appendChild(style);
+
+    // Imprimir
+    window.print();
+
+    // Remover el título y estilo después de imprimir
+    setTimeout(() => {
+        printTitle.remove();
+        style.remove();
+    }, 100);
+}

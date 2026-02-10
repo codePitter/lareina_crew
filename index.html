@@ -31,11 +31,13 @@
                     <button class="day-tab" data-day="4">VIE</button>
                     <button class="day-tab" data-day="5">SÁB</button>
                     <button class="day-tab" data-day="6">DOM</button>
+                    <button onclick="openPrintConfigModal()" class="print-schedule-btn">🖨️ Imprimir horario</button>
+
                 </div>
             </div>
 
             <div class="header-right">
-                
+
 
                 <!-- Botón Hamburguesa -->
                 <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menú">
@@ -178,6 +180,50 @@
         </div>
     </div>
 
+    <!-- Modal de Configuración de Impresión -->
+    <div id="printConfigModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🖨️ Configuración de Impresión</h2>
+                <span class="close-modal" onclick="closePrintConfigModal()">&times;</span>
+            </div>
+
+            <div class="modal-body">
+                <div style="margin-bottom: 20px;">
+                    <p style="font-size: 14px; color: var(--text-medium); margin-bottom: 15px;">
+                        Selecciona qué horarios de <strong>salida</strong> deseas omitir en la impresión:
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: var(--bg-secondary); border-radius: 6px; transition: all 0.2s;">
+                        <input type="checkbox" id="omitTurno1Salida" style="cursor: pointer; width: 18px; height: 18px;">
+                        <span style="font-weight: 600; color: var(--text-dark);">Turno 1 - Salida</span>
+                    </label>
+
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: var(--bg-secondary); border-radius: 6px; transition: all 0.2s;">
+                        <input type="checkbox" id="omitTurno2Salida" style="cursor: pointer; width: 18px; height: 18px;">
+                        <span style="font-weight: 600; color: var(--text-dark);">Turno 2 - Salida</span>
+                    </label>
+
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; background: var(--bg-secondary); border-radius: 6px; transition: all 0.2s;">
+                        <input type="checkbox" id="omitTurno3Salida" style="cursor: pointer; width: 18px; height: 18px;">
+                        <span style="font-weight: 600; color: var(--text-dark);">Turno 3 - Salida</span>
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 25px; justify-content: flex-end;">
+                    <button onclick="closePrintConfigModal()" style="padding: 10px 20px; background: var(--border-medium); color: var(--text-dark); border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                        Cancelar
+                    </button>
+                    <button onclick="proceedWithPrint()" style="padding: 10px 20px; background: var(--primary-green); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                        🖨️ Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de Gestión de Personal -->
     <div id="personnelModal" class="modal">
         <div class="modal-content">
@@ -220,6 +266,7 @@
         </div>
     </div>
 
+    <script src="js/print-config.js"></script>
     <script src="js/main.js?v=2.1"></script>
 </body>
 </html>
