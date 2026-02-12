@@ -137,11 +137,12 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    width:50%;
+    width: 50%;
 }
 
 .landing-title-container {
     margin-bottom: 10px;
+    overflow: visible;
 }
 
     .landing-title-container h1 {
@@ -151,6 +152,7 @@
         margin: 0;
         line-height: 1.1;
         font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+        overflow: visible;
     }
 
 .landing-title-crew {
@@ -161,6 +163,32 @@
 .landing-title-planner {
     color: #66BB6A;
     display: inline-block;
+}
+
+/* Cada letra envuelta en span.title-letter por JS */
+.title-letter {
+    display: inline-block;
+    opacity: 0;
+    animation: letterImplode 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes letterImplode {
+    0% {
+        opacity: 0;
+        transform: var(--letter-from);
+        filter: blur(8px);
+    }
+
+    65% {
+        opacity: 1;
+        filter: blur(1px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        filter: blur(0);
+    }
 }
 
 .landing-subtitle {

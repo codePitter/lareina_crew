@@ -21,7 +21,7 @@
                 <span class="titlebar-dot red"></span>
                 <span class="titlebar-dot yellow"></span>
                 <span class="titlebar-dot green"></span>
-                <span class="titlebar-label">Crew Planner</span>
+                <!--<span class="titlebar-label">Crew Planner</span>-->
             </div>
 
             <div class="landing-background-svg">
@@ -105,6 +105,43 @@
             if (!hasVisited) {
                 landingModal.classList.add('show');
             }
+
+            // ── Animación letra por letra (explosión inversa) ──
+            const directions = [
+                'translate(-180px, -120px) rotate(-25deg) scale(2.5)',
+                'translate(160px, -150px) rotate(20deg) scale(3)',
+                'translate(-140px, 160px) rotate(15deg) scale(2.8)',
+                'translate(200px, 100px) rotate(-18deg) scale(2.2)',
+                'translate(-100px, -200px) rotate(30deg) scale(3.2)',
+                'translate(180px, -80px) rotate(-22deg) scale(2.6)',
+                'translate(-200px, 80px) rotate(12deg) scale(2.4)',
+                'translate(120px, 180px) rotate(-30deg) scale(2.9)',
+                'translate(-160px, 140px) rotate(25deg) scale(2.1)',
+                'translate(90px, -190px) rotate(-15deg) scale(3.1)',
+                'translate(-220px, -60px) rotate(18deg) scale(2.7)',
+            ];
+
+            let letterIndex = 0;
+
+            function splitToLetters(span) {
+                const text = span.textContent;
+                span.textContent = '';
+                [...text].forEach((char, i) => {
+                    const el = document.createElement('span');
+                    el.className = 'title-letter';
+                    el.textContent = char === ' ' ? '\u00A0' : char;
+                    const dir = directions[letterIndex % directions.length];
+                    el.style.setProperty('--letter-from', dir);
+                    // delay escalonado: crew desde 0.3s, planner desde 0.55s
+                    const baseDelay = span.classList.contains('landing-title-crew') ? 0.3 : 0.55;
+                    el.style.animationDelay = (baseDelay + i * 0.07) + 's';
+                    span.appendChild(el);
+                    letterIndex++;
+                });
+            }
+
+            splitToLetters(document.querySelector('.landing-title-crew'));
+            splitToLetters(document.querySelector('.landing-title-planner'));
         });
 
         // Función para cerrar el modal
@@ -113,6 +150,16 @@
             landingModal.classList.remove('show');
             localStorage.setItem('hasVisitedLanding', 'true');
         }
+
+        // Cerrar con Enter
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                const landingModal = document.getElementById('landingModal');
+                if (landingModal.classList.contains('show')) {
+                    closeLandingModal();
+                }
+            }
+        });
     </script>
     <div class="container">
         <!-- Header -->

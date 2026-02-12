@@ -911,19 +911,22 @@ function setupEventListeners() {
     document.getElementById('contractFilter').addEventListener('change', generateScheduleTable);
     document.getElementById('searchInput').addEventListener('input', generateScheduleTable);
 
-    // Fecha - Forzar selección de lunes
+    // Fecha - Restaurar última guardada o usar lunes de la semana actual
     const dateInput = document.getElementById('weekDate');
-    const today = new Date();
+    const savedDate = localStorage.getItem('lastWeekDate');
 
-    // Calcular el lunes de la semana actual
-    const dayOfWeek = today.getDay();
-    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - daysToSubtract);
+    if (savedDate) {
+        dateInput.value = savedDate;
+    } else {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        const monday = new Date(today);
+        monday.setDate(today.getDate() - daysToSubtract);
+        dateInput.valueAsDate = monday;
+    }
 
-    dateInput.valueAsDate = monday;
-
-    // Agregar listener para forzar selección de lunes
+    // Agregar listener para forzar selección de lunes y guardar
     dateInput.addEventListener('change', function (event) {
         const input = event.target;
         const selectedDate = new Date(input.value + 'T00:00:00');
@@ -936,6 +939,9 @@ function setupEventListeners() {
             monday.setDate(selectedDate.getDate() - daysToSubtract);
             input.valueAsDate = monday;
         }
+
+        // Guardar la fecha seleccionada
+        localStorage.setItem('lastWeekDate', input.value);
 
         // Recargar datos al cambiar fecha
         loadManagersScheduleFromLocalStorage();

@@ -183,15 +183,22 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 function setTodayDate() {
-    const today = new Date();
     const dateInput = document.getElementById('weekDate');
     if (!dateInput) return;
 
-    const dayOfWeek = today.getDay();
-    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - daysToSubtract);
-    dateInput.valueAsDate = monday;
+    // Restaurar última fecha guardada o usar lunes de la semana actual
+    const savedDate = localStorage.getItem('lastWeekDate');
+    if (savedDate) {
+        dateInput.value = savedDate;
+    } else {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        const monday = new Date(today);
+        monday.setDate(today.getDate() - daysToSubtract);
+        dateInput.valueAsDate = monday;
+    }
+
     dateInput.addEventListener('change', forceMonday);
 }
 
@@ -205,6 +212,9 @@ function forceMonday(event) {
         monday.setDate(selectedDate.getDate() - daysToSubtract);
         input.valueAsDate = monday;
     }
+
+    // Guardar la fecha seleccionada
+    localStorage.setItem('lastWeekDate', input.value);
 }
 
 // ========== VALIDAR SI PERSONA ESTÁ EN OTRA SECCIÓN ==========

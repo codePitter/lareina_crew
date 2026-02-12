@@ -284,24 +284,29 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 });
 
-// Establecer fecha actual (siempre lunes de la semana actual)
+// Establecer fecha: restaura la última guardada o usa el lunes de la semana actual
 function setTodayDate() {
-    const today = new Date();
     const dateInput = document.getElementById('weekDate');
 
-    // Calcular el lunes de la semana actual
-    const dayOfWeek = today.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
-    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Si es domingo, restar 6 días
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - daysToSubtract);
+    // Intentar restaurar la última fecha guardada
+    const savedDate = localStorage.getItem('lastWeekDate');
+    if (savedDate) {
+        dateInput.value = savedDate;
+    } else {
+        // Fallback: lunes de la semana actual
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        const monday = new Date(today);
+        monday.setDate(today.getDate() - daysToSubtract);
+        dateInput.valueAsDate = monday;
+    }
 
-    dateInput.valueAsDate = monday;
-
-    // Agregar listener para forzar selección de lunes
+    // Agregar listener para forzar selección de lunes y guardar
     dateInput.addEventListener('change', forceMonday);
 }
 
-// Forzar que la fecha seleccionada sea siempre un lunes
+// Forzar que la fecha seleccionada sea siempre un lunes y guardarla
 function forceMonday(event) {
     const input = event.target;
     const selectedDate = new Date(input.value + 'T00:00:00');
@@ -314,6 +319,9 @@ function forceMonday(event) {
         monday.setDate(selectedDate.getDate() - daysToSubtract);
         input.valueAsDate = monday;
     }
+
+    // Guardar la fecha seleccionada
+    localStorage.setItem('lastWeekDate', input.value);
 }
 
 // ========== GENERAR GRID DE HORARIOS ==========
