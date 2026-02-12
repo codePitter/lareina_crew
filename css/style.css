@@ -1928,17 +1928,17 @@ body {
     margin-right: 10px;
 }
 
-    .print-schedule-btn:hover {
-        background: var(--dark-green);
-        box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
-    }
+.print-schedule-btn:hover {
+    background: var(--dark-green);
+    box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+}
 
 /* ========== ESTILOS PARA IMPRESIÓN DEL SCHEDULE ========== */
 @media print {
     /* Configuración de página A4 */
     @page {
         size: A4 portrait;
-        margin: 8mm;
+        margin: 5mm 10mm;
     }
 
     /* Resetear body y html */
@@ -1962,14 +1962,13 @@ body {
 
     #scheduleArea {
         position: absolute;
-        left: 0;
+        left: 50%;
         top: 0;
-        width: 100%;
-        max-width: 194mm; /* 210mm - 16mm de márgenes */
+        transform: translateX(-50%);
+        width: 95%;
+        max-width: 95%;
         padding: 0;
         margin: 0;
-        transform: scale(0.95);
-        transform-origin: top left;
     }
 
     /* Ocultar elementos que no se deben imprimir */
@@ -1996,7 +1995,7 @@ body {
         display: block !important;
         visibility: visible !important;
         text-align: center;
-        font-size: 11pt;
+        font-size: 16px;
         font-weight: bold;
         margin-bottom: 5mm;
         color: #000;
@@ -2007,7 +2006,7 @@ body {
     .schedule-grid {
         page-break-inside: avoid;
         width: 100%;
-        font-size: 7pt;
+        font-size: 16px;
         display: block !important;
         gap: 2px !important;
     }
@@ -2026,7 +2025,7 @@ body {
 
     .grid-row {
         page-break-inside: avoid;
-        font-size: 7pt;
+        font-size: 16px;
         padding: 1px 0 !important;
         margin: 2px 0 !important;
         border: none !important;
@@ -2042,7 +2041,7 @@ body {
             background: none !important;
             color: #000 !important;
             font-weight: bold;
-            font-size: 7pt;
+            font-size: 16px;
             padding: 2px 0 !important;
             margin: 2px 0 !important;
             border-bottom: 1pt solid #000 !important;
@@ -2058,12 +2057,12 @@ body {
         margin: 0 !important;
         box-shadow: none !important;
         transform: none !important;
-        font-size: 7pt;
+        font-size: 16px;
         font-weight: bold;
         text-align: center;
         min-width: 15mm;
-        height: 5mm;
-        line-height: 5mm;
+        height: 7.5mm;
+        line-height: 7.5mm;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2071,7 +2070,7 @@ body {
     }
 
     .grid-cell {
-        font-size: 7pt;
+        font-size: 16px;
         padding: 0 !important;
         margin: 0 !important;
         line-height: 1.1;
@@ -2087,9 +2086,9 @@ body {
             margin: 0 !important;
             box-shadow: none !important;
             font-weight: bold;
-            font-size: 7pt;
-            height: 5mm;
-            line-height: 5mm;
+            font-size: 16px;
+            height: 7.5mm;
+            line-height: 7.5mm;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -2102,23 +2101,24 @@ body {
             border: 0.5pt solid #000 !important;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
-            height: 5mm;
-            min-height: 5mm;
-            max-height: 5mm;
-            font-size: 7pt;
-            padding: 0 1mm !important;
+            height: 7.5mm;
+            min-height: 7.5mm;
+            max-height: 7.5mm;
+            font-size: 16px;
+            padding: 0 2mm !important;
             margin: 0 !important;
-            line-height: 5mm;
+            line-height: 7.5mm;
             display: flex !important;
             align-items: center;
             justify-content: flex-start;
-            overflow: visible !important;
+            overflow: hidden !important;
             white-space: nowrap;
             color: #000 !important;
-            font-weight: normal;
+            font-weight: bold !important;
+            text-overflow: ellipsis;
         }
 
-            /* Mostrar nombres en dropzones */
+            /* Mostrar nombres en dropzones - usar el contenido directamente */
             .name-dropzone.has-name,
             .grid-cell.name-dropzone.has-name {
                 color: #000 !important;
@@ -2132,25 +2132,18 @@ body {
                 display: none !important;
             }
 
-            /* Asegurar que el texto se vea cuando NO está vacío */
-            .name-dropzone:not(:empty),
-            .grid-cell.name-dropzone:not(:empty) {
-                color: #000 !important;
-                visibility: visible !important;
-            }
-
     /* Inputs de tiempo con bordes conectados */
     input[type="time"],
     .time-input {
         border: 0.5pt solid #000 !important;
         border-left: none !important;
-        font-size: 7pt;
+        font-size: 16px;
         padding: 0 1mm !important;
         margin: 0 !important;
-        height: 5mm;
-        min-height: 5mm;
-        max-height: 5mm;
-        line-height: 5mm;
+        height: 7.5mm;
+        min-height: 7.5mm;
+        max-height: 7.5mm;
+        line-height: 7.5mm;
         box-sizing: border-box;
         color: #000 !important;
         background: transparent !important;
@@ -2164,18 +2157,10 @@ body {
         border-left: none !important;
     }
 
-    /* Separador de flecha sin bordes */
+    /* Separador de flecha - OCULTAR EN IMPRESIÓN */
     .time-separator {
-        font-size: 7pt;
-        margin: 0;
-        padding: 0 1mm;
-        border: none !important;
-        background: transparent !important;
-        height: 5mm;
-        line-height: 5mm;
-        display: inline-flex;
-        align-items: center;
-        color: #000 !important;
+        display: none !important;
+        visibility: hidden !important;
     }
 
     /* Turno block y turno content - conectar todo */
@@ -2185,16 +2170,19 @@ body {
         padding: 0 !important;
         background: none !important;
         border: none !important;
+        width: 100% !important;
     }
 
     .turno-content {
-        display: flex !important;
+        display: grid !important;
+        grid-template-columns: 35mm 20mm 20mm !important;
         flex: 1;
         align-items: stretch;
         gap: 0 !important;
         margin: 0 !important;
         padding: 0 !important;
         background: transparent !important;
+        width: 100% !important;
     }
 
         .turno-content > * {
@@ -2211,7 +2199,7 @@ body {
     }
 
     .francos-section-title {
-        font-size: 9pt;
+        font-size: 16px;
         font-weight: bold;
         margin-bottom: 1mm;
         color: #000;
@@ -2239,12 +2227,13 @@ body {
     .franco-chip {
         color: #000 !important;
         border: 0.5pt solid #000 !important;
+        font-size: 16px;
     }
 
     /* Ajustar elementos arrastrables */
     .person-card,
     .draggable-person {
-        font-size: 7pt;
+        font-size: 16px;
         padding: 1mm;
         margin: 0.5mm;
         background: white !important;
@@ -2266,6 +2255,10 @@ body {
         box-shadow: none !important;
         transform: none !important;
         color: #000 !important;
+        /* Definir columnas fijas para que todos los dropzones sean del mismo ancho */
+        display: grid !important;
+        grid-template-columns: 15mm repeat(3, 1fr) !important;
+        gap: 0 !important;
     }
 
     /* Ocultar botón de agregar fila en impresión */

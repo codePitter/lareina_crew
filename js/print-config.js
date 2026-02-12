@@ -61,6 +61,40 @@ function prepareCajaNumbers() {
         // Reemplazar el contenido con solo el texto sin emojis
         caja.textContent = textWithoutEmojis;
     });
+
+    // Formatear nombres en dropzones para mostrar Apellido + Inicial
+    prepareNameDropzones();
+}
+
+// Formatear nombres para impresión (Apellido + Inicial)
+function prepareNameDropzones() {
+    const dropzones = document.querySelectorAll('.name-dropzone.has-name');
+    dropzones.forEach(dropzone => {
+        const fullName = dropzone.textContent.trim();
+        if (fullName) {
+            // Guardar nombre original
+            dropzone.setAttribute('data-original-name', fullName);
+
+            // Formatear nombre: detectar si tiene dos partes (nombre + apellido)
+            const nameParts = fullName.trim().split(/\s+/);
+            let formattedName = fullName;
+
+            if (nameParts.length >= 2) {
+                // Si tiene dos o más partes, tomar la última como apellido
+                const lastName = nameParts[nameParts.length - 1];
+                const firstInitial = nameParts[0].charAt(0).toUpperCase();
+                formattedName = `${lastName} ${firstInitial}.`;
+            } else if (nameParts.length === 1) {
+                // Si solo tiene una parte, agregar la primera inicial
+                const name = nameParts[0];
+                const initial = name.charAt(0).toUpperCase();
+                formattedName = `${name} ${initial}.`;
+            }
+
+            // Actualizar el texto del dropzone
+            dropzone.textContent = formattedName;
+        }
+    });
 }
 
 // Restaurar números de caja después de impresión
@@ -72,6 +106,22 @@ function restoreCajaNumbers() {
         if (originalHTML) {
             caja.innerHTML = originalHTML;
             caja.removeAttribute('data-original-html');
+        }
+    });
+
+    // Restaurar nombres originales en dropzones si es necesario
+    restoreNameDropzones();
+}
+
+// Restaurar nombres originales en dropzones
+function restoreNameDropzones() {
+    const dropzones = document.querySelectorAll('.name-dropzone.has-name');
+    dropzones.forEach(dropzone => {
+        // Restaurar nombre original
+        const originalName = dropzone.getAttribute('data-original-name');
+        if (originalName) {
+            dropzone.textContent = originalName;
+            dropzone.removeAttribute('data-original-name');
         }
     });
 }

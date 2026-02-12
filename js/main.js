@@ -754,6 +754,8 @@ function assignPersonnelToDropzone(name, dropzone) {
     // Actualizar la dropzone visualmente
     dropzone.textContent = name;
     dropzone.classList.add('has-name');
+    // Agregar el nombre completo como atributo para impresión
+    dropzone.setAttribute('data-fullname', name);
     makeDropzoneDraggable(dropzone);
 
     // Actualizar estado del personal y contadores
@@ -1556,6 +1558,8 @@ function loadSchedule(day) {
                 if (dropzone) {
                     dropzone.textContent = turnoData.name;
                     dropzone.classList.add('has-name');
+                    // Agregar el nombre completo como atributo para impresión
+                    dropzone.setAttribute('data-fullname', turnoData.name);
                     makeDropzoneDraggable(dropzone);
                 }
             }
