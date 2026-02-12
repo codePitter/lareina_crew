@@ -868,6 +868,9 @@ function toggleViewMode() {
 
 // ========== EVENT LISTENERS ==========
 function setupEventListeners() {
+    // Botón de impresión
+    document.getElementById('printScheduleBtn').addEventListener('click', printSchedule);
+
     // Botones principales
     document.getElementById('manageCodesBtn').addEventListener('click', openCodesModal);
     document.getElementById('manageCodesMainBtn').addEventListener('click', openCodesModal);

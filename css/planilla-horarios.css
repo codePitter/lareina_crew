@@ -1356,7 +1356,7 @@ body {
 
     .schedule-table {
         width: 100%;
-        font-size: 9px !important;
+        font-size: 3.2mm !important;
         border-collapse: collapse;
     }
 
@@ -1372,7 +1372,7 @@ body {
             padding: 1px 3px !important;
             border: 1px solid #333 !important;
             page-break-inside: avoid;
-            font-size: 8px !important;
+            font-size: 3.2mm !important;
         }
 
         .schedule-table thead {
@@ -1391,7 +1391,7 @@ body {
             .schedule-table thead th,
             .schedule-table thead tr th {
                 font-weight: bold !important;
-                font-size: 8px !important;
+                font-size: 3.2mm !important;
                 color: #000 !important;
                 padding: 1px 3px !important;
                 text-transform: none !important;
@@ -1412,7 +1412,7 @@ body {
         }
 
         .schedule-table tbody td {
-            font-size: 8px !important;
+            font-size: 3.2mm !important;
             padding: 1px 2px !important;
         }
 
